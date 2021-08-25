@@ -2,14 +2,15 @@ language: csharp
 
 matrix:
   include:
-    - os: linux
-      services:
-        - docker
-    - os: osx
-      sudo: required
+#    - os: linux
+#      services:
+#        - docker
+#    - os: osx
+#      sudo: required
 
     - os: windows
-
+      services:
+        - docker
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull ubuntu:latest ; fi
@@ -31,10 +32,10 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
 
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/f1a1178baa78d1162385
-    on_success: change
-    on_failure: always
-    on_start: never
+#notifications:
+#  webhooks:
+#    urls:
+#      - https://webhooks.gitter.im/e/f1a1178baa78d1162385
+#    on_success: change
+#    on_failure: always
+#    on_start: never
