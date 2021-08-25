@@ -9,6 +9,7 @@ matrix:
 #      sudo: required
 
     - os: windows
+      mono: none
       services:
         - docker
 
