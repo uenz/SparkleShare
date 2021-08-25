@@ -1,4 +1,4 @@
-language: generic
+language: csharp
 
 matrix:
   include:
@@ -10,8 +10,6 @@ matrix:
 
     - os: windows
       mono: none
-      services:
-        - docker
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull ubuntu:latest ; fi
