@@ -16,8 +16,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then sudo installer -pkg xamarin.mac*.pkg -target / ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install netfx-4.5.2-devpack ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version 3.11.0.20170506 ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then setx /M PATH "%PATH%;C:\Program Files (x86)\WiX Toolset v3.11\bin" ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version 3.11.0.20170506 ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then setx /M PATH "%PATH%;C:\Program Files (x86)\WiX Toolset v3.11\bin" ; fi
 
 
 
@@ -25,7 +25,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then msbuild /p:Configuration=ReleaseMac SparkleShare.sln ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then echo %cd% ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then SparkleShare/Windows/build.cmd installer ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then SparkleShare/Windows/build.cmd ; fi
 
 
 before_deploy:
