@@ -22,6 +22,7 @@ before_install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then msbuild /p:Configuration=ReleaseMac SparkleShare.sln ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then echo %cd% ; fi  
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then SparkleShare/Windows/build.cmd installer ; fi
 
 
