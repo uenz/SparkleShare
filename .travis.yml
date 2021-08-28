@@ -18,7 +18,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install netfx-4.5.2-devpack ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then powershell Install-WindowsFeature Net-Framework-Core ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version=3.11.2 ; fi
-  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then setx /M PATH "%PATH%;C:\Program Files (x86)\WiX Toolset v3.11\bin" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then set WIX="C:\Program Files (x86)\WiX Toolset v3.11\bin" ; fi
   #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install nuget.commandline ; fi
   #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then nuget install wix -Version 3.11.2 ; fi
 
