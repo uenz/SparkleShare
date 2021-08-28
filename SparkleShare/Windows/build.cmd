@@ -5,8 +5,8 @@ set msbuild="%WinDirNet%\v4.0\msbuild.exe"
 if not exist %msbuild% set msbuild="%WinDirNet%\v4.0.30319\msbuild.exe"
 set wixBinDir=%WIX%\bin
 
-if not exist ..\..\bin mkdir ..\..\bin
-copy Images\sparkleshare-app.ico ..\..\bin\
+if not exist %~dp0\..\..\bin mkdir %~dp0\..\..\bin
+copy %~dp0\Images\sparkleshare-app.ico %~dp0\..\..\bin\
 
 %msbuild% "%~dp0\..\..\SparkleShare.sln" /target:SparkleShare_Windows:Rebuild /p:Configuration=Release /p:Platform="Any CPU"
 
@@ -21,5 +21,6 @@ if "%1"=="installer" (
 	) else (
 		echo Not building installer ^(could not find wix, Windows Installer XML toolset^)
 	  echo wix is available at http://wix.sourceforge.net/
+		SET ERRORLEVEL=2
 	)
 ) else echo Not building installer, as it was not requested. ^(Issue "build.cmd installer" to build installer ^)
