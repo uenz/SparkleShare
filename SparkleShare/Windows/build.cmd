@@ -3,7 +3,7 @@
 set WinDirNet=%WinDir%\Microsoft.NET\Framework
 set msbuild="%WinDirNet%\v4.0\msbuild.exe"
 if not exist %msbuild% set msbuild="%WinDirNet%\v4.0.30319\msbuild.exe"
-if not exist %WIX% set WIX="C:\Program Files (x86)\WiX Toolset v3.11\"
+if not defined WIX set WIX="C:\Program Files (x86)\WiX Toolset v3.11\"
 set wixBinDir=%WIX%\bin
 
 if not exist %~dp0\..\..\bin mkdir %~dp0\..\..\bin
