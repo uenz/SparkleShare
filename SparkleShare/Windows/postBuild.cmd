@@ -1,4 +1,4 @@
-@ECHO OFF
+@ECHO ON
 setlocal enableDelayedExpansion
 REM if no target directory is passed use default on
 IF [%1]==[]  (SET OUTDIR="%~dp0..\..\bin\msysgit") ELSE (SET OUTDIR=%~1)
