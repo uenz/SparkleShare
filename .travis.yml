@@ -16,10 +16,11 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then sudo installer -pkg xamarin.mac*.pkg -target / ; fi
   #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install netfx-4.5.2-devpack ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install choco install windows-sdk-8.0 ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then powershell Install-WindowsFeature Net-Framework-Core ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version=3.11.2 ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then candle.exe ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then setx WIX "C:\Program Files (x86)\WiX Toolset v3.11\bin" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then setx WIX "C:\Program Files (x86)\WiX Toolset v3.11\" ; fi
 
 
 script:
