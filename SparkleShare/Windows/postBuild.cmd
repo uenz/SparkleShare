@@ -11,7 +11,7 @@ FOR /F "usebackq tokens=2" %%i IN ("%~dp0\git.download") DO SET md5hash=%%i
 CALL :downloadandverify %url% %~dp0\git.tar.gz %md5hash%
 mkdir %OUTDIR%
 REM check if tar is available else use tartool and unzip
-IF EXIST C:\Windows\System32\TARx.exe (
+IF EXIST C:\Windows\System32\TAR.exe (
 	C:\Windows\System32\TAR -zxvf %~dp0\git.tar.gz -C %OUTDIR%
 ) ELSE (
 	tartool %~dp0\git.tar.gz %OUTDIR%
@@ -20,7 +20,7 @@ DEL /s /q %~dp0\git.tar.gz
 
 curl -L https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win32.zip -o %~dp0\OpenSSH-Win32.zip
 REM check if tar is available else use tartool and unzip
-IF EXIST C:\Windows\System32\TARx.exe (
+IF EXIST C:\Windows\System32\TAR.exe (
 	C:\Windows\System32\TAR -zxvf %~dp0\OpenSSH-Win32.zip -C %~dp0
 ) ELSE (
 	echo "Using linux / GitBash tar arguments"
