@@ -20,7 +20,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then powershell Install-WindowsFeature Net-Framework-Core ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version=3.11.2 ; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install tartool ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install unzip ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install unzip ; fi
   #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export "WIX=C:\Program Files (x86)\WiX Toolset v3.11\" ; fi
 
 
