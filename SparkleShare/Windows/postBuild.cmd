@@ -3,20 +3,29 @@ setlocal enableDelayedExpansion
 REM if no target directory is passed use default on
 IF [%1]==[]  (SET OUTDIR="%~dp0..\..\bin\msysgit") ELSE (SET OUTDIR=%~1)
 
-REM IF EXIST %OUTDIR%\cmd GOTO skipgitdownload
+IF EXIST %OUTDIR%\cmd GOTO skipgitdownload
 ECHO installing git
 REM download git
 FOR /F "usebackq tokens=1" %%i IN ("%~dp0\git.download") DO SET url=%%i
 FOR /F "usebackq tokens=2" %%i IN ("%~dp0\git.download") DO SET md5hash=%%i
 CALL :downloadandverify %url% %~dp0\git.tar.gz %md5hash%
 mkdir %OUTDIR%
-REM force using microsoft version of tar
-C:\Windows\System32\TAR -zxvf %~dp0\git.tar.gz -C %OUTDIR%
+REM check if tar is available else use tartool and unzip
+IF EXIST C:\Windows\System32\TARx.exe (
+	C:\Windows\System32\TAR -zxvf %~dp0\git.tar.gz -C %OUTDIR%
+) ELSE (
+	tartool %~dp0\git.tar.gz %OUTDIR%
+)
 DEL /s /q %~dp0\git.tar.gz
 
 curl -L https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win32.zip -o %~dp0\OpenSSH-Win32.zip
-REM force using microsoft version of tar
-C:\Windows\System32\TAR -zxvf %~dp0\OpenSSH-Win32.zip -C %~dp0
+REM check if tar is available else use tartool and unzip
+IF EXIST C:\Windows\System32\TARx.exe (
+	C:\Windows\System32\TAR -zxvf %~dp0\OpenSSH-Win32.zip -C %~dp0
+) ELSE (
+	echo "Using linux / GitBash tar arguments"
+  unzip %~dp0\OpenSSH-Win32.zip -d %~dp0
+)
 DEL /s /q %~dp0\OpenSSH-Win32.zip
 XCOPY  %~dp0\OpenSSH-Win32\ssh-keygen.exe %OUTDIR%\usr\bin /Y
 XCOPY  %~dp0\OpenSSH-Win32\ssh-keyscan.exe %OUTDIR%\usr\bin /Y
