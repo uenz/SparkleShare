@@ -1,4 +1,4 @@
-@ECHO ON
+@ECHO OFF
 setlocal enableDelayedExpansion
 REM if no target directory is passed use default on
 IF [%1]==[]  (SET OUTDIR="%~dp0..\..\bin\msysgit") ELSE (SET OUTDIR=%~1)
@@ -10,11 +10,13 @@ FOR /F "usebackq tokens=1" %%i IN ("%~dp0\git.download") DO SET url=%%i
 FOR /F "usebackq tokens=2" %%i IN ("%~dp0\git.download") DO SET md5hash=%%i
 CALL :downloadandverify %url% %~dp0\git.tar.gz %md5hash%
 mkdir %OUTDIR%
-TAR -zxvf %~dp0\git.tar.gz -C %OUTDIR%
+REM force using microsoft version of tar
+C:\Windows\System32\TAR -zxvf %~dp0\git.tar.gz -C %OUTDIR%
 DEL /s /q %~dp0\git.tar.gz
 
 curl -L https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win32.zip -o %~dp0\OpenSSH-Win32.zip
-TAR -zxvf %~dp0\OpenSSH-Win32.zip -C %~dp0
+REM force using microsoft version of tar
+C:\Windows\System32\TAR -zxvf %~dp0\OpenSSH-Win32.zip -C %~dp0
 DEL /s /q %~dp0\OpenSSH-Win32.zip
 XCOPY  %~dp0\OpenSSH-Win32\ssh-keygen.exe %OUTDIR%\usr\bin /Y
 XCOPY  %~dp0\OpenSSH-Win32\ssh-keyscan.exe %OUTDIR%\usr\bin /Y
