@@ -36,12 +36,12 @@ script:
 
 
 before_deploy:
-  pwd
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz` ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./ ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; pwd ; fi  
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare/Windows/SparkleShare.msi  sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi; fi
 deploy: &deploy_base
   provider: releases
