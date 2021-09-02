@@ -44,14 +44,15 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare/Windows/SparkleShare.msi  sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi; fi
 deploy: &deploy_base
   provider: releases
-  api_key: "GITHUB OAUTH TOKEN"
+  api_key: ${GITHUB_TOKEN}
   file: sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi
-  skip_cleanup: true
+  cleanup: false
   draft: false
   name: Windows CI Build
-  branches:
-    only: feature/WindowsTravisCi
   on:
+    branch:
+      - feature/WindowsTravisCi
+
     tags: false
 
 #notifications:
