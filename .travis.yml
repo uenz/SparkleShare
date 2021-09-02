@@ -41,11 +41,11 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi ; fi
 deploy: &deploy_base
   provider: releases
   api_key: ${GITHUB_TOKEN}
-  file: sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi
+  file: SparkleShare.msi
   cleanup: false
   draft: true
   name: Windows CI Build
