@@ -36,6 +36,7 @@ script:
 
 
 before_deploy:
+  pwd
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz` ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./ ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
