@@ -47,12 +47,11 @@ deploy: &deploy_base
   api_key: ${GITHUB_TOKEN}
   file: sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi
   cleanup: false
-  draft: false
+  draft: true
   name: Windows CI Build
   on:
     branch:
       - feature/WindowsTravisCi
-
     tags: false
 
 #notifications:
