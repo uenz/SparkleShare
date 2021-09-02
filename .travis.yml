@@ -1,17 +1,19 @@
 language: csharp
-
+cache:
+  directories:
+    - upload
 matrix:
   include:
-#    - os: linux
-#      services:
-#        - docker
-#    - os: osx
-#      sudo: required
-
+    - os: linux
+      services:
+        - docker
+    - os: osx
+      sudo: required
     - os: windows
       mono: none
 
 before_install:
+  - mkdir upload
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull ubuntu:latest ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then sudo installer -pkg xamarin.mac*.pkg -target / ; fi
@@ -37,18 +39,19 @@ script:
 
 before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz` ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./ ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app . ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  sparkleshare-win-nightly-${TRAVIS_COMMIT}.msi ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  s./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
+
 deploy: &deploy_base
   provider: releases
   api_key: ${GITHUB_TOKEN}
-  file: SparkleShare.msi
+  file: ./upload/SparkleShare-${TRAVIS_OS_NAME}‚
   cleanup: false
   draft: true
-  name: Windows CI Build
+  name: Nightly CI Build
   on:
     branch:
       - feature/WindowsTravisCi
