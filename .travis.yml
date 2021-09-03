@@ -2,59 +2,59 @@ language: csharp
 cache:
   directories:
     - upload
-matrix:
+jobs:
   include:
-#    - os: linux
-#      services:
-#        - docker
-#    - os: osx
-#      sudo: required
-    - os: windows
+    - stage: "Compile for Mac"
+      os: osx
+      before_install:
+        - mkdir -p ./upload
+        - brew install xamarin.mac
+      script:
+        - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
+      before_deploy:
+        - mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-macos-nightly.app
+      deploy: &deploy_base
+        provider: releases
+        api_key: ${GITHUB_TOKEN}
+        file: ./upload/SparkleShare-macos-nightly.app‚
+        skip_cleanup: true
+        draft: true
+        name: Nightly CI Build
+        on:
+          branch:
+            - feature/WindowsTravisCi
+          tags: false
+
+    - stage: "Compile for linux"
+      os: linux
+      services:
+        - docker
+      before_install:
+        - docker pull ubuntu:latest
+      script:
+        - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
+      before_deploy:
+        - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
+        #- mv $ {DEPLOY_FILE} sparkleshare-linux-nightly.tar.gz
+        
+    - stage: "Compile for Windows"
+      os: windows
       mono: none
-
-before_install:
-  - mkdir -p ./upload
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull ubuntu:latest ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then sudo installer -pkg xamarin.mac*.pkg -target / ; fi
-  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install netfx-4.5.2-devpack ; fi
-  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install windows-sdk-8.0 ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then powershell Install-WindowsFeature Net-Framework-Core ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y wixtoolset --version=3.11.2 ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install tartool ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install unzip ; fi
-  #- if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export "WIX=C:\Program Files (x86)\WiX Toolset v3.11\" ; fi
-
-
-
-script:
-  #create nightly tag if not already exists
-#  - if [[ "$TRAVIS_TAG" == "" ]]; then git tag -f nightly ; fi
-#  - if [[ "$TRAVIS_TAG" == "" ]]; then git push --tags -f ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly . ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then msbuild /p:Configuration=ReleaseMac SparkleShare.sln ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then ./SparkleShare/Windows/build.cmd installer ; fi
-
-
-before_deploy:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz` ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
-
-deploy: &deploy_base
-  provider: releases
-  api_key: ${GITHUB_TOKEN}
-  file: ./upload/SparkleShare-${TRAVIS_OS_NAME}‚
-  skip_cleanup: true
-  draft: true
-  name: Nightly CI Build
-  on:
-    branch:
-      - feature/WindowsTravisCi
-    tags: false
+      before_install:
+        # - choco install netfx-4.5.2-devpack
+        # - choco install windows-sdk-8.0
+        - powershell Install-WindowsFeature Net-Framework-Core
+        - choco install -y wixtoolset --version=3.11.2
+        - choco install tartool
+        - choco install unzip
+      script:
+        - ./SparkleShare/Windows/build.cmd installer
+      before_deploy:
+        - mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-windows-nightly.exe
+      deploy:
+          <<: *deploy_base
+          draft: true
+          file: ./upload/SparkleShare-windows-nightly.exe‚
 
 #notifications:
 #  webhooks:
