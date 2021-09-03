@@ -4,11 +4,11 @@ cache:
     - upload
 matrix:
   include:
-    - os: linux
-      services:
-        - docker
-    - os: osx
-      sudo: required
+#    - os: linux
+#      services:
+#        - docker
+#    - os: osx
+#      sudo: required
     - os: windows
       mono: none
 
