@@ -42,7 +42,7 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
 #  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
 
 deploy: &deploy_base
   provider: releases
