@@ -15,11 +15,12 @@ jobs:
       script:
         - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
       before_deploy:
-        - mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-macos-nightly.app
+        - zip -r SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app
+        - mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
       deploy: &deploy_base
         provider: releases
         api_key: ${GITHUB_TOKEN}
-        file: ./upload/SparkleShare-macos-nightly.app‚
+        file: ./upload/SparkleShare-macos-nightly.zip,
         skip_cleanup: true
         draft: true
         name: Nightly CI Build
@@ -38,7 +39,7 @@ jobs:
         - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
       before_deploy:
         - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
-        #- mv $ {DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
+        - mv ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
       deploy:
           <<: *deploy_base
           draft: true
