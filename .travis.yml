@@ -8,7 +8,10 @@ jobs:
       os: osx
       before_install:
         - mkdir -p ./upload
-        - brew install xamarin.mac
+        # more secure but very slow due to many updates
+        #- brew install xamarin.mac 
+        - wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg
+        - sudo installer -pkg xamarin.mac*.pkg -target
       script:
         - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
       before_deploy:
@@ -36,7 +39,7 @@ jobs:
       before_deploy:
         - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
         #- mv $ {DEPLOY_FILE} sparkleshare-linux-nightly.tar.gz
-        
+
     - stage: "Compile for Windows"
       os: windows
       mono: none
