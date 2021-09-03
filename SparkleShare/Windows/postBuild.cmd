@@ -31,13 +31,12 @@ XCOPY  %~dp0\OpenSSH-Win32\ssh-keygen.exe %OUTDIR%\usr\bin /Y
 XCOPY  %~dp0\OpenSSH-Win32\ssh-keyscan.exe %OUTDIR%\usr\bin /Y
 XCOPY  %~dp0\OpenSSH-Win32\ssh.exe %OUTDIR%\usr\bin /Y
 XCOPY  %~dp0\OpenSSH-Win32\libcrypto.dll %OUTDIR%\usr\bin /Y
-
 DEL /s /q %~dp0\OpenSSH-Win32
 
 :skipgitdownload
-
 SET ERRORLEVEL=0
 ECHO ready
+
 :ready
 endlocal
 EXIT /B %ERRORLEVEL%

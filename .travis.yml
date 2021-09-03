@@ -13,7 +13,7 @@ matrix:
       mono: none
 
 before_install:
-  - mkdir upload
+  - mkdir -p ./upload
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull ubuntu:latest ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then sudo installer -pkg xamarin.mac*.pkg -target / ; fi
@@ -33,17 +33,16 @@ script:
 #  - if [[ "$TRAVIS_TAG" == "" ]]; then git push --tags -f ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly . ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then msbuild /p:Configuration=ReleaseMac SparkleShare.sln ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then cd  ./SparkleShare/Windows; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then ./build.cmd installer ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then ./SparkleShare/Windows/build.cmd installer ; fi
 
 
 before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz` ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker cp container:${DEPLOY_FILE} ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv sparkleshare*.tar.gz sparkleshare-linux-nightly-${TRAVIS_COMMIT}.tar.gz ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  s./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then zip --recurse-paths sparkleshare-mac-nightly-${TRAVIS_COMMIT}.zip SparkleShare.app ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "windows" ]];   then mv SparkleShare.msi  ./upload/SparkleShare-${TRAVIS_OS_NAME} ; fi
 
 deploy: &deploy_base
   provider: releases

@@ -68,7 +68,7 @@
       <ComponentGroupRef Id='msysGitComponentGroup' />
     </Feature>
 
-	<WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+	  <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
     <UI>
       <UIRef Id="WixUI_InstallDir" />
