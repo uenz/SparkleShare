@@ -39,7 +39,7 @@ jobs:
         - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
       before_deploy:
         - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
-        - mv ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
+        - mv $DEPLOY_FILE ./upload/SparkleShare-linux-nightly.tar.gz
       deploy:
           <<: *deploy_base
           draft: true
