@@ -3,6 +3,8 @@ cache:
   directories:
     - upload
 jobs:
+  allow_failures:
+    language: csharp
   include:
     - stage: "Compile for Mac"
       os: osx
@@ -16,7 +18,7 @@ jobs:
         - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
       before_deploy:
         - zip -r SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app
-        - mv SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
+        - cp SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
       deploy: &deploy_base
         provider: releases
         api_key: ${GITHUB_TOKEN}
@@ -39,7 +41,7 @@ jobs:
         - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
       before_deploy:
         - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
-        - mv $DEPLOY_FILE ./upload/SparkleShare-linux-nightly.tar.gz
+        - cp $DEPLOY_FILE ./upload/SparkleShare-linux-nightly.tar.gz
       deploy:
           <<: *deploy_base
           draft: true
