@@ -14,8 +14,8 @@ if "%1"=="installer" (
 	if exist "%wixBinDir%" (
 	  if exist "%~dp0\SparkleShare.msi" del "%~dp0\SparkleShare.msi"
 		"%wixBinDir%\heat.exe" dir "%~dp0\..\..\bin\msysgit" -cg msysGitComponentGroup -gg -scom -sreg -sfrag -srd -dr MSYSGIT_DIR -var wix.msysgitpath -o "%~dp0\msysgit.wxs"
-		"%wixBinDir%\candle" "%~dp0\SparkleShare.wxs" -ext WixUIExtension -ext WixUtilExtension -o %~dp0"
-		"%wixBinDir%\candle" "%~dp0\msysgit.wxs" -ext WixUIExtension -ext WixUtilExtension -o %~dp0"
+		"%wixBinDir%\candle" "%~dp0\SparkleShare.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
+		"%wixBinDir%\candle" "%~dp0\msysgit.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
 		"%wixBinDir%\light" -ext WixUIExtension -ext WixUtilExtension "%~dp0\Sparkleshare.wixobj" "%~dp0\msysgit.wixobj" -droot="%~dp0\..\.." -dmsysgitpath="%~dp0\..\..\bin\msysgit" -dpluginsdir="%~dp0\..\..\bin\plugins"  -o "%~dp0\SparkleShare.msi"
 		if exist "%~dp0\SparkleShare.msi" echo SparkleShare.msi created.
 	) else (
