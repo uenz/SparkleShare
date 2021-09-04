@@ -22,7 +22,7 @@ jobs:
       deploy: &deploy_base
         provider: releases
         api_key: ${GITHUB_TOKEN}
-        file: ./upload/SparkleShare-macos-nightly.zip,
+        file: ./upload/SparkleShare-macos-nightly.zip
         skip_cleanup: true
         draft: true
         name: Nightly CI Build
@@ -42,11 +42,12 @@ jobs:
         - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
       before_deploy:
         - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
-        - cp ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
+        #- cp ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
+        - touch ./upload/SparkleShare-linux-nightly.tar.gz
       deploy:
           <<: *deploy_base
           draft: true
-          file: ./upload/SparkleShare-linux-nightly.tar.gz‚
+          file: ./upload/SparkleShare-linux-nightly.tar.gz
 
     - stage: "Compile for Windows"
       os: windows
@@ -66,7 +67,7 @@ jobs:
       deploy:
           <<: *deploy_base
           draft: true
-          file: ./upload/SparkleShare-windows-nightly.exe‚
+          file: ./upload/SparkleShare-windows-nightly.exe
 
 #notifications:
 #  webhooks:
