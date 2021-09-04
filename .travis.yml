@@ -17,8 +17,8 @@ jobs:
       script:
         - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
       before_deploy:
-        - zip -r SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app
-        - cp SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
+        - zip -r ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app
+        - cp ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
       deploy: &deploy_base
         provider: releases
         api_key: ${GITHUB_TOKEN}
@@ -36,6 +36,7 @@ jobs:
       services:
         - docker
       before_install:
+        - mkdir -p ./upload
         - docker pull ubuntu:latest
       script:
         - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
@@ -51,6 +52,7 @@ jobs:
       os: windows
       mono: none
       before_install:
+        - mkdir -p ./upload
         # - choco install netfx-4.5.2-devpack
         # - choco install windows-sdk-8.0
         - powershell Install-WindowsFeature Net-Framework-Core
