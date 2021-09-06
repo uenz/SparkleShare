@@ -28,6 +28,7 @@ jobs:
         skip_cleanup: true
         draft: true
         name: Nightly CI Build
+        body: This is a automated CI Build. Do not use for prodiction environments!
         on:
           branch:
             - feature/WindowsTravisCi
