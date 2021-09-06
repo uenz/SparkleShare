@@ -3,8 +3,10 @@ cache:
   directories:
     - upload
 jobs:
-  allow_failures:
-    language: csharp
+  # enable next two lines to allaw an os to fail without quitting pipeline
+  # allow_failures:
+  #   language: csharp
+
   include:
     - stage: "Compile for Mac"
       os: osx
@@ -15,10 +17,10 @@ jobs:
         - wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg
         - sudo installer -pkg xamarin.mac*.pkg -target /
       script:
-        - msbuild /p:Configuration=ReleaseDist SparkleShare.sln
+        - msbuild /p:Configuration=ReleaseMac SparkleShare.sln
       before_deploy:
-        - rm -f ./upload/SparkleShare-macos-nightly.dmg
-        - hdiutil create -format UDZO -srcfolder ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app ./upload/SparkleShare-macos-nightly.dmg
+        - zip -r ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app
+        - cp ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
       deploy: &deploy_base
         provider: releases
         api_key: ${GITHUB_TOKEN}
@@ -31,23 +33,23 @@ jobs:
             - feature/WindowsTravisCi
           tags: false
 
-    - stage: "Compile for Linux"
-      os: linux
-      services:
-        - docker
-      before_install:
-        - mkdir -p ./upload
-        - docker pull ubuntu:latest
-      script:
-        - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
-      before_deploy:
-        - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
-        #- cp ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
-        - touch ./upload/SparkleShare-linux-nightly.tar.gz
-      deploy:
-          <<: *deploy_base
-          draft: true
-          file: ./upload/SparkleShare-linux-nightly.tar.gz
+    # - stage: "Compile for Linux"
+    #   os: linux
+    #   services:
+    #     - docker
+    #   before_install:
+    #     - mkdir -p ./upload
+    #     - docker pull ubuntu:latest
+    #   script:
+    #     - docker build --file scripts/ci/Dockerfile --tag sparkleshare:nightly .
+    #   before_deploy:
+    #     - export DEPLOY_FILE=`docker run --name container sparkleshare:nightly find / -name sparkleshare*.tar.gz`
+    #     - cp ${DEPLOY_FILE} ./upload/SparkleShare-linux-nightly.tar.gz
+    #     - touch ./upload/SparkleShare-linux-nightly.tar.gz
+    #   deploy:
+    #       <<: *deploy_base
+    #       draft: true
+    #       file: ./upload/SparkleShare-linux-nightly.tar.gz
 
     - stage: "Compile for Windows"
       os: windows
