@@ -63,11 +63,11 @@ jobs:
       script:
         - ./SparkleShare/Windows/build.cmd installer
       before_deploy:
-        - mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-windows-nightly.exe
+        - mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-windows-nightly.msi
       deploy:
           <<: *deploy_base
           draft: true
-          file: ./upload/SparkleShare-windows-nightly.exe
+          file: ./upload/SparkleShare-windows-nightly.msi
 
 #notifications:
 #  webhooks:
