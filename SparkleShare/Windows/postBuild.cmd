@@ -24,7 +24,7 @@ IF EXIST C:\Windows\System32\TAR.exe (
 	C:\Windows\System32\TAR -zxvf "%~dp0OpenSSH-Win32.zip" -C "%~dp0."
 ) ELSE (
 	echo "Using linux / GitBash tar arguments"
-  unzip "%~dp0\OpenSSH-Win32.zip" -d "%~dp0"
+  unzip "%~dp0\OpenSSH-Win32.zip" -d "%~dp0
 )
 DEL /s /q "%~dp0OpenSSH-Win32.zip"
 XCOPY  "%~dp0\OpenSSH-Win32\ssh-keygen.exe" %OUTDIR%\usr\bin\ /Y
