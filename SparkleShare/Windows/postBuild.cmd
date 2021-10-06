@@ -27,10 +27,10 @@ IF EXIST C:\Windows\System32\TAR.exe (
   unzip "%~dp0\OpenSSH-Win32.zip" -d "%~dp0"
 )
 DEL /s /q "%~dp0OpenSSH-Win32.zip"
-XCOPY  "%~dp0\OpenSSH-Win32\ssh-keygen.exe" %OUTDIR%\usr\bin /Y
-XCOPY  "%~dp0\OpenSSH-Win32\ssh-keyscan.exe" %OUTDIR%\usr\bin /Y
-XCOPY  "%~dp0\OpenSSH-Win32\ssh.exe" %OUTDIR%\usr\bin /Y
-XCOPY  "%~dp0\OpenSSH-Win32\libcrypto.dll" %OUTDIR%\usr\bin /Y
+XCOPY  "%~dp0\OpenSSH-Win32\ssh-keygen.exe" %OUTDIR%\usr\bin\ /Y
+XCOPY  "%~dp0\OpenSSH-Win32\ssh-keyscan.exe" %OUTDIR%\usr\bin\ /Y
+XCOPY  "%~dp0\OpenSSH-Win32\ssh.exe" %OUTDIR%\usr\bin\ /Y
+XCOPY  "%~dp0\OpenSSH-Win32\libcrypto.dll" %OUTDIR%\usr\bin\ /Y
 RMDIR /s /q "%~dp0\OpenSSH-Win32"
 
 :skipgitdownload
@@ -47,9 +47,9 @@ REM first parameter url to download
 REM second parameter local filename
 REM third parameter md5string
 
-curl -L %~1 -o %~2
+curl -L %~1 -o "%~2"
 set "SHA256="
-for /f "skip=1 tokens=* delims=" %%# in ('certutil -hashfile %~2 SHA256') do (
+for /f "skip=1 tokens=* delims=" %%# in ('certutil -hashfile "%~2" SHA256') do (
 	if not defined SHA256 (
 		for %%Z in (%%#) do set "SHA256=!SHA256!%%Z"
 	)
