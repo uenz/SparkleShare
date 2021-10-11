@@ -14,7 +14,7 @@ function abspath()
 
 export projectFolder=$(dirname $0)
 export projectFolder=$(abspath ${projectFolder})
-
+echo ${projectFolder}
 LINE=$(cat ${projectFolder}/git.download)
 TMP=()
 
@@ -32,7 +32,7 @@ set -e
 
 if [[ ! -f ${projectFolder}/${gitName} ]];
 then
-  curl --silent --location ${gitDownload} > ${gitName}
+  curl --silent --location ${gitDownload} > ${projectFolder}/${gitName}
   test -e ${gitName} || { echo "Failed to download git"; exit 1; }
 
   printf "${gitSHA256}  ${gitName}" | shasum --check --algorithm 256
