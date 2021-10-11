@@ -1,7 +1,7 @@
 @ECHO ON
 setlocal enableDelayedExpansion
 REM if no target directory is passed use default on
-IF [%1]==[]  (SET OUTDIR="%~dp0\bin\msysgit") ELSE (SET OUTDIR="%~1")
+IF [%1]==[]  (SET OUTDIR="%~dp0"bin\msysgit\) ELSE (SET OUTDIR="%~1")
 
 IF EXIST "%OUTDIR%\cmd" GOTO skipgitdownload
 ECHO installing git
@@ -27,11 +27,11 @@ IF EXIST C:\Windows\System32\TAR.exe (
   unzip "%~dp0\OpenSSH-Win32.zip" -d "%~dp0
 )
 DEL /s /q "%~dp0OpenSSH-Win32.zip"
-XCOPY  "%~dp0\OpenSSH-Win32\ssh-keygen.exe" %OUTDIR%\usr\bin\ /Y
-XCOPY  "%~dp0\OpenSSH-Win32\ssh-keyscan.exe" %OUTDIR%\usr\bin\ /Y
-XCOPY  "%~dp0\OpenSSH-Win32\ssh.exe" %OUTDIR%\usr\bin\ /Y
-XCOPY  "%~dp0\OpenSSH-Win32\libcrypto.dll" %OUTDIR%\usr\bin\ /Y
-RMDIR /s /q "%~dp0\OpenSSH-Win32"
+XCOPY  "%~dp0OpenSSH-Win32\ssh-keygen.exe" %OUTDIR%usr\bin\ /Y
+XCOPY  "%~dp0OpenSSH-Win32\ssh-keyscan.exe" %OUTDIR%usr\bin\ /Y
+XCOPY  "%~dp0OpenSSH-Win32\ssh.exe" %OUTDIR%usr\bin\ /Y
+XCOPY  "%~dp0OpenSSH-Win32\libcrypto.dll" %OUTDIR%usr\bin\ /Y
+RMDIR /s /q "%~dp0OpenSSH-Win32"
 
 :skipgitdownload
 SET ERRORLEVEL=0

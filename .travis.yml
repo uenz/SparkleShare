@@ -3,7 +3,7 @@ cache:
   directories:
     - upload
 jobs:
-  # enable next two lines to allaw an os to fail without quitting pipeline
+  # for debugging enable next two lines to allow an os to fail without quitting pipeline
   # allow_failures:
   #   language: csharp
 
