@@ -8,7 +8,7 @@ set wixBinDir=%WIX%\bin
 set OutputDir=%~dp0bin
 if not exist "%OutputDir%" mkdir "%OutputDir%"
 
-%msbuild% "%~dp0\..\..\SparkleShare.sln" /target:SparkleShare_Windows:Rebuild /p:Configuration=Release /p:Platform="Any CPU"
+%msbuild% "%~dp0..\..\SparkleShare.sln" /target:SparkleShare_Windows:Rebuild /p:Configuration=ReleaseWindows /p:Platform="Any CPU" -m
 
 if "%1"=="installer" (
 	if exist "%wixBinDir%" (
@@ -20,7 +20,7 @@ if "%1"=="installer" (
 		"%wixBinDir%\candle" "%~dp0\msysgit.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
 		"%wixBinDir%\candle" "%~dp0\images.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
 		"%wixBinDir%\candle" "%~dp0\presets.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
-		"%wixBinDir%\light" -ext WixUIExtension -ext WixUtilExtension "%~dp0\Sparkleshare.wixobj" "%~dp0\msysgit.wixobj" "%~dp0\images.wixobj" "%~dp0\presets.wixobj" -droot="%~dp0." -dmsysgitpath="%OutputDir%\msysgit" -dimagespath="%OutputDir%\Images"  -dpresetspath="%OutputDir%\Presets" -o "%~dp0SparkleShare.msi"
+		"%wixBinDir%\light" -ext WixUIExtension -ext WixUtilExtension "%~dp0Sparkleshare.wixobj" "%~dp0msysgit.wixobj" "%~dp0images.wixobj" "%~dp0presets.wixobj" -droot="%~dp0." -dmsysgitpath="%OutputDir%\msysgit" -dimagespath="%OutputDir%\Images"  -dpresetspath="%OutputDir%\Presets" -o "%~dp0SparkleShare.msi"
 		if exist "%~dp0\SparkleShare.msi" echo SparkleShare.msi created.
 	) else (
 		echo Not building installer ^(could not find wix, Windows Installer XML toolset^)
