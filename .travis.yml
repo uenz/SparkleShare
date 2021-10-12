@@ -15,7 +15,7 @@ jobs:
         - wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg
         - sudo installer -pkg xamarin.mac*.pkg -target /
       script:
-        - msbuild /target:SparkleShare_Mac:Rebuild  /p:Configuration=ReleaseDist /p:Platform="Any CPU" SparkleShare.sln
+        - msbuild /target:SparkleShare_Mac:Rebuild  /p:Configuration=ReleaseDist /p:Platform="Any CPU" SparkleShare.sln -m
         - ./SparkleShare/Mac/postBuild.sh ./SparkleShare/Mac/bin/ReleaseDist
         - ./SparkleShare/Mac/packReleaseDist.sh ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app
       before_deploy:
