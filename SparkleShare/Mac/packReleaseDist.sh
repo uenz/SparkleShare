@@ -14,10 +14,6 @@ mkdir -p cd ${bundle}/Contents/MonoBundle/
 cd ${bundle}/Contents/MonoBundle/
 assemblyPath=$(dirname $(dirname $(dirname $(pwd))))
 
-echo ${projectFolder}
-pwd
-echo "x"
-echo ${assemblyPath}
 # merge all Assemblies into one Mac binary
 mkbundle \
 	 --simple \

@@ -42,6 +42,4 @@ if [[ -f ${projectFolder}/git.tar.gz ]];
 then
     rm ${projectFolder}/git.tar.gz
 fi
-echo $gitName
-echo ${projectFolder}/git.tar.gz
 ln -s $gitName ${projectFolder}/git.tar.gz
