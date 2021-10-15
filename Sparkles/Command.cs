@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace Sparkles {
 
@@ -117,20 +118,31 @@ namespace Sparkles {
 
         protected static string LocateCommand (string name)
         {
-            string [] possible_command_paths = {
-                Environment.GetFolderPath (Environment.SpecialFolder.Personal) + "/bin/" + name,
-                InstallationInfo.Directory + "/bin/" + name,
+            string[] possible_command_paths = {
+                Path.Combine(Environment.GetFolderPath (Environment.SpecialFolder.Personal), "bin", name),
+                Path.Combine(InstallationInfo.Directory, "bin", name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","usr","bin",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","cmd",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","mingw64", "libexec", "git-core",name),
                 "/usr/local/bin/" + name,
                 "/usr/bin/" + name,
                 "/opt/local/bin/" + name
             };
 
+
             foreach (string path in possible_command_paths) {
-                if (File.Exists (path))
+                if (File.Exists(path))
+                {
                     return path;
+                }
+                else if (File.Exists(path + ".exe"))
+                {
+                    return path + ".exe";
+                }
             }
 
             return name;
         }
+
     }
 }

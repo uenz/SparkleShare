@@ -21,11 +21,11 @@ namespace Sparkles {
 
     public class SSHCommand : Command
     {
-        public static string SSHPath = "";
+        public static string SSHPath = Path.GetDirectoryName(LocateCommand("ssh")).Replace("\\", "/");
 
         public static string SSHCommandPath {
             get {
-                return "\""+Path.Combine (SSHPath, "ssh").Replace ("\\", "/")+"\"";
+                return "\""+LocateCommand("ssh").Replace ("\\", "/")+"\"";
             }
         }
 
@@ -36,7 +36,7 @@ namespace Sparkles {
 
 
         public SSHCommand (string command, string args, SSHAuthenticationInfo auth_info) :
-            base (Path.Combine (SSHPath, command), args)
+            base (command, args)
         {
         }
     }

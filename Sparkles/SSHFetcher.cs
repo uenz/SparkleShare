@@ -23,7 +23,7 @@ namespace Sparkles {
     
     public abstract class SSHFetcher : BaseFetcher {
 
-        public static string SSHKeyScan = "ssh-keyscan";
+        public static string SSHKeyScan = System.IO.Path.Combine(SSHCommand.SSHPath,"ssh-keyscan").Replace("\\", "/");
 
 
         protected SSHFetcher (SparkleFetcherInfo info) : base (info)
