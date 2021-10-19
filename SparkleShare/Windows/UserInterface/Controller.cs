@@ -94,28 +94,31 @@ namespace SparkleShare {
             string app_path = Path.GetDirectoryName (Forms.Application.ExecutablePath);
             string icon_file_path = Path.Combine (app_path, "Images", "sparkleshare-folder.ico");
 
-            if (!File.Exists (icon_file_path))
+            if (File.Exists (icon_file_path))
             {
                 string ini_file_path = Path.Combine (FoldersPath, "desktop.ini");
-                string n = Environment.NewLine;
-
-                string ini_file = "[.ShellClassInfo]" + n +
-                    "IconFile=" + icon_file_path + n +
-                    "IconIndex=0" + n +
-                    "InfoTip=SparkleShare";
-
-                try
+                if (!File.Exists(ini_file_path))
                 {
-                    File.Create (ini_file_path).Close ();
-                    File.WriteAllText (ini_file_path, ini_file);
+                    string n = Environment.NewLine;
 
-                    File.SetAttributes (ini_file_path,
-                        File.GetAttributes (ini_file_path) | FileAttributes.Hidden | FileAttributes.System);
+                    string ini_file = "[.ShellClassInfo]" + n +
+                        "IconFile=" + icon_file_path + n +
+                        "IconIndex=0" + n +
+                        "InfoTip=SparkleShare";
 
-                }
-                catch (IOException e)
-                {
-                    Logger.LogInfo ("Config", "Failed setting icon for '" + FoldersPath + "': " + e.Message);
+                    try
+                    {
+                        File.Create(ini_file_path).Close();
+                        File.WriteAllText(ini_file_path, ini_file);
+
+                        File.SetAttributes(ini_file_path,
+                            File.GetAttributes(ini_file_path) | FileAttributes.Hidden | FileAttributes.System);
+
+                    }
+                    catch (IOException e)
+                    {
+                        Logger.LogInfo("Config", "Failed setting icon for '" + FoldersPath + "': " + e.Message);
+                    }
                 }
             }
         }
