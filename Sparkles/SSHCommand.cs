@@ -25,7 +25,21 @@ namespace Sparkles {
 
         public static string SSHCommandPath {
             get {
-                return "\""+LocateCommand("ssh").Replace ("\\", "/")+"\"";
+                return LocateCommand("ssh").Replace ("\\", "/");
+            }
+        }
+        public static string SSHKeyScanCommandPath
+        {
+            get
+            {
+                return LocateCommand("ssh-keyscan").Replace("\\", "/");
+            }
+        }
+        public static string SSHKeyGenCommandPath
+        {
+            get
+            {
+                return LocateCommand("ssh-keygen").Replace("\\", "/");
             }
         }
 
@@ -36,8 +50,36 @@ namespace Sparkles {
 
 
         public SSHCommand (string command, string args, SSHAuthenticationInfo auth_info) :
-            base (command, args)
+            base (Path.Combine(SSHPath,command), args)
         {
         }
+        public static string SSHVersion
+        {
+            get
+            {
+                var ssh_version = new Command(SSHCommandPath, "-V", false);
+                string version = ssh_version.StartAndReadStandardError();   //the version is written to StandardError instead of StanderdOutput!
+                return version.Replace("SSH ", "").Split(',')[0];
+            }
+        }
+        public static string KeyscanVersion
+        {
+            get
+            {
+                var ssh_version = new Command(SSHKeyScanCommandPath, "",false);
+                ssh_version.StartAndWaitForExit(); // call to check if exists
+                return "found";
+            }
+        }
+        public static string KeygenVersion
+        {
+            get
+            {
+                var ssh_version = new Command(SSHKeyGenCommandPath, "",false);
+                ssh_version.StartAndWaitForExit(); // call to check if exists
+                return "found";
+            }
+        }
+
     }
 }
