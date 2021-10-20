@@ -121,9 +121,10 @@ namespace Sparkles {
             string[] possible_command_paths = {
                 Path.Combine(Environment.GetFolderPath (Environment.SpecialFolder.Personal), "bin", name),
                 Path.Combine(InstallationInfo.Directory, "bin", name),
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","usr","bin",name),
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","cmd",name),
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"msysgit","mingw64", "libexec", "git-core",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw64", "bin",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw32", "bin",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","usr","bin",name),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","cmd",name),
                 "/usr/local/bin/" + name,
                 "/usr/bin/" + name,
                 "/opt/local/bin/" + name

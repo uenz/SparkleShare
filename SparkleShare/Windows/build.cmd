@@ -13,14 +13,14 @@ if not exist "%OutputDir%" mkdir "%OutputDir%"
 if "%1"=="installer" (
 	if exist "%wixBinDir%" (
 	  if exist "%~dp0\SparkleShare.msi" del "%~dp0\SparkleShare.msi"
-		"%wixBinDir%\heat.exe" dir "%OutputDir%\msysgit" -cg msysGitComponentGroup -gg -scom -sreg -sfrag -srd -dr MSYSGIT_DIR -var wix.msysgitpath -o "%~dp0\msysgit.wxs"
+		"%wixBinDir%\heat.exe" dir "%OutputDir%\git_scm" -cg gitScmComponentGroup -gg -scom -sreg -sfrag -srd -dr GITSCM_DIR -var wix.gitscmpath -o "%~dp0\git_scm.wxs"
 		"%wixBinDir%\heat.exe" dir "%OutputDir%\Images"  -cg ImagesComponentGroup  -gg -scom -sreg -sfrag -srd -dr IMAGES_DIR  -var wix.imagespath  -o "%~dp0\images.wxs"
 		"%wixBinDir%\heat.exe" dir "%OutputDir%\Presets" -cg PresetsComponentGroup -gg -scom -sreg -sfrag -srd -dr PRESETS_DIR -var wix.presetspath -o "%~dp0\presets.wxs"
 		"%wixBinDir%\candle" "%~dp0\SparkleShare.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
-		"%wixBinDir%\candle" "%~dp0\msysgit.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
+		"%wixBinDir%\candle" "%~dp0\git_scm.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
 		"%wixBinDir%\candle" "%~dp0\images.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
 		"%wixBinDir%\candle" "%~dp0\presets.wxs" -ext WixUIExtension -ext WixUtilExtension -o "%~dp0\"
-		"%wixBinDir%\light" -ext WixUIExtension -ext WixUtilExtension "%~dp0Sparkleshare.wixobj" "%~dp0msysgit.wixobj" "%~dp0images.wixobj" "%~dp0presets.wixobj" -droot="%~dp0." -dmsysgitpath="%OutputDir%\msysgit" -dimagespath="%OutputDir%\Images"  -dpresetspath="%OutputDir%\Presets" -o "%~dp0SparkleShare.msi"
+		"%wixBinDir%\light" -ext WixUIExtension -ext WixUtilExtension "%~dp0Sparkleshare.wixobj" "%~dp0git_scm.wixobj" "%~dp0images.wixobj" "%~dp0presets.wixobj" -droot="%~dp0." -dgitscmpath="%OutputDir%\git_scm" -dimagespath="%OutputDir%\Images"  -dpresetspath="%OutputDir%\Presets" -o "%~dp0SparkleShare.msi"
 		if exist "%~dp0\SparkleShare.msi" echo SparkleShare.msi created.
 	) else (
 		echo Not building installer ^(could not find wix, Windows Installer XML toolset^)

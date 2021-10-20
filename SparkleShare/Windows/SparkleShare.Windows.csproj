@@ -284,6 +284,6 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)\postBuild.cmd" "$(TargetDir)\msysgit"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)\postBuild.cmd" "$(TargetDir)git_scm"</PostBuildEvent>
   </PropertyGroup>
 </Project>
