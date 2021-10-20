@@ -421,10 +421,10 @@ namespace Sparkles.Git {
             string clean_command;
 
             if (InstallationInfo.OperatingSystem == OS.macOS || InstallationInfo.OperatingSystem == OS.Windows) {
-                smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND + "' " +
-                    Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/") + " smudge %f";
+                smudge_command = "env GIT_SSH_COMMAND=" + GIT_SSH_COMMAND + " '" +
+                    Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/") + "' smudge %f";
 
-                clean_command = Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/") + " clean %f";
+                clean_command = "'"+Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/")+"'" + " clean %f";
 
             } else {
                 smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND + "' git-lfs smudge %f";
