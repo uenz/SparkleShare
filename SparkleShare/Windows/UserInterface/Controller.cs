@@ -47,23 +47,16 @@ namespace SparkleShare {
 
         public override void Initialize ()
         {
-            // Add msysgit to path, as we cannot asume it is added to the path
-            // Asume it is installed in @"<exec dir>\msysgit\bin"
+            // Add git_scm to path, as we cannot asume it is added to the path
+            // Asume it is installed in @"<exec dir>\git_scm\bin"
             string executable_path = Path.GetDirectoryName (Forms.Application.ExecutablePath);
-            string msysgit_path    = Path.Combine (executable_path, "msysgit");
+            string git_scm_path    = Path.Combine (executable_path, "git_scm");
 
             Environment.SetEnvironmentVariable ("HOME", Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 
             base.Initialize ();
-            try
-            {
-                File.Copy(Path.Combine(msysgit_path, "mingw64", "libexec", "git-core", "git-lfs.exe"), Path.Combine(Config.BinPath, "git-lfs.exe"), true);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-            }
 
+            File.Copy(GitCommand.GitLfsPath, Path.Combine(Config.BinPath, "git-lfs.exe"), true);           
         }
 
 
