@@ -11,6 +11,8 @@ FOR /F "usebackq tokens=2" %%i IN ("%~dp0git.download") DO SET md5hash=%%i
 CALL :downloadandverify %url% "%~dp0PortableGit.7z.exe" %md5hash%
 "%~dp0PortableGit.7z.exe" -o %OUTDIR% -y
 DEL "%~dp0PortableGit.7z.exe"
+DEL /s /q "%~dp0OpenSSH-Win32.zip"
+
 :skipgitdownload
 SET ERRORLEVEL=0
 ECHO ready
