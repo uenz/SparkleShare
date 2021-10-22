@@ -75,8 +75,23 @@ namespace Sparkles {
         {
             get
             {
-                var ssh_version = new Command(SSHKeyGenCommandPath, "",false);
+                // since keygen has no version output try to create testkey, if keygen is not found Comand will exit
+                string arguments =
+                "-t rsa " + // Crypto type
+                "-b 4096 " + // Key size
+                "-P \"\" " + // No password
+                "-C \"test\" " + // Key comment
+                "-f \"" + System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey") + "\"";
+                var ssh_version = new Command(SSHKeyGenCommandPath, arguments,false);
                 ssh_version.StartAndWaitForExit(); // call to check if exists
+                if (File.Exists(System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey")))
+                {
+                    File.Delete(System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey"));
+                }
+                if (File.Exists(System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey.pub")))
+                {
+                    File.Delete(System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey.pub"));
+                }
                 return "found";
             }
         }
