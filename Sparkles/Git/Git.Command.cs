@@ -27,7 +27,7 @@ namespace Sparkles.Git {
 
 
         static string git_path;
-
+        static string git_lfs_path;
         public static string GitPath {
             get {
                 if (git_path == null)
@@ -43,14 +43,14 @@ namespace Sparkles.Git {
 
         public static string GitLfsPath {
             get {
-                if (git_path == null)
-                    git_path = LocateCommand ("git-lfs");
+                if (git_lfs_path == null)
+                    git_lfs_path = LocateCommand ("git-lfs");
 
-                return git_path;
+                return git_lfs_path;
             }
 
             set {
-                git_path = value;
+                git_lfs_path = value;
             }
         }
         
@@ -238,8 +238,6 @@ namespace Sparkles.Git {
                 "-o UserKnownHostsFile=" + auth_info.KnownHostsFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + " " +
                 "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
                 "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
-                "-o HostKeyAlgorithms=ssh-rsa" + " " +
-                "-o PubkeyAcceptedKeyTypes=ssh-rsa" + " " + //https://www.linuxquestions.org/questions/showthread.php?s=54ca108ae8fb7a8c0cff31c6fa6ee23f&p=6288387#post6288387
                 "-F /dev/null"; // Ignore the system's SSH config file
         }
     }
