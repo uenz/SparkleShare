@@ -55,8 +55,6 @@ namespace SparkleShare {
             Environment.SetEnvironmentVariable ("HOME", Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 
             base.Initialize ();
-
-            File.Copy(GitCommand.GitLfsPath, Path.Combine(Config.BinPath, "git-lfs.exe"), true);           
         }
 
 
