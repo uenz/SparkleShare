@@ -176,6 +176,12 @@ namespace Sparkles.Git {
                 File.WriteAllText (identifier_path, identifier);
                 File.SetAttributes (identifier_path, FileAttributes.Hidden);
 
+
+                var git_config = new GitCommand(TargetFolder, "config user.name \"SparkleShare\"");
+                git_config.StartAndWaitForExit();
+                git_config = new GitCommand(TargetFolder, "config user.email \"info@sparkleshare.org\"");
+                git_config.StartAndWaitForExit();
+                
                 // We can't do the "commit --all" shortcut because it doesn't add untracked files
                 var git_add    = new GitCommand (TargetFolder, "add .sparkleshare");
                 var git_commit = new GitCommand (TargetFolder,
@@ -237,10 +243,10 @@ namespace Sparkles.Git {
             var git_config_required = new GitCommand (TargetFolder, "config filter.encryption.required true");
 
             var git_config_smudge = new GitCommand (TargetFolder, "config filter.encryption.smudge " +
-                string.Format ("\"'{0}' enc -d -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+                string.Format ("\"'{0}' enc -d -aes-256-cbc -base64 -S '{1}' -pass file:'{2}' -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
             var git_config_clean = new GitCommand (TargetFolder, "config filter.encryption.clean " +
-                string.Format ("\"'{0}' enc -e -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+                string.Format ("\"'{0}' enc -e -aes-256-cbc -base64 -S '{1}' -pass file:'{2}' -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
             git_config_required.StartAndWaitForExit ();
             git_config_smudge.StartAndWaitForExit ();
@@ -420,16 +426,9 @@ namespace Sparkles.Git {
             string smudge_command;
             string clean_command;
 
-            if (InstallationInfo.OperatingSystem == OS.macOS || InstallationInfo.OperatingSystem == OS.Windows) {
-                smudge_command = "env GIT_SSH_COMMAND=" + GIT_SSH_COMMAND + " '" +
-                    Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/") + "' smudge %f";
+            smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND + "' '" + GitCommand.GitLfsPath + "' smudge %f";
+            clean_command = "'" + GitCommand.GitLfsPath + "'" + " clean %f";
 
-                clean_command = "'"+Path.Combine (Configuration.DefaultConfiguration.BinPath, "git-lfs").Replace ("\\", "/")+"'" + " clean %f";
-
-            } else {
-                smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND + "' git-lfs smudge %f";
-                clean_command = "git-lfs clean %f";
-            }
 
             var git_config_smudge = new GitCommand (TargetFolder,
                 string.Format ("config filter.lfs.smudge \"{0}\"", smudge_command));
