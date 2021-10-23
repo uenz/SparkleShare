@@ -7,34 +7,34 @@ jobs:
   # allow_failures:
   #   language: csharp
 
-  include:
-    - stage: "Compile for Mac"
-      os: osx
-      before_install:
-        - mkdir -p ./upload
-        - wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg
-        - sudo installer -pkg xamarin.mac*.pkg -target /
-      script:
-        - msbuild /target:SparkleShare_Mac:Rebuild  /p:Configuration=ReleaseDist /p:Platform="Any CPU" SparkleShare.sln -m
-        - ./SparkleShare/Mac/postBuild.sh ./SparkleShare/Mac/bin/ReleaseDist
-        - ./SparkleShare/Mac/packReleaseDist.sh ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app
-      before_deploy:
-        - cd SparkleShare/Mac/bin/ReleaseDist
-        - zip -r SparkleShare.zip SparkleShare.app
-        - cd ../../../..
-        - cp ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
-      deploy: &deploy_base
-        provider: releases
-        api_key: ${GITHUB_TOKEN}
-        file: ./upload/SparkleShare-macos-nightly.zip
-        skip_cleanup: true
-        draft: true
-        name: Nightly CI Build
-        body: This is a automated CI Build. Do not use for prodiction environments!
-        on:
-          branch:
-            - feature/WindowsTravisCi
-          tags: false
+  # include:
+  #   - stage: "Compile for Mac"
+  #     os: osx
+  #     before_install:
+  #       - mkdir -p ./upload
+  #       - wget https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-3.0.0.393.pkg
+  #       - sudo installer -pkg xamarin.mac*.pkg -target /
+  #     script:
+  #       - msbuild /target:SparkleShare_Mac:Rebuild  /p:Configuration=ReleaseDist /p:Platform="Any CPU" SparkleShare.sln -m
+  #       - ./SparkleShare/Mac/postBuild.sh ./SparkleShare/Mac/bin/ReleaseDist
+  #       - ./SparkleShare/Mac/packReleaseDist.sh ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app
+  #     before_deploy:
+  #       - cd SparkleShare/Mac/bin/ReleaseDist
+  #       - zip -r SparkleShare.zip SparkleShare.app
+  #       - cd ../../../..
+  #       - cp ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.zip ./upload/SparkleShare-macos-nightly.zip
+  #     deploy: &deploy_base
+  #       provider: releases
+  #       api_key: ${GITHUB_TOKEN}
+  #       file: ./upload/SparkleShare-macos-nightly.zip
+  #       skip_cleanup: true
+  #       draft: true
+  #       name: Nightly CI Build
+  #       body: This is a automated CI Build. Do not use for production environments!
+  #       on:
+  #         branch:
+  #           - feature/WindowsTravisCi
+  #         tags: false
 
     # - stage: "Compile for Linux"
     #   os: linux
@@ -69,10 +69,22 @@ jobs:
         - ./SparkleShare/Windows/build.cmd installer
       before_deploy:
         - mv ./SparkleShare/Windows/SparkleShare.msi  ./upload/SparkleShare-windows-nightly.msi
-      deploy:
-          <<: *deploy_base
-          draft: true
-          file: ./upload/SparkleShare-windows-nightly.msi
+      deploy: &deploy_base
+        provider: releases
+        api_key: ${GITHUB_TOKEN}
+        file: ./upload/SparkleShare-windows-nightly.msi
+        skip_cleanup: true
+        draft: true
+        name: Nightly CI Build
+        body: This is a automated CI Build. Do not use for production environments!
+        on:
+          branch:
+            - feature/WindowsTravisCi
+          tags: false
+      # deploy:
+      #     <<: *deploy_base
+      #     draft: true
+      #     file: ./upload/SparkleShare-windows-nightly.msi
 
 #notifications:
 #  webhooks:
