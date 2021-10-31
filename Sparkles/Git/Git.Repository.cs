@@ -79,7 +79,7 @@ namespace Sparkles.Git {
             git_config = new GitCommand (LocalPath, "config remote.origin.url \"" + RemoteUrl + "\"");
             git_config.StartAndWaitForExit ();
 
-            git_config = new GitCommand (LocalPath, "config core.sshCommand " + GitCommand.FormatGitSSHCommand (auth_info));
+            git_config = new GitCommand (LocalPath, "config core.sshCommand \"" + GitCommand.FormatGitSSHCommand (auth_info).Replace("\"", "\\\"") + "\"");
             git_config.StartAndWaitForExit();
 
             PrepareGitLFS ();
@@ -896,7 +896,7 @@ namespace Sparkles.Git {
             pre_push_hook_content =
                 "#!/bin/sh" + Environment.NewLine +
                 "env GIT_SSH_COMMAND='" + GitCommand.FormatGitSSHCommand (auth_info) + "' " + "'"+
-                GitCommand.GitLfsPath + "'"  + " pre-push \"$@\"";
+                GitCommand.GitLfsPath + "' pre-push \"$@\"";
 
 
             if (InstallationInfo.OperatingSystem != OS.Windows) {

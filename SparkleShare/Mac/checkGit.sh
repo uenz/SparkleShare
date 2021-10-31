@@ -1,5 +1,4 @@
 #!/bin/sh
-set -x
 function abspath()
 {
   case "${1}" in
@@ -14,7 +13,7 @@ function abspath()
 
 export projectFolder=$(dirname $0)
 export projectFolder=$(abspath ${projectFolder})
-echo ${projectFolder}
+
 LINE=$(cat ${projectFolder}/git.download)
 TMP=()
 
@@ -33,13 +32,11 @@ set -e
 if [[ ! -f ${projectFolder}/${gitName} ]];
 then
   curl --silent --location ${gitDownload} > ${projectFolder}/${gitName}
-  test -e ${gitName} || { echo "Failed to download git"; exit 1; }
+  test -e ${projectFolder}/${gitName} || { echo "Failed to download git"; exit 1; }
 
-  printf "${gitSHA256}  ${gitName}" | shasum --check --algorithm 256
+  printf "${gitSHA256}  ${projectFolder}/${gitName}" | shasum --check --algorithm 256
 
 fi
-if [[ -f ${projectFolder}/git.tar.gz ]];
-then
-    rm ${projectFolder}/git.tar.gz
-fi
-ln -s $gitName ${projectFolder}/git.tar.gz
+
+rm -f ${projectFolder}/git.tar.gz
+ln -s ${projectFolder}/$gitName ${projectFolder}/git.tar.gz

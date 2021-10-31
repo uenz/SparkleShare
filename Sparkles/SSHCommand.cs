@@ -50,7 +50,7 @@ namespace Sparkles {
 
 
         public SSHCommand (string command, string args, SSHAuthenticationInfo auth_info) :
-            base (Path.Combine(SSHPath,command), args)
+            base (command, args)
         {
         }
         public static string SSHVersion

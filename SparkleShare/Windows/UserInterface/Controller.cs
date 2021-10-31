@@ -47,11 +47,11 @@ namespace SparkleShare {
 
         public override void Initialize ()
         {
-            // Add git_scm to path, as we cannot asume it is added to the path
-            // Asume it is installed in @"<exec dir>\git_scm\bin"
-            string executable_path = Path.GetDirectoryName (Forms.Application.ExecutablePath);
-            string git_scm_path    = Path.Combine (executable_path, "git_scm");
-
+            string[] search_path = new string[] {   Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw64", "bin"),
+                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw32", "bin"),
+                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","usr","bin"),
+                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","cmd")};
+            Command.SetSearchPath(search_path);
             Environment.SetEnvironmentVariable ("HOME", Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 
             base.Initialize ();

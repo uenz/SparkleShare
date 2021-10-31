@@ -227,7 +227,7 @@ namespace SparkleShare {
             Logger.LogInfo ("Environment", "SSH " + Sparkles.SSHCommand.SSHVersion);
             Logger.LogInfo ("Environment", "SSH-KeyGen " + Sparkles.SSHCommand.KeygenVersion);
             Logger.LogInfo ("Environment", "SSH-KeyScan " + Sparkles.SSHCommand.KeyscanVersion);
-            Logger.LogInfo ("Environment", "OpenSSL " + Sparkles.OpenSSLCommand.OpenSSLVersion);
+            Logger.LogInfo ("Environment", Sparkles.OpenSSLCommand.OpenSSLVersion);
             Logger.LogInfo ("Environment", InstallationInfo.OperatingSystem + " " + InstallationInfo.OperatingSystemVersion);
 
             UserAuthenticationInfo = new SSHAuthenticationInfo ();

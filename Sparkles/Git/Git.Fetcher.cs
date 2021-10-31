@@ -243,10 +243,10 @@ namespace Sparkles.Git {
             var git_config_required = new GitCommand (TargetFolder, "config filter.encryption.required true");
 
             var git_config_smudge = new GitCommand (TargetFolder, "config filter.encryption.smudge " +
-                string.Format ("\"'{0}' enc -d -aes-256-cbc -base64 -S '{1}' -pass file:'{2}' -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+                string.Format ("\"'{0}' enc -d -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
             var git_config_clean = new GitCommand (TargetFolder, "config filter.encryption.clean " +
-                string.Format ("\"'{0}' enc -e -aes-256-cbc -base64 -S '{1}' -pass file:'{2}' -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+                string.Format ("\"'{0}' enc -e -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
             git_config_required.StartAndWaitForExit ();
             git_config_smudge.StartAndWaitForExit ();
@@ -426,15 +426,16 @@ namespace Sparkles.Git {
             string smudge_command;
             string clean_command;
 
-            smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND + "' '" + GitCommand.GitLfsPath + "' smudge %f";
-            clean_command = "'" + GitCommand.GitLfsPath + "'" + " clean %f";
+
+            smudge_command = "env GIT_SSH_COMMAND='" + GIT_SSH_COMMAND.Replace("\"", "\\\"") + "' '" + GitCommand.GitLfsPath + "' smudge %f";
+            clean_command = "'" + GitCommand.GitLfsPath + "' clean %f";
 
 
             var git_config_smudge = new GitCommand (TargetFolder,
                 string.Format ("config filter.lfs.smudge \"{0}\"", smudge_command));
 
             var git_config_clean = new GitCommand (TargetFolder,
-                string.Format ("config filter.lfs.clean \"{0}\"", clean_command));
+                string.Format ("config filter.lfs.clean '{0}'", clean_command));
 
             git_config_required.StartAndWaitForExit ();
             git_config_clean.StartAndWaitForExit ();

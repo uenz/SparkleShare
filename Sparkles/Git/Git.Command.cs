@@ -28,6 +28,7 @@ namespace Sparkles.Git {
 
         static string git_path;
         static string git_lfs_path;
+        
         public static string GitPath {
             get {
                 if (git_path == null)
@@ -234,8 +235,8 @@ namespace Sparkles.Git {
         public static string FormatGitSSHCommand (SSHAuthenticationInfo auth_info)
         {
             return "\""+SSHCommandPath + "\" " +
-                "-i " + auth_info.PrivateKeyFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + " " +
-                "-o UserKnownHostsFile=" + auth_info.KnownHostsFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + " " +
+                "-i \"" + auth_info.PrivateKeyFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
+                "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
                 "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
                 "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
                 "-F /dev/null"; // Ignore the system's SSH config file
