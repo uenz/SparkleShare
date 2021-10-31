@@ -35,7 +35,7 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-        if: matrix.os == 'macos-latest' or if: matrix.os == 'macos-latest'
+        if: matrix.os != 'windows-latest'
         run: |
           dir ${{ github.workspace }}
         if: matrix.os == 'windows-latest'
