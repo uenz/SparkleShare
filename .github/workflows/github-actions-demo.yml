@@ -10,9 +10,7 @@ jobs:
     strategy:
       matrix:
         include:
-          os: macos-latest
-          os: ubuntu-latest
-          os: windows-latest
+          os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
