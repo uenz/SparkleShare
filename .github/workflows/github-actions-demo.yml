@@ -37,5 +37,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           dir
+          shell: cmd
         if: matrix.os == 'windows-latest'
       - run: echo "🍏 This job's status is ${{ job.status }}."
