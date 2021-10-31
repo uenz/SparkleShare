@@ -35,6 +35,7 @@ jobs:
         if: matrix.os != 'windows-latest'
       - name: List files in the repository
         run: |
-          dir ${{ github.workspace }}
+          cd ${{ github.workspace }}
+          dir
         if: matrix.os == 'windows-latest'
       - run: echo "🍏 This job's status is ${{ job.status }}."
