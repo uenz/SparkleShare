@@ -1,0 +1,42 @@
+name: GitHub Actions Demo
+on: [push]
+
+defaults:
+  run:
+    shell: bash
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          os: macos-latest
+          os: ubuntu-latest
+          os: windows-latest
+
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Install Dependencies (Linux)
+        run: echo "Linux"
+        if: matrix.os == 'ubuntu-latest'
+      - name: Install Dependencies (Windows)
+        run: echo "Windows"
+        if: matrix.os == 'windows-latest'
+    - name: Install Dependencies (macOS)
+        run: echo "macOS"
+        if: matrix.os == 'macos-latest'
+
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+        if: matrix.os == 'macos-latest' or if: matrix.os == 'macos-latest'
+        run: |
+          dir ${{ github.workspace }}
+        if: matrix.os == 'windows-latest'
+      - run: echo "🍏 This job's status is ${{ job.status }}."
