@@ -9,7 +9,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        #s: [macos-latest, ubuntu-latest, windows-latest]        
+        os: [macos-latest]
 
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -24,7 +25,6 @@ jobs:
       - name: Install Dependencies (macOS)
         run: echo "macOS"
         if: matrix.os == 'macos-latest'
-
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
