@@ -43,7 +43,10 @@ jobs:
           sudo make install
         if: matrix.os == 'ubuntu-latest'
       - name: Install Dependencies (Windows)
-        run: echo "Windows"
+        run: |
+          - choco install -y wixtoolset --version=3.11.2
+          - choco install tartool
+          - choco install unzip
         if: matrix.os == 'windows-latest'
       - name: Install Dependencies (macOS)
         run: echo "macOS"
@@ -63,10 +66,8 @@ jobs:
           ninja -C build/
           sudo ninja install -C build/
         if: matrix.os == 'ubuntu-latest'
-      - name: List files in the repository
+      - name: Compile (Windows)
         run: |
-          cd ${{ github.workspace }}
-          dir
-          shell: cmd
+          ./SparkleShare/Windows/build.cmd installer
         if: matrix.os == 'windows-latest'
       - run: echo "🍏 This job's status is ${{ job.status }}."
