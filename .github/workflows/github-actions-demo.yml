@@ -27,7 +27,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]        
+        os: [macos-latest]
+        #, ubuntu-latest, windows-latest]        
 
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -76,6 +77,7 @@ jobs:
       - name: Compile (macOS)
         run: |
           /Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
+          pwd
           cd ./SparkleShare/Mac/bin/ReleaseDist
           zip -r SparkleShare.zip SparkleShare.app
           cd ../../../..
