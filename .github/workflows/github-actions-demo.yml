@@ -76,11 +76,12 @@ jobs:
       - run: git status
       - name: Compile (macOS)
         run: |
-          /Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
+          #/Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
           pwd
-          cd ./SparkleShare/Mac/bin/ReleaseDist
-          zip -r SparkleShare.zip SparkleShare.app
-          cd ../../../..
+          ls
+          #cd ./SparkleShare/Mac/bin/ReleaseDist
+          #zip -r SparkleShare.zip SparkleShare.app
+          #cd ../../../..
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
