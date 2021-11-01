@@ -78,6 +78,7 @@ jobs:
           /Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
           cd ./SparkleShare/Mac/bin/ReleaseDist
           zip -r SparkleShare.zip SparkleShare.app
+          cd ../../../..
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
