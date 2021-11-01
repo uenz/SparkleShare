@@ -76,9 +76,10 @@ jobs:
       - run: git status
       - name: Compile (macOS)
         run: |
-          /Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
-          mv ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app .
-          zip -recurse-paths ./SparkleShare.zip ./SparkleShare.app
+          #/Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
+          #mv ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app .
+          #zip -recurse-paths ./SparkleShare.zip ./SparkleShare.app
+          zip -r ./SparkleShare.zip ./Sparkles 
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
