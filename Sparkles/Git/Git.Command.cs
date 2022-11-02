@@ -237,6 +237,7 @@ namespace Sparkles.Git {
             return "\""+SSHCommandPath + "\" " +
                 "-i \"" + auth_info.PrivateKeyFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
                 "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
+
                 "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
                 "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
                 "-F /dev/null"; // Ignore the system's SSH config file
