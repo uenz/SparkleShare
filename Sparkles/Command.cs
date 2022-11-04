@@ -144,7 +144,7 @@ namespace Sparkles {
             foreach (string path in command_paths) {
                 if (File.Exists(Path.Combine(path,name)))
                 {
-                    return path;
+                    return Path.Combine (path, name);
                 }
                 else if (File.Exists(Path.Combine(path, name + ".exe")))
                 {
