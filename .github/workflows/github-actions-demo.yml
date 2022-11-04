@@ -84,6 +84,7 @@ jobs:
           #mv ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app .
           #zip -r ./SparkleShare.zip ./SparkleShare.app
           pwd
+          ls
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
