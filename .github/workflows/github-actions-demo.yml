@@ -5,30 +5,12 @@ defaults:
   run:
     shell: bash
 jobs:
-  create_release:
-    name: Create release
-    runs-on: ubuntu-latest
-    # Note this. We are going to use that in further jobs.
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: CI-Build ${{ github.ref }}
-          draft: true
-          prerelease: true
-
   build:
     runs-on: ${{ matrix.os }}
     needs: create_release # we need to know the upload URL
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
         #, ubuntu-latest, windows-latest]
 
     steps:
@@ -79,10 +61,9 @@ jobs:
       - run: git status
       - name: Compile (macOS)
         run: |
-          echo "macOS"
           msbuild SparkleShare.sln /target:SparkleShare_Mac:Rebuild /p:Configuration=ReleaseDist /p:Platform="Any CPU" -m
           mv ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app .
-          zip -r ./SparkleShare.zip ./SparkleShare.app
+          zip -r ./SparkleShare-ci-build-${{ matrix.config.os }}.zip ./SparkleShare.app
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
@@ -93,25 +74,14 @@ jobs:
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
+          cp ./SparkleShare/Windows/SparkleShare.msi SparkleShare-ci-build-${{ matrix.config.os }}.msi
         if: matrix.os == 'windows-latest'
-      - name: Upload build (macOS)
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        #if: startsWith(github.ref, 'refs/tags/')
+        with:
+            files: 'SparkleShare-ci-build*'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: SparkleShare-ci-build-${{ matrix.config.os }}.zip
-          asset_path: ./SparkleShare.zip
-          asset_content_type: application/octet-stream
-      - name: Upload build (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: SparkleShare-ci-build-${{ matrix.config.os }}.msi
-          asset_path: ./SparkleShare/Windows/SparkleShare.msi
-          asset_content_type: application/octet-stream
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
