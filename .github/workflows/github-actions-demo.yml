@@ -22,14 +22,14 @@ jobs:
           release_name: CI-Build ${{ github.ref }}
           draft: true
           prerelease: true
-  
+
   build:
     runs-on: ${{ matrix.os }}
     needs: create_release # we need to know the upload URL
     strategy:
       matrix:
         os: [macos-latest]
-        #, ubuntu-latest, windows-latest]        
+        #, ubuntu-latest, windows-latest]
 
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -39,7 +39,7 @@ jobs:
         run: |
           # setup developer tools
           sudo apt-get update
-          sudo apt-get install curl git git-lfs gvfs  
+          sudo apt-get install curl git git-lfs gvfs
           sudo apt-get install desktop-file-utils gtk-sharp3-gapi libappindicator3-0.1-cil-dev libdbus-glib2.0-cil-dev libgtk3.0-cil-dev libnotify3.0-cil-dev libsoup2.4-dev libtool-bin libwebkit2gtk-4.0 meson mono-devel mono-mcs xsltproc
           # checkout and build requirement soup-sharp
           git clone https://github.com/hbons/soup-sharp
@@ -69,6 +69,8 @@ jobs:
         if: matrix.os == 'windows-latest'
       - name: Install Dependencies (macOS)
         run: echo "macOS"
+        run: |
+          brew install autoconf automake libtool pkg-config
         if: matrix.os == 'macos-latest'
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -77,10 +79,10 @@ jobs:
       - run: git status
       - name: Compile (macOS)
         run: |
-          #/Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
+          #/Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"          
           #mv ./SparkleShare/Mac/bin/ReleaseMac/SparkleShare.app .
           #zip -recurse-paths ./SparkleShare.zip ./SparkleShare.app
-          zip -r ./SparkleShare.zip ./Sparkles 
+          zip -r ./SparkleShare.zip ./Sparkles
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
@@ -111,5 +113,5 @@ jobs:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_name: SparkleShare-ci-build-${{ matrix.config.os }}.msi
           asset_path: ./SparkleShare/Windows/SparkleShare.msi
-          asset_content_type: application/octet-stream          
+          asset_content_type: application/octet-stream
       - run: echo "🍏 This job's status is ${{ job.status }}."

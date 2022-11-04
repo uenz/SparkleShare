@@ -37,3 +37,4 @@ Remove `My Documents\SparkleShare` and `AppData\Roaming\org.sparkleshare.Sparkle
 ### Uninstalling
 
 You can uninstall SparkleShare through the Windows Control Panel.
+

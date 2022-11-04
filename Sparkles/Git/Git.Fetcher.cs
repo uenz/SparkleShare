@@ -182,7 +182,7 @@ namespace Sparkles.Git {
                 git_config.StartAndWaitForExit();
                 git_config = new GitCommand(TargetFolder, "config user.email \"info@sparkleshare.org\"");
                 git_config.StartAndWaitForExit();
-
+                
                 // We can't do the "commit --all" shortcut because it doesn't add untracked files
                 var git_add    = new GitCommand (TargetFolder, "add .sparkleshare");
                 var git_commit = new GitCommand (TargetFolder,

@@ -31,3 +31,4 @@ sparkles = library('Sparkles',
     cs_args: '-r:System.Xml.Linq',
     install: true,
     install_dir: install_dir)
+

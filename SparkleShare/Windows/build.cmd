@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 set WinDirNet=%WinDir%\Microsoft.NET\Framework
 set msbuild="%WinDirNet%\v4.0\msbuild.exe"
@@ -28,3 +28,4 @@ if "%1"=="installer" (
 		SET ERRORLEVEL=2
 	)
 ) else echo Not building installer, as it was not requested. ^(Issue "build.cmd installer" to build installer ^)
+

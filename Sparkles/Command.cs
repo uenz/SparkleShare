@@ -154,6 +154,5 @@ namespace Sparkles {
 
             return name;
         }
-
     }
 }
