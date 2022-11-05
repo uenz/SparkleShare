@@ -6,7 +6,7 @@ defaults:
     shell: bash
 jobs:
   build:
-    if: startsWith(github.ref, '/refs/heads/feature/WindowsTravisCI')
+    #if: startsWith(github.ref, '/refs/heads/feature/WindowsTravisCI')
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
