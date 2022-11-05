@@ -7,7 +7,6 @@ defaults:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    needs: create_release # we need to know the upload URL
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
