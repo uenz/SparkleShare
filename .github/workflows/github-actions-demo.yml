@@ -77,7 +77,7 @@ jobs:
         if: matrix.os == 'windows-latest'
       - name: Publish
         uses: softprops/action-gh-release@v1
-        #if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
             files: 'SparkleShare-ci-build*'
         env:
