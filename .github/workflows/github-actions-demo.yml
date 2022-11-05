@@ -64,7 +64,7 @@ jobs:
         run: |
           msbuild SparkleShare.sln /target:SparkleShare_Mac:Rebuild /p:Configuration=ReleaseDist /p:Platform="Any CPU" -m
           mv ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app .
-          zip -r ./SparkleShare-MacOs.zip ./SparkleShare.app
+          zip -r ./SparkleShare-MacOs-${{ github.ref }}.zip ./SparkleShare.app
         if: matrix.os == 'macos-latest'
       - name: Compile (Linux)
         run: |
@@ -75,7 +75,7 @@ jobs:
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
-          cp ./SparkleShare/Windows/SparkleShare.msi SparkleShare-Windows.msi
+          cp ./SparkleShare/Windows/SparkleShare.msi SparkleShare-Windows-${{ github.ref }}.msi
         if: matrix.os == 'windows-latest'
       - name: Publish
         uses: softprops/action-gh-release@v1
