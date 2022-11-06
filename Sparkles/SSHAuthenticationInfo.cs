@@ -2,8 +2,8 @@
 //   Copyright (C) 2010  Hylke Bons <hi@planetpeanut.uk>
 //
 //   This program is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU Lesser General Public License as 
-//   published by the Free Software Foundation, either version 3 of the 
+//   it under the terms of the GNU Lesser General Public License as
+//   published by the Free Software Foundation, either version 3 of the
 //   License, or (at your option) any later version.
 //
 //   This program is distributed in the hope that it will be useful,
@@ -94,8 +94,8 @@ namespace Sparkles {
                     computer_name.LastIndexOf (".", StringComparison.InvariantCulture));
 
             string arguments =
-                "-t rsa "  + // Crypto type
-                "-b 4096 " + // Key size
+                "-t ecdsa "  + // Crypto type
+                "-b 521 " + // Key size
                 "-P \"\" " + // No password
                 "-C \"" + computer_name + " (SparkleShare)\" " + // Key comment
                 "-f \"" + key_file_name + "\"";

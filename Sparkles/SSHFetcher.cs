@@ -2,8 +2,8 @@
 //   Copyright (C) 2010  Hylke Bons <hi@planetpeanut.uk>
 //
 //   This program is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU Lesser General Public License as 
-//   published by the Free Software Foundation, either version 3 of the 
+//   it under the terms of the GNU Lesser General Public License as
+//   published by the Free Software Foundation, either version 3 of the
 //   License, or (at your option) any later version.
 //
 //   This program is distributed in the hope that it will be useful,
@@ -20,7 +20,7 @@ using System.IO;
 using System.Security.Cryptography;
 
 namespace Sparkles {
-    
+
     public abstract class SSHFetcher : BaseFetcher {
 
         protected SSHFetcher (SparkleFetcherInfo info) : base (info)
@@ -65,10 +65,10 @@ namespace Sparkles {
         string FetchHostKey ()
         {
             Logger.LogInfo ("Auth", string.Format ("Fetching host key for {0}", RemoteUrl.Host));
-            var ssh_keyscan = new SSHCommand (SSHCommand.SSHKeyScanCommandPath, string.Format ("-t rsa -p 22 {0}", RemoteUrl.Host));
+            var ssh_keyscan = new SSHCommand (SSHCommand.SSHKeyScanCommandPath, string.Format ("-t ecdsa -p 22 {0}", RemoteUrl.Host));
 
             if (RemoteUrl.Port > 0)
-                ssh_keyscan.StartInfo.Arguments = string.Format ("-t rsa -p {0} {1}", RemoteUrl.Port, RemoteUrl.Host);
+                ssh_keyscan.StartInfo.Arguments = string.Format ("-t ecdsa -p {0} {1}", RemoteUrl.Port, RemoteUrl.Host);
 
             string host_key = ssh_keyscan.StartAndReadStandardOutput ();
 
