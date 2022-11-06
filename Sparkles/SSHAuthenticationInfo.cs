@@ -94,7 +94,7 @@ namespace Sparkles {
                     computer_name.LastIndexOf (".", StringComparison.InvariantCulture));
 
             string arguments =
-                "-t rsa "  + // Crypto type
+                "-t ecdsa "  + // Crypto type
                 "-b 4096 " + // Key size
                 "-P \"\" " + // No password
                 "-C \"" + computer_name + " (SparkleShare)\" " + // Key comment
