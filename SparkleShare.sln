@@ -14,6 +14,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkleShare.Mac", "SparkleShare\Mac\SparkleShare.Mac.csproj", "{8FCDF699-E2C3-4CB3-AF98-44198972AFC0}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SparkleShare\Common\SparkleShare.projitems*{5714d3ca-88a6-4330-a29d-4ca90d1d193c}*SharedItemsImports = 4
+		SparkleShare\Common\SparkleShare.projitems*{728483aa-e34b-4441-bf2c-c8bc2901e4e0}*SharedItemsImports = 4
+		SparkleShare\Common\SparkleShare.projitems*{f16e3683-b622-4654-b799-99c8d68aa963}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
 		Debug|Any CPU = Debug|Any CPU
@@ -52,20 +57,6 @@ Global
 		{2C914413-B31C-4362-93C7-1AE34F09112A}.ReleaseDist|Any CPU.Build.0 = Release|Any CPU
 		{2C914413-B31C-4362-93C7-1AE34F09112A}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
 		{2C914413-B31C-4362-93C7-1AE34F09112A}.ReleaseMac|Any CPU.Build.0 = ReleaseMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugMac|Any CPU.ActiveCfg = DebugMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugWindows|Any CPU.ActiveCfg = DebugWindows|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugWindows|Any CPU.Build.0 = DebugWindows|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseWindows|Any CPU.ActiveCfg = ReleaseWindows|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseWindows|Any CPU.Build.0 = ReleaseWindows|Any CPU		
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseDist|Any CPU.ActiveCfg = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseDist|Any CPU.Build.0 = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseMac|Any CPU.Build.0 = ReleaseMac|Any CPU
 		{5714D3CA-88A6-4330-A29D-4CA90D1D193C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5714D3CA-88A6-4330-A29D-4CA90D1D193C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5714D3CA-88A6-4330-A29D-4CA90D1D193C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,18 +93,12 @@ Global
 		{8FCDF699-E2C3-4CB3-AF98-44198972AFC0}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
 		{8FCDF699-E2C3-4CB3-AF98-44198972AFC0}.DebugWindows|Any CPU.ActiveCfg = DebugMac|Any CPU
 		{8FCDF699-E2C3-4CB3-AF98-44198972AFC0}.ReleaseWindows|Any CPU.ActiveCfg = ReleaseMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseDist|Any CPU.ActiveCfg = ReleaseDist|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseDist|Any CPU.Build.0 = ReleaseDist|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseMac|Any CPU.Build.0 = ReleaseMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugMac|Any CPU.ActiveCfg = DebugMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.DebugWindows|Any CPU.ActiveCfg = DebugMac|Any CPU
-		{F16E3683-B622-4654-B799-99C8D68AA963}.ReleaseWindows|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {36A991A8-DF23-4A30-9490-252CDA05BE90}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -129,24 +114,6 @@ Global
 		$3.inheritsSet = Mono
 		$3.inheritsScope = text/x-csharp
 		$3.scope = text/x-csharp
-		$3.IndentSwitchSection = False
-		$3.NewLinesForBracesInProperties = False
-		$3.NewLinesForBracesInAccessors = False
-		$3.NewLinesForBracesInAnonymousMethods = False
-		$3.NewLinesForBracesInControlBlocks = False
-		$3.NewLinesForBracesInAnonymousTypes = False
-		$3.NewLinesForBracesInObjectCollectionArrayInitializers = False
-		$3.NewLinesForBracesInLambdaExpressionBody = False
-		$3.NewLineForElse = False
-		$3.NewLineForCatch = False
-		$3.NewLineForFinally = False
-		$3.NewLineForMembersInObjectInit = False
-		$3.NewLineForMembersInAnonymousTypes = False
-		$3.NewLineForClausesInQuery = False
-		$3.SpacingAfterMethodDeclarationName = True
-		$3.SpaceAfterMethodCallName = True
-		$3.SpaceBeforeOpenSquareBracket = True
-		version = 
 	EndGlobalSection
 EndGlobal
 
