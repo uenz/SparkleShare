@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest,  
+        os: [ macos-14,  
               #ubuntu-latest, 
               windows-latest]
 
@@ -18,33 +18,33 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      # - name: Install Dependencies (Linux)
-      #   run: |
-      #     echo "Linux {{matrix.config.os}}"
-      #     # setup developer tools
-      #     sudo apt-get update
-      #     sudo apt-get install curl git git-lfs gvfs
-      #     sudo apt-get install desktop-file-utils gtk-sharp3-gapi libappindicator3-0.1-cil-dev libdbus-glib2.0-cil-dev libgtk3.0-cil-dev libnotify3.0-cil-dev libsoup2.4-dev libtool-bin libwebkit2gtk-4.0 meson mono-devel mono-mcs xsltproc
-      #     # checkout and build requirement soup-sharp
-      #     git clone https://github.com/hbons/soup-sharp
-      #     cd soup-sharp/
-      #     ./autogen.sh
-      #     make
-      #     sudo make install
-      #     # checkout and build requirement webkit2-sharp
-      #     git clone https://github.com/hbons/webkit2-sharp
-      #     cd webkit2-sharp/
-      #     ./autogen.sh
-      #     make
-      #     sudo make install
-      #     # checkout and build requirement libappindicator3-dev
-      #     sudo apt-get install libappindicator3-dev
-      #     git clone https://github.com/hbons/appindicator-sharp
-      #     cd appindicator-sharp/
-      #     ./autogen.sh
-      #     make
-      #     sudo make install
-      #   if: matrix.os == 'ubuntu-latest'
+      - name: Install Dependencies (Linux)
+        run: |
+          echo "Linux {{matrix.config.os}}"
+          # setup developer tools
+          sudo apt-get update
+          sudo apt-get install curl git git-lfs gvfs
+          sudo apt-get install desktop-file-utils gtk-sharp3-gapi libappindicator3-0.1-cil-dev libdbus-glib2.0-cil-dev libgtk3.0-cil-dev libnotify3.0-cil-dev libsoup2.4-dev libtool-bin libwebkit2gtk-4.0 meson mono-devel mono-mcs xsltproc
+          # checkout and build requirement soup-sharp
+          git clone https://github.com/hbons/soup-sharp
+          cd soup-sharp/
+          ./autogen.sh
+          make
+          sudo make install
+          # checkout and build requirement webkit2-sharp
+          git clone https://github.com/hbons/webkit2-sharp
+          cd webkit2-sharp/
+          ./autogen.sh
+          make
+          sudo make install
+          # checkout and build requirement libappindicator3-dev
+          sudo apt-get install libappindicator3-dev
+          git clone https://github.com/hbons/appindicator-sharp
+          cd appindicator-sharp/
+          ./autogen.sh
+          make
+          sudo make install
+        if: matrix.os == 'ubuntu-latest'
       - name: Install Dependencies (Windows)
         run: |
           echo "Windows {{matrix.config.os}}"
@@ -68,12 +68,12 @@ jobs:
           mv ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app .
           zip -r ./SparkleShare-MacOs-${GITHUB_REF##*/}.zip ./SparkleShare.app
         if: matrix.os == 'macos-14'
-      # - name: Compile (Linux)
-      #   run: |
-      #     meson build/
-      #     ninja -C build/
-      #     sudo ninja install -C build/
-      #   if: matrix.os == 'ubuntu-latest'
+      - name: Compile (Linux)
+        run: |
+          meson build/
+          ninja -C build/
+          sudo ninja install -C build/
+        if: matrix.os == 'ubuntu-latest'
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
