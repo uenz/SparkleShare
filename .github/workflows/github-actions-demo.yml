@@ -66,12 +66,12 @@ jobs:
           mv ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app .
           zip -r ./SparkleShare-MacOs-${GITHUB_REF##*/}.zip ./SparkleShare.app
         if: matrix.os == 'macos-14'
-      - name: Compile (Linux)
-        run: |
-          meson build/
-          ninja -C build/
-          sudo ninja install -C build/
-        if: matrix.os == 'ubuntu-latest'
+      # - name: Compile (Linux)
+      #   run: |
+      #     meson build/
+      #     ninja -C build/
+      #     sudo ninja install -C build/
+      #   if: matrix.os == 'ubuntu-latest'
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
