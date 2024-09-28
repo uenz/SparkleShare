@@ -41,7 +41,7 @@ To build any of these configurations,
 To build SparkleShare from a command line (e.g. for using a CI system), use this command:
 
 ```bash
- /Applications/Visual\ Studio.app/Contents/MacOS/vstool build "--configuration:ReleaseMac" "SparkleShare.sln"
+ msbuild SparkleShare.sln /target:SparkleShare_Mac:Rebuild /p:Configuration=ReleaseDist /p:Platform="Any CPU" -m
 ```
 
 

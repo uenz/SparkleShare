@@ -46,7 +46,7 @@ jobs:
       - name: Install Dependencies (Windows)
         run: |
           echo "Windows {{matrix.config.os}}"
-          choco install -y wixtoolset --version=3.11.2
+          choco install -y wixtoolset --version=3.14.1
           choco install tartool
           choco install unzip
         if: matrix.os == 'windows-latest'
