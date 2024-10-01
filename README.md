@@ -1,10 +1,17 @@
 # [SparkleShare](https://www.sparkleshare.org/)
 
+## Status
+This is a fork of https://github.com/hbons/SparkleShare/ with is not maintained anymore. 
+At the moment this fork offers the latest MacOS and Windows builds and recent build instructions. 
+Goal of this fork is to port the code to net8.0 to keep the great application alive and multiplatform. The librarys are almost ported to net8.0. The gui shall be ported to [MAUI](https://learn.microsoft.com/de-de/dotnet/maui/what-is-maui?view=net-maui-8.0) or [AvaloniaUI](https://avaloniaui.net/) which will take a while.
+
+## SparkleSahare
+
 [SparkleShare](https://www.sparkleshare.org/) is a file sharing and collaboration app. It works just like Dropbox, and you can run it on your own server. It's available for Linux distributions, macOS, and Windows.
 
 ![Banner](https://raw.githubusercontent.com/hbons/SparkleShare/master/SparkleShare/Common/Images/readme-banner.png)
 
-You can support this project through [💕 GitHub Sponsors](https://github.com/sponsors/hbons).
+
 
 ## How does it work?
 
@@ -26,8 +33,11 @@ Now you can run SparkleShare from the apps menu.
 
 ## Install on macOS
 
-Download the app from the [releases page](https://github.com/hbons/SparkleShare/releases).
+Download the app from the [releases page](https://github.com/uenz/SparkleShare/tags).
 
+## Install on Windows
+
+Download the app from the [releases page](https://github.com/uenz/SparkleShare/tags).
 
 ## Set up a host
 
@@ -38,16 +48,6 @@ Under the hood SparkleShare uses the version control system [Git](https://git-sc
 `SparkleShare` is Free and Open Source software and licensed under the [GNU GPLv3 or later](LICENSE.md). You are welcome to change and redistribute it under certain conditions. Its library `Sparkles` is licensed under the [GNU LGPLv3 or later](LICENSE_Sparkles.md).
 
 Here are instructions to build SparkleShare on [Linux distributions](SparkleShare/Linux/README.md), [macOS](SparkleShare/Mac/README.md), and [Windows](SparkleShare/Windows/README.md).
-
-
-[![Build Status](https://travis-ci.org/hbons/SparkleShare.svg?branch=master)](https://travis-ci.org/hbons/SparkleShare)
-[![Join the chat at https://gitter.im/hbons/SparkleShare](https://badges.gitter.im/hbons/SparkleShare.svg)](https://gitter.im/hbons/SparkleShare?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-## Useful links
-- [sparkleshare.org](https://www.sparkleshare.org/)
-- [@SparkleShare](https://www.twitter.com/SparkleShare), [@hbons on Mastodon](https://mastodon.social/@hbons)
-- Community chatroom on [Gitter](https://www.gitter.im/hbons/SparkleShare)
-- [Wiki](https://www.github.com/hbons/SparkleShare/wiki)
 
 
 Have fun, make awesome. :)

@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ macos-12,  
-              # ubuntu-22.04, 
+              ubuntu-20.04, 
               windows-latest
             ]
 
@@ -45,7 +45,7 @@ jobs:
           ./autogen.sh
           make
           sudo make install
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-20.04'
       - name: Install Dependencies (Windows)
         run: |
           echo "Windows {{matrix.config.os}}"
@@ -74,7 +74,7 @@ jobs:
           meson build/
           ninja -C build/
           sudo ninja install -C build/
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-20.04'
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
