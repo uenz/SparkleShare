@@ -25,34 +25,36 @@ using NUnit.Framework;
 using System;
 using Sparkles;
 
-namespace Sparkles.Tests {
+namespace Sparkles.Tests
+{
 
-    [TestFixture ()]
-    public class TestExtensions {
+    [TestFixture()]
+    public class TestExtensions
+    {
 
-        [Test ()]
-        public void ReturnSHA256 ()
+        [Test()]
+        public void ReturnSHA256()
         {
-            string result = "hello".SHA256 ();
-            Assert.IsTrue (result == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
+            string result = "hello".SHA256();
+            Assert.That(result == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
         }
 
 
-        [Test ()]
-        public void ReturnSHA256WithSalt ()
+        [Test()]
+        public void ReturnSHA256WithSalt()
         {
             string salt = "salt";
-            string result = "hello".SHA256 (salt);
+            string result = "hello".SHA256(salt);
 
-            Assert.IsTrue (result == "87daba3fe263b34c335a0ee3b28ffec4d159aad6542502eaf551dc7b9128c267");
+            Assert.That(result == "87daba3fe263b34c335a0ee3b28ffec4d159aad6542502eaf551dc7b9128c267");
         }
 
 
-        [Test ()]
-        public void ReturnMD5 ()
+        [Test()]
+        public void ReturnMD5()
         {
-            string result = "hello".MD5 ();
-            Assert.IsTrue (result == "5d41402abc4b2a76b9719d911017c592");
+            string result = "hello".MD5();
+            Assert.That(result == "5d41402abc4b2a76b9719d911017c592");
         }
 
 
@@ -60,52 +62,51 @@ namespace Sparkles.Tests {
         string plain_text = "secret";
         string password = "password";
 
-        [Test (), Order (1)]
-        public void ReturnAESEncrypt ()
+        [Test(), Order(1)]
+        public void ReturnAESEncrypt()
         {
-            string result = plain_text.AESEncrypt (password);
+            string result = plain_text.AESEncrypt(password);
             cipher_text = result;
 
-            Assert.That (result, Is.Not.Null.And.Not.Empty);
-        }    
-
-
-        [Test (), Order (2)]
-        public void ReturnAESDecrypt ()
-        {
-            string result = cipher_text.AESDecrypt (password);
-            Assert.IsTrue (result == plain_text);
+            Assert.That(result, Is.Not.Null.And.Not.Empty);
         }
 
 
-        [Test ()]
-        public void ReturnReplaceUnderScoreWithSpace ()
+        [Test(), Order(2)]
+        public void ReturnAESDecrypt()
         {
-            string result = "good_morning_to_you".ReplaceUnderscoreWithSpace ();
-            Assert.IsTrue (result == "good morning to you");
+            string result = cipher_text.AESDecrypt(password);
+            Assert.That(result == plain_text);
+        }
+
+        [Test()]
+        public void ReturnReplaceUnderScoreWithSpace()
+        {
+            string result = "good_morning_to_you".ReplaceUnderscoreWithSpace();
+            Assert.That(result == "good morning to you");
         }
 
 
-        [Test ()]
-        public void ReturnToSize ()
+        [Test()]
+        public void ReturnToSize()
         {
-            Assert.IsTrue (1099511627776.0.ToSize () == "1 ᴛʙ");
-            Assert.IsTrue (1073741824.0.ToSize () == "1 ɢʙ");
-            Assert.IsTrue (1048576.0.ToSize () == "1 ᴍʙ");
-            Assert.IsTrue (1024.0.ToSize () == "1 ᴋʙ");
-            Assert.IsTrue (0.0.ToSize () == "0 ʙ");
+            Assert.That(1099511627776.0.ToSize() == "1 ᴛʙ");
+            Assert.That(1073741824.0.ToSize() == "1 ɢʙ");
+            Assert.That(1048576.0.ToSize() == "1 ᴍʙ");
+            Assert.That(1024.0.ToSize() == "1 ᴋʙ");
+            Assert.That(0.0.ToSize() == "0 ʙ");
         }
 
 
-        [Test ()]
-        public void ReturnToPrettyDate ()
+        [Test()]
+        public void ReturnToPrettyDate()
         {
             // TODO
         }
 
 
-        [Test ()]
-        public void ReturnIsSymlink ()
+        [Test()]
+        public void ReturnIsSymlink()
         {
             // TODO
         }

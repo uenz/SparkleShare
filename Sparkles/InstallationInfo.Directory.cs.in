@@ -21,9 +21,10 @@ using System.Reflection;
 [assembly:AssemblyVersion ("@VERSION@")]
 [assembly:AssemblyCopyright ("Copyright (c) 2010 Hylke Bons and others")]
 
-namespace Sparkles {
-
-    public partial class InstallationInfo {
+namespace Sparkles 
+{
+    public partial class InstallationInfo 
+    {
         public const string Directory = "@ABS_INSTALL_DIR@";
     }
 }

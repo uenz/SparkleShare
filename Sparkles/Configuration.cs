@@ -21,19 +21,22 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class Configuration : XmlDocument {
+    public class Configuration : XmlDocument
+    {
 
-        private static Lazy<Configuration> ConfigLazy = new Lazy<Configuration> (() => {
-            string app_data_path = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+        private static Lazy<Configuration> ConfigLazy = new Lazy<Configuration>(() =>
+        {
+            string app_data_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
-                app_data_path = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
+                app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
 
-            string config_path = Path.Combine (app_data_path, "org.sparkleshare.SparkleShare");
+            string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
 
-            return new Configuration (config_path, "projects.xml");
+            return new Configuration(config_path, "projects.xml");
         });
 
         public static Configuration DefaultConfiguration { get { return ConfigLazy.Value; } }
@@ -42,263 +45,306 @@ namespace Sparkles {
         public readonly string DirectoryPath;
         public readonly string FilePath;
         public readonly string TmpPath;
-        public string AvatarProvider;
+        public string AvatarProvider = null!;
 
         public readonly string LogFilePath;
 
 
-        public string HomePath {
-            get {
-                if (InstallationInfo.OperatingSystem == OS.Windows)
-                    return Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
-
-                return Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-            }
-        }
-
-
-        public string FoldersPath {
-            get {
-                if (GetConfigOption ("folders_path") != null)
-                    return GetConfigOption ("folders_path");
-
-                return Path.Combine (HomePath, "SparkleShare");
-            }
-        }
-
-
-        public Configuration (string config_path, string config_file_name)
+        public string HomePath
         {
-            FilePath = Path.Combine (config_path, config_file_name);
+            get
+            {
+                if (InstallationInfo.OperatingSystem == OS.Windows)
+                    return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+                return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+        }
+
+
+        public string FoldersPath
+        {
+            get
+            {
+                if (GetConfigOption("folders_path") != null)
+                    return GetConfigOption("folders_path")!;
+
+                return Path.Combine(HomePath, "SparkleShare");
+            }
+        }
+
+
+        public Configuration(string config_path, string config_file_name)
+        {
+            FilePath = Path.Combine(config_path, config_file_name);
             DirectoryPath = config_path;
 
-            string logs_path = Path.Combine (config_path, "logs");
+            string logs_path = Path.Combine(config_path, "logs");
 
             int i = 1;
-            do {
-                LogFilePath = Path.Combine (
-                    logs_path, "log_" + DateTime.Now.ToString ("yyyy-MM-dd") + "." +  i + ".txt");
+            do
+            {
+                LogFilePath = Path.Combine(
+                    logs_path, "log_" + DateTime.Now.ToString("yyyy-MM-dd") + "." + i + ".txt");
 
                 i++;
 
-            } while (File.Exists (LogFilePath));
+            } while (File.Exists(LogFilePath));
 
-            if (!Directory.Exists (logs_path))
-                Directory.CreateDirectory (logs_path);
+            if (!Directory.Exists(logs_path))
+                Directory.CreateDirectory(logs_path);
 
             // Delete logs older than a week
-            foreach (FileInfo file in new DirectoryInfo (logs_path).GetFiles ("log*.txt")) {
-                if (file.LastWriteTime < DateTime.Now.AddDays (-7))
-                    file.Delete ();
+            foreach (FileInfo file in new DirectoryInfo(logs_path).GetFiles("log*.txt"))
+            {
+                if (file.LastWriteTime < DateTime.Now.AddDays(-7))
+                    file.Delete();
             }
 
-            if (!Directory.Exists (config_path))
-                Directory.CreateDirectory (config_path);
+            if (!Directory.Exists(config_path))
+                Directory.CreateDirectory(config_path);
 
-            try {
-                Load (FilePath);
+            try
+            {
+                Load(FilePath);
 
-            } catch (TypeInitializationException) {
-                CreateInitialConfig ();
+            }
+            catch (TypeInitializationException)
+            {
+                CreateInitialConfig();
 
-            } catch (FileNotFoundException) {
-                CreateInitialConfig ();
+            }
+            catch (FileNotFoundException)
+            {
+                CreateInitialConfig();
 
-            } catch (XmlException) {
-                var file = new FileInfo (FilePath);
+            }
+            catch (XmlException)
+            {
+                var file = new FileInfo(FilePath);
 
-                if (file.Length == 0) {
-                    File.Delete (FilePath);
-                    CreateInitialConfig ();
+                if (file.Length == 0)
+                {
+                    File.Delete(FilePath);
+                    CreateInitialConfig();
 
-                } else {
+                }
+                else
+                {
                     throw;
                 }
 
-            } finally {
-                TmpPath = Path.Combine (DirectoryPath, "tmp");
-                Directory.CreateDirectory (TmpPath);
+            }
+            finally
+            {
+                TmpPath = Path.Combine(DirectoryPath, "tmp");
+                Directory.CreateDirectory(TmpPath);
             }
         }
 
 
-        void CreateInitialConfig ()
+        void CreateInitialConfig()
         {
             string user_name = Environment.UserName;
 
-            if (InstallationInfo.OperatingSystem != OS.Windows) {
-                if (string.IsNullOrEmpty (user_name))
+            if (InstallationInfo.OperatingSystem != OS.Windows)
+            {
+                if (string.IsNullOrEmpty(user_name))
                     user_name = "Unknown";
                 else
                     // On Unix systems the user name may have commas appended
-                    user_name = user_name.TrimEnd (',');
+                    user_name = user_name.TrimEnd(',');
             }
 
             XElement xml =
-                new XElement ("sparkleshare",
-                    new XElement ("user",
-                        new XElement ("name", user_name),
-                        new XElement ("email", "Unknown")
+                new XElement("sparkleshare",
+                    new XElement("user",
+                        new XElement("name", user_name),
+                        new XElement("email", "Unknown")
                     ),
-                    new XElement ("notifications", bool.TrueString)
+                    new XElement("notifications", bool.TrueString)
             );
 
-            LoadXml (xml.ToString ());
+            LoadXml(xml.ToString());
         }
 
 
-        public User User {
-            get {
-                string name  = SelectSingleNode ("/sparkleshare/user/name/text()").Value;
-                string email = SelectSingleNode ("/sparkleshare/user/email/text()").Value;
+        public User User
+        {
+            get
+            {
+                string? name = SelectSingleNode("/sparkleshare/user/name/text()")!.Value;
+                string? email = SelectSingleNode("/sparkleshare/user/email/text()")!.Value;
 
-                return new User (name, email);
+                return new User(name!, email!);
             }
 
-            set {
-                SelectSingleNode ("/sparkleshare/user/name/text()").InnerText  = value.Name;
-                SelectSingleNode ("/sparkleshare/user/email/text()").InnerText = value.Email;
+            set
+            {
+                SelectSingleNode("/sparkleshare/user/name/text()")!.InnerText = value.Name;
+                SelectSingleNode("/sparkleshare/user/email/text()")!.InnerText = value.Email;
 
-                Save ();
+                Save();
             }
         }
 
 
-        public List<string> Folders {
-            get {
-                var folders = new List<string> ();
+        public List<string> Folders
+        {
+            get
+            {
+                var folders = new List<string>();
 
-                foreach (XmlNode node_folder in SelectNodes ("/sparkleshare/folder"))
-                    folders.Add (node_folder ["name"].InnerText);
-
-                folders.Sort ();
+                foreach (XmlNode? node_folder in SelectNodes("/sparkleshare/folder")!)
+                    if (node_folder != null)
+                    {
+                        folders.Add(node_folder["name"]!.InnerText);
+                    }
+                folders.Sort();
                 return folders;
             }
         }
 
 
-        public void AddFolder (string name, string identifier, string url, string backend)
+        public void AddFolder(string name, string identifier, string url, string backend)
         {
-            XmlNode node_name       = CreateElement ("name");
-            XmlNode node_identifier = CreateElement ("identifier");
-            XmlNode node_url        = CreateElement ("url");
-            XmlNode node_backend    = CreateElement ("backend");
+            XmlNode node_name = CreateElement("name");
+            XmlNode node_identifier = CreateElement("identifier");
+            XmlNode node_url = CreateElement("url");
+            XmlNode node_backend = CreateElement("backend");
 
-            node_name.InnerText       = name;
+            node_name.InnerText = name;
             node_identifier.InnerText = identifier;
-            node_url.InnerText        = url;
-            node_backend.InnerText    = backend;
+            node_url.InnerText = url;
+            node_backend.InnerText = backend;
 
-            XmlNode node_folder = CreateNode (XmlNodeType.Element, "folder", null);
+            XmlNode node_folder = CreateNode(XmlNodeType.Element, "folder", null);
 
-            node_folder.AppendChild (node_name);
-            node_folder.AppendChild (node_identifier);
-            node_folder.AppendChild (node_url);
-            node_folder.AppendChild (node_backend);
+            node_folder.AppendChild(node_name);
+            node_folder.AppendChild(node_identifier);
+            node_folder.AppendChild(node_url);
+            node_folder.AppendChild(node_backend);
 
-            XmlNode node_root = SelectSingleNode ("/sparkleshare");
-            node_root.AppendChild (node_folder);
-
-            Save ();
-        }
-
-
-        public void RemoveFolder (string name)
-        {
-            foreach (XmlNode node_folder in SelectNodes ("/sparkleshare/folder")) {
-                if (node_folder ["name"].InnerText.Equals (name))
-                    SelectSingleNode ("/sparkleshare").RemoveChild (node_folder);
+            XmlNode? node_root = SelectSingleNode("/sparkleshare");
+            if (node_root != null)
+            {
+                node_root.AppendChild(node_folder);
             }
-
-            Save ();
+            Save();
         }
 
 
-        public void RenameFolder (string identifier, string new_name)
+        public void RemoveFolder(string name)
         {
-            XmlNode node_folder = SelectSingleNode (
-                string.Format ("/sparkleshare/folder[identifier=\"{0}\"]", identifier));
-
-            node_folder ["name"].InnerText = new_name;
-            Save ();
+            foreach (XmlNode? node_folder in SelectNodes("/sparkleshare/folder")!)
+            {
+                if (node_folder != null)
+                {
+                    if (node_folder["name"]!.InnerText.Equals(name))
+                        SelectSingleNode("/sparkleshare")!.RemoveChild(node_folder);
+                }
+            }
+            Save();
         }
 
 
-        public string BackendByName (string name)
+        public void RenameFolder(string identifier, string new_name)
         {
-            return FolderValueByKey (name, "backend");
+            XmlNode? node_folder = SelectSingleNode(
+                string.Format("/sparkleshare/folder[identifier=\"{0}\"]", identifier));
+            if (node_folder != null)
+            {
+                node_folder["name"]!.InnerText = new_name;
+            }
+            Save();
         }
 
 
-        public string IdentifierByName (string name)
+        public string BackendByName(string name)
         {
-            return FolderValueByKey (name, "identifier");
+            return FolderValueByKey(name, "backend")!;
         }
 
 
-        public string UrlByName (string name)
+        public string IdentifierByName(string name)
         {
-            return FolderValueByKey (name, "url");
+            return FolderValueByKey(name, "identifier")!;
         }
 
 
-        public bool IdentifierExists (string identifier)
+        public string UrlByName(string name)
+        {
+            return FolderValueByKey(name, "url")!;
+        }
+
+
+        public bool IdentifierExists(string identifier)
         {
             if (identifier == null)
-                throw new ArgumentNullException ();
+                throw new ArgumentNullException();
 
-            foreach (XmlNode node_folder in SelectNodes ("/sparkleshare/folder")) {
-                XmlElement folder_id = node_folder ["identifier"];
+            foreach (XmlNode? node_folder in SelectNodes("/sparkleshare/folder")!)
+            {
+                if (node_folder != null)
+                {
+                    XmlElement? folder_id = node_folder["identifier"];
 
-                if (folder_id != null && identifier.Equals (folder_id.InnerText))
-                    return true;
+                    if (identifier.Equals(folder_id!.InnerText))
+                        return true;
+                }
             }
 
             return false;
         }
 
 
-        public bool SetFolderOptionalAttribute (string folder_name, string key, string value)
+        public bool SetFolderOptionalAttribute(string folder_name, string key, string value)
         {
-            XmlNode folder = FolderByName (folder_name);
+            XmlNode? folder = FolderByName(folder_name);
 
             if (folder == null)
                 return false;
 
-            if (folder [key] != null) {
-                folder [key].InnerText = value;
+            if (folder[key] != null)
+            {
+                folder[key]!.InnerText = value;
 
-            } else {
-                XmlNode new_node = CreateElement (key);
+            }
+            else
+            {
+                XmlNode new_node = CreateElement(key);
                 new_node.InnerText = value;
-                folder.AppendChild (new_node);
+                folder.AppendChild(new_node);
             }
 
-            Save ();
+            Save();
 
             return true;
         }
 
 
-        public string GetFolderOptionalAttribute (string folder_name, string key)
+        public string? GetFolderOptionalAttribute(string folder_name, string key)
         {
-            XmlNode folder = FolderByName (folder_name);
+            XmlNode? folder = FolderByName(folder_name);
 
-            if (folder != null) {
-                if (folder [key] != null)
-                    return folder [key].InnerText;
+            if (folder != null)
+            {
+                if (folder[key] != null)
+                    return folder[key]!.InnerText;
                 else
                     return null;
 
-            } else {
+            }
+            else
+            {
                 return null;
             }
         }
 
 
-        public string GetConfigOption (string name)
+        public string? GetConfigOption(string name)
         {
-            XmlNode node = SelectSingleNode ("/sparkleshare/" + name);
+            XmlNode? node = SelectSingleNode("/sparkleshare/" + name);
 
             if (node != null)
                 return node.InnerText;
@@ -307,47 +353,50 @@ namespace Sparkles {
         }
 
 
-        public void SetConfigOption (string name, string content)
+        public void SetConfigOption(string name, string content)
         {
-            XmlNode node = SelectSingleNode ("/sparkleshare/" + name);
+            XmlNode? node = SelectSingleNode("/sparkleshare/" + name);
 
-            if (node != null) {
+            if (node != null)
+            {
                 node.InnerText = content;
 
-            } else {
-                node           = CreateElement (name);
+            }
+            else
+            {
+                node = CreateElement(name);
                 node.InnerText = content;
 
-                XmlNode node_root = SelectSingleNode ("/sparkleshare");
-                node_root.AppendChild (node);
+                XmlNode? node_root = SelectSingleNode("/sparkleshare");
+                node_root!.AppendChild(node);
             }
 
-            Save ();
-            Logger.LogInfo ("Config", "Updated option " + name + ":" + content);
+            Save();
+            Logger.LogInfo("Config", "Updated option " + name + ":" + content);
         }
 
 
-        XmlNode FolderByName (string name)
+        XmlNode? FolderByName(string name)
         {
-            return SelectSingleNode (string.Format ("/sparkleshare/folder[name=\"{0}\"]", name));
+            return SelectSingleNode(string.Format("/sparkleshare/folder[name=\"{0}\"]", name));
         }
 
 
-        string FolderValueByKey (string name, string key)
+        string? FolderValueByKey(string name, string key)
         {
-            XmlNode folder = FolderByName(name);
+            XmlNode? folder = FolderByName(name);
 
-            if ((folder != null) && (folder [key] != null))
-                return folder [key].InnerText;
+            if ((folder != null) && (folder[key] != null))
+                return folder[key]!.InnerText;
 
             return null;
         }
 
 
-        void Save ()
+        void Save()
         {
-            Save (FilePath);
-            Logger.LogInfo ("Config", "Wrote to '" + FilePath + "'");
+            Save(FilePath);
+            Logger.LogInfo("Config", "Wrote to '" + FilePath + "'");
         }
     }
 }

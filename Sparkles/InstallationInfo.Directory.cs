@@ -21,9 +21,11 @@ using System.Reflection;
 [assembly:AssemblyVersion ("3.38.1")]
 [assembly:AssemblyCopyright ("Copyright (c) 2010 Hylke Bons and others")]
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public partial class InstallationInfo {
+    public partial class InstallationInfo
+    {
         public const string Directory = "/usr/local/share/sparkleshare";
     }
 }

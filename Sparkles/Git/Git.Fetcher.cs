@@ -19,70 +19,77 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace Sparkles.Git {
+namespace Sparkles.Git
+{
 
-    public class GitFetcher : SSHFetcher {
+    public class GitFetcher : SSHFetcher
+    {
 
-        GitCommand git_clone;
-        SSHAuthenticationInfo auth_info;
+        GitCommand git_clone = null!;
+        SSHAuthenticationInfo auth_info = null!;
 
-        string password_salt = Path.GetRandomFileName ().SHA256 ().Substring (0, 16);
+        string password_salt = Path.GetRandomFileName().SHA256().Substring(0, 16);
 
 
-        protected override bool IsFetchedRepoEmpty {
-            get {
-                var git_rev_parse = new GitCommand (TargetFolder, "rev-parse HEAD");
-                git_rev_parse.StartAndWaitForExit ();
+        protected override bool IsFetchedRepoEmpty
+        {
+            get
+            {
+                var git_rev_parse = new GitCommand(TargetFolder, "rev-parse HEAD");
+                git_rev_parse.StartAndWaitForExit();
 
                 return (git_rev_parse.ExitCode != 0);
             }
         }
 
 
-        public GitFetcher (SparkleFetcherInfo fetcher_info, SSHAuthenticationInfo auth_info) : base (fetcher_info)
+        public GitFetcher(SparkleFetcherInfo fetcher_info, SSHAuthenticationInfo auth_info) : base(fetcher_info)
         {
             this.auth_info = auth_info;
-            var uri_builder = new UriBuilder (RemoteUrl);
+            var uri_builder = new UriBuilder(RemoteUrl);
 
-            if (!RemoteUrl.Scheme.Equals ("ssh") && !RemoteUrl.Scheme.Equals ("git"))
+            if (!RemoteUrl.Scheme.Equals("ssh") && !RemoteUrl.Scheme.Equals("git"))
                 uri_builder.Scheme = "ssh";
 
-            if (RemoteUrl.Host.Equals ("github.com") ||
-                RemoteUrl.Host.Equals ("gitlab.com")) {
+            if (RemoteUrl.Host.Equals("github.com") ||
+                RemoteUrl.Host.Equals("gitlab.com"))
+            {
 
-                AvailableStorageTypes.Add (
-                    new StorageTypeInfo (StorageType.LargeFiles, "Large File Storage",
+                AvailableStorageTypes.Add(
+                    new StorageTypeInfo(StorageType.LargeFiles, "Large File Storage",
                         "Trade off versioning to save space;\nkeeps file history on the host only"));
 
-                uri_builder.Scheme   = "ssh";
+                uri_builder.Scheme = "ssh";
                 uri_builder.UserName = "git";
 
-                if (!RemoteUrl.AbsolutePath.EndsWith (".git"))
+                if (!RemoteUrl.AbsolutePath.EndsWith(".git"))
                     uri_builder.Path += ".git";
 
-            } else if (string.IsNullOrEmpty (RemoteUrl.UserInfo)) {
+            }
+            else if (string.IsNullOrEmpty(RemoteUrl.UserInfo))
+            {
                 uri_builder.UserName = "storage";
             }
 
             RemoteUrl = uri_builder.Uri;
 
-            AvailableStorageTypes.Add (
-                new StorageTypeInfo (StorageType.Encrypted, "Encrypted Storage",
+            AvailableStorageTypes.Add(
+                new StorageTypeInfo(StorageType.Encrypted, "Encrypted Storage",
                     "Trade off efficiency for privacy;\nencrypts before storing files on the host"));
         }
 
 
-        public override bool Fetch ()
+        public override bool Fetch()
         {
-            if (!base.Fetch ())
+            if (!base.Fetch())
                 return false;
 
-            StorageType? storage_type = DetermineStorageType ();
+            StorageType? storage_type = DetermineStorageType();
 
             if (storage_type == null)
                 return false;
 
-            FetchedRepoStorageType = (StorageType) storage_type;
+            FetchedRepoStorageType = (StorageType)storage_type;
 
             string git_clone_command = "clone --progress --no-checkout";
 
@@ -92,12 +99,12 @@ namespace Sparkles.Git {
             if (storage_type == StorageType.LargeFiles)
                 git_clone_command = "lfs clone --progress --no-checkout";
 
-            git_clone = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
-                string.Format ("{0} \"{1}\" \"{2}\"", git_clone_command, RemoteUrl, TargetFolder),
+            git_clone = new GitCommand(Configuration.DefaultConfiguration.TmpPath,
+                string.Format("{0} \"{1}\" \"{2}\"", git_clone_command, RemoteUrl, TargetFolder),
                 auth_info);
 
             git_clone.StartInfo.RedirectStandardError = true;
-            git_clone.Start ();
+            git_clone.Start();
 
             StreamReader output_stream = git_clone.StandardError;
 
@@ -108,73 +115,84 @@ namespace Sparkles.Git {
             double speed = 0;
             string information = "";
 
-            while (!output_stream.EndOfStream) {
-                string line = output_stream.ReadLine ();
+            while (!output_stream.EndOfStream)
+            {
+                string line = output_stream.ReadLine()!;
 
-                ErrorStatus error = GitCommand.ParseProgress (line, out percentage, out speed, out information);
+                ErrorStatus error = GitCommand.ParseProgress(line, out percentage, out speed, out information);
 
-                if (error != ErrorStatus.None) {
+                if (error != ErrorStatus.None)
+                {
                     IsActive = false;
-                    git_clone.Kill ();
-                    git_clone.Dispose ();
+                    git_clone.Kill();
+                    git_clone.Dispose();
 
                     return false;
                 }
 
-                OnProgressChanged (percentage, speed, information);
+                OnProgressChanged(percentage, speed, information);
             }
 
-            git_clone.WaitForExit ();
+            git_clone.WaitForExit();
 
             if (git_clone.ExitCode != 0)
                 return false;
 
-            Thread.Sleep (500);
-            OnProgressChanged (100, 0, "");
-            Thread.Sleep (500);
+            Thread.Sleep(500);
+            OnProgressChanged(100, 0, "");
+            Thread.Sleep(500);
 
             return true;
         }
 
 
-        public override void Stop ()
+        public override void Stop()
         {
-            try {
-                if (git_clone != null && !git_clone.HasExited) {
-                    git_clone.Kill ();
-                    git_clone.Dispose ();
+            try
+            {
+                if (git_clone != null && !git_clone.HasExited)
+                {
+                    git_clone.Kill();
+                    git_clone.Dispose();
                 }
 
-            } catch (Exception e) {
-                Logger.LogInfo ("Fetcher", "Failed to dispose properly", e);
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Fetcher", "Failed to dispose properly", e);
             }
 
-            if (Directory.Exists (TargetFolder)) {
-                try {
-                    Directory.Delete (TargetFolder, recursive: true);
-                    Logger.LogInfo ("Fetcher", "Deleted '" + TargetFolder + "'");
+            if (Directory.Exists(TargetFolder))
+            {
+                try
+                {
+                    Directory.Delete(TargetFolder, recursive: true);
+                    Logger.LogInfo("Fetcher", "Deleted '" + TargetFolder + "'");
 
-                } catch (Exception e) {
-                    Logger.LogInfo ("Fetcher", "Failed to delete '" + TargetFolder + "'", e);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogInfo("Fetcher", "Failed to delete '" + TargetFolder + "'", e);
                 }
             }
         }
 
 
-        public override string Complete (StorageType selected_storage_type)
+        public override string Complete(StorageType selected_storage_type)
         {
-            string identifier = base.Complete (selected_storage_type);
-            string identifier_path = Path.Combine (TargetFolder, ".sparkleshare");
+            string identifier = base.Complete(selected_storage_type);
+            string identifier_path = Path.Combine(TargetFolder, ".sparkleshare");
 
-            InstallConfiguration ();
-            InstallGitLFS ();
+            InstallConfiguration();
+            InstallGitLFS();
 
-            InstallAttributeRules ();
-            InstallExcludeRules ();
+            InstallAttributeRules();
+            InstallExcludeRules();
 
-            if (IsFetchedRepoEmpty) {
-                File.WriteAllText (identifier_path, identifier);
-                File.SetAttributes (identifier_path, FileAttributes.Hidden);
+            if (IsFetchedRepoEmpty)
+            {
+                File.WriteAllText(identifier_path, identifier);
+                File.SetAttributes(identifier_path, FileAttributes.Hidden);
 
                 // The repo is freshly cloned and no config user.name is set yet, so temporary use SparkleShare
                 // to avoid error 'TELL ME WHO YOU ARE', later on this will be handled in Commit of Git.Repository
@@ -182,110 +200,117 @@ namespace Sparkles.Git {
                 git_config.StartAndWaitForExit();
                 git_config = new GitCommand(TargetFolder, "config user.email \"info@sparkleshare.org\"");
                 git_config.StartAndWaitForExit();
-                
+
                 // We can't do the "commit --all" shortcut because it doesn't add untracked files
-                var git_add    = new GitCommand (TargetFolder, "add .sparkleshare");
-                var git_commit = new GitCommand (TargetFolder,
-                    string.Format ("commit --message=\"{0}\" --author=\"{1}\"",
+                var git_add = new GitCommand(TargetFolder, "add .sparkleshare");
+                var git_commit = new GitCommand(TargetFolder,
+                    string.Format("commit --message=\"{0}\" --author=\"{1}\"",
                         "Set up SparkleShare project",
                         "SparkleShare <info@sparkleshare.org>"));
 
-                git_add.StartAndWaitForExit ();
-                git_commit.StartAndWaitForExit ();
+                git_add.StartAndWaitForExit();
+                git_commit.StartAndWaitForExit();
 
                 // These branches will be pushed later by "git push --all"
-                if (selected_storage_type == StorageType.LargeFiles) {
-                    var git_branch = new GitCommand (TargetFolder, "branch x-sparkleshare-lfs", auth_info);
-                    git_branch.StartAndWaitForExit ();
+                if (selected_storage_type == StorageType.LargeFiles)
+                {
+                    var git_branch = new GitCommand(TargetFolder, "branch x-sparkleshare-lfs", auth_info);
+                    git_branch.StartAndWaitForExit();
                 }
 
-                if (selected_storage_type == StorageType.Encrypted) {
-                    var git_branch = new GitCommand (TargetFolder,
-                        string.Format ("branch x-sparkleshare-encrypted-{0}", password_salt), auth_info);
+                if (selected_storage_type == StorageType.Encrypted)
+                {
+                    var git_branch = new GitCommand(TargetFolder,
+                        string.Format("branch x-sparkleshare-encrypted-{0}", password_salt), auth_info);
 
-                    git_branch.StartAndWaitForExit ();
+                    git_branch.StartAndWaitForExit();
                 }
 
-            } else {
+            }
+            else
+            {
                 string branch = "HEAD";
                 string prefered_branch = "SparkleShare";
 
                 // Prefer the "SparkleShare" branch if it exists
-                var git_show_ref = new GitCommand (TargetFolder,
+                var git_show_ref = new GitCommand(TargetFolder,
                    "show-ref --verify --quiet refs/heads/" + prefered_branch);
 
-                git_show_ref.StartAndWaitForExit ();
+                git_show_ref.StartAndWaitForExit();
 
                 if (git_show_ref.ExitCode == 0)
                     branch = prefered_branch;
 
-                var git_checkout = new GitCommand (TargetFolder, string.Format ("checkout --quiet --force {0}", branch));
-                git_checkout.StartAndWaitForExit ();
+                var git_checkout = new GitCommand(TargetFolder, string.Format("checkout --quiet --force {0}", branch));
+                git_checkout.StartAndWaitForExit();
 
-                if (File.Exists (identifier_path)) {
-                    File.SetAttributes (identifier_path, FileAttributes.Hidden);
-                    identifier = File.ReadAllText (identifier_path).Trim ();
+                if (File.Exists(identifier_path))
+                {
+                    File.SetAttributes(identifier_path, FileAttributes.Hidden);
+                    identifier = File.ReadAllText(identifier_path).Trim();
                 }
             }
 
             // git-lfs may leave junk behind
-            string git_lfs_tmp_path = Path.Combine (Configuration.DefaultConfiguration.TmpPath, "lfs");
+            string git_lfs_tmp_path = Path.Combine(Configuration.DefaultConfiguration.TmpPath, "lfs");
 
-            if (Directory.Exists (git_lfs_tmp_path))
-                Directory.Delete (git_lfs_tmp_path, recursive: true);
+            if (Directory.Exists(git_lfs_tmp_path))
+                Directory.Delete(git_lfs_tmp_path, recursive: true);
 
             return identifier;
         }
 
 
-        public override void EnableFetchedRepoCrypto (string password)
+        public override void EnableFetchedRepoCrypto(string password)
         {
             string password_file = ".git/info/encryption_password";
-            var git_config_required = new GitCommand (TargetFolder, "config filter.encryption.required true");
+            var git_config_required = new GitCommand(TargetFolder, "config filter.encryption.required true");
 
-            var git_config_smudge = new GitCommand (TargetFolder, "config filter.encryption.smudge " +
-                string.Format ("\"'{0}' enc -d -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+            var git_config_smudge = new GitCommand(TargetFolder, "config filter.encryption.smudge " +
+                string.Format("\"'{0}' enc -d -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
-            var git_config_clean = new GitCommand (TargetFolder, "config filter.encryption.clean " +
-                string.Format ("\"'{0}' enc -e -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
+            var git_config_clean = new GitCommand(TargetFolder, "config filter.encryption.clean " +
+                string.Format("\"'{0}' enc -e -aes-256-cbc -base64 -S {1} -pass file:{2} -md sha256\"", OpenSSLCommand.OpenSSLCommandPath, password_salt, password_file));
 
-            git_config_required.StartAndWaitForExit ();
-            git_config_smudge.StartAndWaitForExit ();
-            git_config_clean.StartAndWaitForExit ();
+            git_config_required.StartAndWaitForExit();
+            git_config_smudge.StartAndWaitForExit();
+            git_config_clean.StartAndWaitForExit();
 
-            string git_info_path = Path.Combine (TargetFolder, ".git", "info");
-            Directory.CreateDirectory (git_info_path);
+            string git_info_path = Path.Combine(TargetFolder, ".git", "info");
+            Directory.CreateDirectory(git_info_path);
 
             // Store the password, TODO: 600 permissions
-            string password_file_path = Path.Combine (git_info_path, "encryption_password");
-            File.WriteAllText (password_file_path, password.SHA256 (password_salt));
+            string password_file_path = Path.Combine(git_info_path, "encryption_password");
+            File.WriteAllText(password_file_path, password.SHA256(password_salt));
         }
 
 
-        public override bool IsFetchedRepoPasswordCorrect (string password)
+        public override bool IsFetchedRepoPasswordCorrect(string password)
         {
-            string password_check_file_path = Path.Combine (TargetFolder, ".sparkleshare");
+            string password_check_file_path = Path.Combine(TargetFolder, ".sparkleshare");
 
-            if (!File.Exists (password_check_file_path)) {
-                var git_show = new GitCommand (TargetFolder, "show HEAD:.sparkleshare");
-                string output = git_show.StartAndReadStandardOutput ();
+            if (!File.Exists(password_check_file_path))
+            {
+                var git_show = new GitCommand(TargetFolder, "show HEAD:.sparkleshare");
+                string output = git_show.StartAndReadStandardOutput();
 
                 if (git_show.ExitCode == 0)
-                    File.WriteAllText (password_check_file_path, output);
+                    File.WriteAllText(password_check_file_path, output);
                 else
                     return false;
             }
 
-            string args = string.Format ("enc -d -aes-256-cbc -base64 -S {0} -pass pass:{1} -in \"{2}\" -md sha256",
-                password_salt, password.SHA256 (password_salt), password_check_file_path);
+            string args = string.Format("enc -d -aes-256-cbc -base64 -S {0} -pass pass:{1} -in \"{2}\" -md sha256",
+                password_salt, password.SHA256(password_salt), password_check_file_path);
 
-            var process = new OpenSSLCommand (args);
+            var process = new OpenSSLCommand(args);
 
             process.StartInfo.WorkingDirectory = TargetFolder;
-            process.StartAndWaitForExit ();
+            process.StartAndWaitForExit();
 
-            if (process.ExitCode == 0) {
-                File.Delete (password_check_file_path);
+            if (process.ExitCode == 0)
+            {
+                File.Delete(password_check_file_path);
                 return true;
             }
 
@@ -293,44 +318,46 @@ namespace Sparkles.Git {
         }
 
 
-        public override string FormatName ()
+        public override string FormatName()
         {
-            string name = Path.GetFileName (RemoteUrl.AbsolutePath);
-            name = name.ReplaceUnderscoreWithSpace ();
+            string name = Path.GetFileName(RemoteUrl.AbsolutePath);
+            name = name.ReplaceUnderscoreWithSpace();
 
-            if (name.EndsWith (".git"))
-                name = name.Replace (".git", "");
+            if (name.EndsWith(".git"))
+                name = name.Replace(".git", "");
 
             return name;
         }
 
 
-        StorageType? DetermineStorageType ()
+        StorageType? DetermineStorageType()
         {
-            var git_ls_remote = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
-                string.Format ("ls-remote --heads \"{0}\"", RemoteUrl), auth_info);
+            var git_ls_remote = new GitCommand(Configuration.DefaultConfiguration.TmpPath,
+                string.Format("ls-remote --heads \"{0}\"", RemoteUrl), auth_info);
 
-            string output = git_ls_remote.StartAndReadStandardOutput ();
+            string output = git_ls_remote.StartAndReadStandardOutput();
 
             if (git_ls_remote.ExitCode != 0)
                 return null;
 
-            if (string.IsNullOrWhiteSpace (output))
+            if (string.IsNullOrWhiteSpace(output))
                 return StorageType.Unknown;
 
-            string encrypted_storage_prefix  = "x-sparkleshare-encrypted-";
+            string encrypted_storage_prefix = "x-sparkleshare-encrypted-";
             string large_file_storage_prefix = "x-sparkleshare-lfs";
 
-            foreach (string line in output.Split ("\n".ToCharArray ())) {
+            foreach (string line in output.Split("\n".ToCharArray()))
+            {
                 // Remote branches are outputed as "remote/branch", we need the second part
-                string [] line_parts = line.Split ('/');
-                string branch = line_parts [line_parts.Length - 1];
+                string[] line_parts = line.Split('/');
+                string branch = line_parts[line_parts.Length - 1];
 
                 if (branch == large_file_storage_prefix)
                     return StorageType.LargeFiles;
 
-                if (branch.StartsWith (encrypted_storage_prefix)) {
-                    password_salt = branch.Replace (encrypted_storage_prefix, "");
+                if (branch.StartsWith(encrypted_storage_prefix))
+                {
+                    password_salt = branch.Replace(encrypted_storage_prefix, "");
                     return StorageType.Encrypted;
                 }
             }
@@ -339,9 +366,9 @@ namespace Sparkles.Git {
         }
 
 
-        void InstallConfiguration ()
+        void InstallConfiguration()
         {
-            string [] settings = {
+            string[] settings = {
                 "core.autocrlf input",
                 "core.quotepath false", // For commands to output Unicode characters "as is". e.g. '"h\303\251"' becomes 'hé'.
                 "core.precomposeunicode true", // Use the same Unicode form on all filesystems
@@ -358,72 +385,76 @@ namespace Sparkles.Git {
             };
 
             if (InstallationInfo.OperatingSystem == OS.Windows)
-                settings [0] = "core.autocrlf true";
+                settings[0] = "core.autocrlf true";
 
-            foreach (string setting in settings) {
-                var git_config = new GitCommand (TargetFolder, "config " + setting);
-                git_config.StartAndWaitForExit ();
+            foreach (string setting in settings)
+            {
+                var git_config = new GitCommand(TargetFolder, "config " + setting);
+                git_config.StartAndWaitForExit();
             }
         }
 
 
-        void InstallExcludeRules ()
+        void InstallExcludeRules()
         {
-            string git_info_path = Path.Combine (TargetFolder, ".git", "info");
-            Directory.CreateDirectory (git_info_path);
+            string git_info_path = Path.Combine(TargetFolder, ".git", "info");
+            Directory.CreateDirectory(git_info_path);
 
-            string exclude_rules = string.Join (Environment.NewLine, ExcludeRules);
-            string exclude_rules_file_path = Path.Combine (git_info_path, "exclude");
+            string exclude_rules = string.Join(Environment.NewLine, ExcludeRules);
+            string exclude_rules_file_path = Path.Combine(git_info_path, "exclude");
 
-            File.WriteAllText (exclude_rules_file_path, exclude_rules);
+            File.WriteAllText(exclude_rules_file_path, exclude_rules);
         }
 
 
-        void InstallAttributeRules ()
+        void InstallAttributeRules()
         {
-            string git_info_path = Path.Combine (TargetFolder, ".git", "info");
-            Directory.CreateDirectory (git_info_path);
+            string git_info_path = Path.Combine(TargetFolder, ".git", "info");
+            Directory.CreateDirectory(git_info_path);
 
-            string git_attributes_file_path = Path.Combine (git_info_path, "attributes");
+            string git_attributes_file_path = Path.Combine(git_info_path, "attributes");
 
-            if (FetchedRepoStorageType == StorageType.LargeFiles) {
-                File.WriteAllText (git_attributes_file_path, "* filter=lfs diff=lfs merge=lfs -text");
+            if (FetchedRepoStorageType == StorageType.LargeFiles)
+            {
+                File.WriteAllText(git_attributes_file_path, "* filter=lfs diff=lfs merge=lfs -text");
                 return;
             }
 
-            if (FetchedRepoStorageType == StorageType.Encrypted) {
-                File.WriteAllText (git_attributes_file_path, "* filter=encryption -diff -delta merge=binary");
+            if (FetchedRepoStorageType == StorageType.Encrypted)
+            {
+                File.WriteAllText(git_attributes_file_path, "* filter=encryption -diff -delta merge=binary");
                 return;
             }
 
-            TextWriter writer = new StreamWriter (git_attributes_file_path);
+            TextWriter writer = new StreamWriter(git_attributes_file_path);
 
             // Treat all files as binary as we always want to keep both file versions on a conflict
-            writer.WriteLine ("* merge=binary");
+            writer.WriteLine("* merge=binary");
 
             // Compile a list of files we don't want Git to compress. Not compressing
             // already compressed files decreases memory usage and increases speed
-            string [] extensions = {
+            string[] extensions = {
                 "jpg", "jpeg", "png", "tiff", "gif", // Images
                 "flac", "mp3", "ogg", "oga", // Audio
                 "avi", "mov", "mpg", "mpeg", "mkv", "ogv", "ogx", "webm", // Video
                 "zip", "gz", "bz", "bz2", "rpm", "deb", "tgz", "rar", "ace", "7z", "pak", "tc", "iso", ".dmg" // Archives
             };
 
-            foreach (string extension in extensions) {
-                writer.WriteLine ("*." + extension + " -delta merge=binary");
-                writer.WriteLine ("*." + extension.ToUpper () + " -delta merge=binary");
+            foreach (string extension in extensions)
+            {
+                writer.WriteLine("*." + extension + " -delta merge=binary");
+                writer.WriteLine("*." + extension.ToUpper() + " -delta merge=binary");
             }
 
-            writer.Close ();
+            writer.Close();
         }
 
 
-        void InstallGitLFS ()
+        void InstallGitLFS()
         {
-            var git_config_required = new GitCommand (TargetFolder, "config filter.lfs.required true");
+            var git_config_required = new GitCommand(TargetFolder, "config filter.lfs.required true");
 
-            string GIT_SSH_COMMAND = GitCommand.FormatGitSSHCommand (auth_info);
+            string GIT_SSH_COMMAND = GitCommand.FormatGitSSHCommand(auth_info);
             string smudge_command;
             string clean_command;
 
@@ -432,15 +463,15 @@ namespace Sparkles.Git {
             clean_command = "'" + GitCommand.GitLfsPath + "' clean %f";
 
 
-            var git_config_smudge = new GitCommand (TargetFolder,
-                string.Format ("config filter.lfs.smudge \"{0}\"", smudge_command));
+            var git_config_smudge = new GitCommand(TargetFolder,
+                string.Format("config filter.lfs.smudge \"{0}\"", smudge_command));
 
-            var git_config_clean = new GitCommand (TargetFolder,
-                string.Format ("config filter.lfs.clean '{0}'", clean_command));
+            var git_config_clean = new GitCommand(TargetFolder,
+                string.Format("config filter.lfs.clean '{0}'", clean_command));
 
-            git_config_required.StartAndWaitForExit ();
-            git_config_clean.StartAndWaitForExit ();
-            git_config_smudge.StartAndWaitForExit ();
+            git_config_required.StartAndWaitForExit();
+            git_config_clean.StartAndWaitForExit();
+            git_config_smudge.StartAndWaitForExit();
         }
     }
 }

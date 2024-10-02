@@ -15,7 +15,8 @@
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-namespace Sparkles {
+namespace Sparkles
+{
 
     public abstract class AuthenticationInfo
     {

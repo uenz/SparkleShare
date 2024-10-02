@@ -22,7 +22,7 @@ namespace Sparkles
     public class OpenSSLCommand : Command
     {
         public static string OpenSSLBinary = "openssl";
-        public static string OpenSSLPath = Path.GetDirectoryName(LocateCommand(OpenSSLBinary)).Replace("\\", "/");
+        public static string OpenSSLPath = Path.GetDirectoryName(LocateCommand(OpenSSLBinary))!.Replace("\\", "/");
 
         public static string OpenSSLCommandPath
         {
@@ -34,7 +34,7 @@ namespace Sparkles
 
 
         public OpenSSLCommand(string command, string args) :
-            base(Path.Combine(OpenSSLPath, command), args)
+            base(Path.Combine(OpenSSLPath!, command), args)
         {
         }
         public OpenSSLCommand(string args) : base(OpenSSLCommandPath, args)
@@ -42,13 +42,15 @@ namespace Sparkles
         }
         public static string OpenSSLVersion
         {
-            get {
-                var openssl_version = new Command (OpenSSLCommandPath, "version", false);
+            get
+            {
+                var openssl_version = new Command(OpenSSLCommandPath, "version", false);
 
-                string [] version = openssl_version.StartAndReadStandardOutput ().Split (' ');
-                string version_string = version [0];
-                if (version.Length >= 2) {
-                    version_string= version [0] + " " + version [1];
+                string[] version = openssl_version.StartAndReadStandardOutput().Split(' ');
+                string version_string = version[0];
+                if (version.Length >= 2)
+                {
+                    version_string = version[0] + " " + version[1];
                 }
                 return version_string;
             }

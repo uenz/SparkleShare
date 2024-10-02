@@ -17,21 +17,23 @@
 
 using System.IO;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class Watcher : FileSystemWatcher {
+    public class Watcher : FileSystemWatcher
+    {
 
         public event ChangeEventEventHandler ChangeEvent = delegate { };
-        public delegate void ChangeEventEventHandler (FileSystemEventArgs args);
+        public delegate void ChangeEventEventHandler(FileSystemEventArgs args);
 
-        object thread_lock = new object ();
+        object thread_lock = new object();
 
 
-        public Watcher (string path) : base (path)
+        public Watcher(string path) : base(path)
         {
             IncludeSubdirectories = true;
-            EnableRaisingEvents   = true;
-            Filter                = "*";
+            EnableRaisingEvents = true;
+            Filter = "*";
 
             Changed += OnChanged;
             Created += OnChanged;
@@ -40,20 +42,20 @@ namespace Sparkles {
         }
 
 
-        void OnChanged (object sender, FileSystemEventArgs args)
+        void OnChanged(object sender, FileSystemEventArgs args)
         {
-            ChangeEvent (args);
+            ChangeEvent(args);
         }
 
 
-        public void Enable ()
+        public void Enable()
         {
             lock (this.thread_lock)
                 EnableRaisingEvents = true;
         }
 
 
-        public void Disable ()
+        public void Disable()
         {
             lock (this.thread_lock)
                 EnableRaisingEvents = false;

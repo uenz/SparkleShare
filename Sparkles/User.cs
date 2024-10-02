@@ -15,19 +15,21 @@
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class User {
+    public class User
+    {
 
         public readonly string Name;
         public readonly string Email;
 
-        public string AvatarFilePath;
+        public string AvatarFilePath = null!;
 
 
-        public User (string name, string email)
+        public User(string name, string email)
         {
-            Name  = name;
+            Name = name;
             Email = email;
         }
     }

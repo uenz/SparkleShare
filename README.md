@@ -2,8 +2,8 @@
 
 ## Status
 This is a fork of https://github.com/hbons/SparkleShare/ with is not maintained anymore. 
-At the moment this fork offers the latest MacOS and Windows builds and recent build instructions. 
-Goal of this fork is to port the code to net8.0 to keep the great application alive and multiplatform. The librarys are almost ported to net8.0. The gui shall be ported to [MAUI](https://learn.microsoft.com/de-de/dotnet/maui/what-is-maui?view=net-maui-8.0) or [AvaloniaUI](https://avaloniaui.net/) which will take a while.
+At the moment this fork offers the latest MacOS and Windows builds and recent build instructions.
+Goal of this fork is to port the code the dotnet core framework to keep the geat application alive and multiplatform.
 
 ## SparkleSahare
 
@@ -41,7 +41,7 @@ Download the app from the [releases page](https://github.com/uenz/SparkleShare/t
 
 ## Set up a host
 
-Under the hood SparkleShare uses the version control system [Git](https://git-scm.com/) and the large files extension [Git LFS](https://git-lfs.github.com), so setting up a host yourself is relatively easy. Using your own host gives you more privacy and control, as well as lots of cheap storage space and higher transfer speeds. We've made a simple [script](https://github.com/uenz/Dazzle) that does the hard work for you. If you need to manage a lot of projects and/or users we recommend hosting a [GitLab Community Edition](https://about.gitlab.com/installation/) instance.
+Under the hood SparkleShare uses the version control system [Git](https://git-scm.com/) and the large files extension [Git LFS](https://git-lfs.github.com), so setting up a host yourself is relatively easy. Using your own host gives you more privacy and control, as well as lots of cheap storage space and higher transfer speeds. We've made a simple [script](https://github.com/hbons/Dazzle) that does the hard work for you. If you need to manage a lot of projects and/or users we recommend hosting a [GitLab Community Edition](https://about.gitlab.com/installation/) instance.
 
 
 ## Build from source
