@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,9 +9,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SparkleShare.Linux</RootNamespace>
     <AssemblyName>SparkleShare.Linux</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <ReleaseVersion>
     </ReleaseVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,8 +73,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Presets\" />
-    <Folder Include="UserInterface\" />
     <Folder Include="UserInterface\" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +124,7 @@
     <None Include="..\Common\Presets\own-server%402x.png">
       <Link>Presets\own-server%402x.png</Link>
     </None>
+    <None Include="app.config" />
     <None Include="org.sparkleshare.SparkleShare.appdata.xml" />
     <None Include="org.sparkleshare.SparkleShare.desktop" />
     <None Include="org.sparkleshare.SparkleShare.Invites.desktop" />
