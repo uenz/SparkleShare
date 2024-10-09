@@ -18,80 +18,83 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Xml;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class SparkleInvite : XmlDocument {
+    public class SparkleInvite : XmlDocument
+    {
 
-        public string Address { get; private set; }
-        public string RemotePath { get; private set; }
-        public string Fingerprint { get; private set; }
-        public string AcceptUrl { get; private set; }
-        public string AnnouncementsUrl { get; private set; }
+        public string Address { get; private set; } = null!;
+        public string RemotePath { get; private set; } = null!;
+        public string Fingerprint { get; private set; } = null!;
+        public string AcceptUrl { get; private set; } = null!;
+        public string AnnouncementsUrl { get; private set; } = null!;
 
-        public bool IsValid {
-            get {
-                return (!string.IsNullOrEmpty (Address) && !string.IsNullOrEmpty (RemotePath));
+        public bool IsValid
+        {
+            get
+            {
+                return (!string.IsNullOrEmpty(Address) && !string.IsNullOrEmpty(RemotePath));
             }
         }
 
 
-        public SparkleInvite (string xml_file_path)
+        public SparkleInvite(string xml_file_path)
         {
-            try {
-                Load (xml_file_path);
+            try
+            {
+                Load(xml_file_path);
 
-            } catch (XmlException e) {
-                Logger.LogInfo ("Invite", "Error parsing XML", e);
+            }
+            catch (XmlException e)
+            {
+                Logger.LogInfo("Invite", "Error parsing XML", e);
                 return;
             }
 
-            Address          = ReadField ("address");
-            RemotePath       = ReadField ("remote_path");
-            AcceptUrl        = ReadField ("accept_url");
-            AnnouncementsUrl = ReadField ("announcements_url");
-            Fingerprint      = ReadField ("fingerprint");
+            Address = ReadField("address");
+            RemotePath = ReadField("remote_path");
+            AcceptUrl = ReadField("accept_url");
+            AnnouncementsUrl = ReadField("announcements_url");
+            Fingerprint = ReadField("fingerprint");
         }
 
 
-        public bool Accept (string public_key)
+        public bool Accept(string public_key)
         {
-            #if __MonoCS__
+#if __MonoCS__
             ServicePointManager.ServerCertificateValidationCallback = delegate {
                 return true;
             };
-            #endif
+#endif
 
-            if (string.IsNullOrEmpty (AcceptUrl))
+            if (string.IsNullOrEmpty(AcceptUrl))
                 return true;
 
-            string post_data   = "public_key=" + Uri.EscapeDataString (public_key);
-            byte [] post_bytes = Encoding.UTF8.GetBytes (post_data);
-
-            WebRequest request    = WebRequest.Create (AcceptUrl);
-            request.Method        = "POST";
-            request.ContentType   = "application/x-www-form-urlencoded";
-            request.ContentLength = post_bytes.Length;
-
-            Stream data_stream = request.GetRequestStream ();
-            data_stream.Write (post_bytes, 0, post_bytes.Length);
-            data_stream.Close ();
-
-            HttpWebResponse response = null;
-
-            try {
-                response = (HttpWebResponse) request.GetResponse ();
-                response.Close ();
-
-            } catch (WebException e) {
-                Logger.LogInfo ("Invite", "Failed uploading public key to " + AcceptUrl + "", e);
+            string post_data = "public_key=" + Uri.EscapeDataString(public_key);
+            byte[] post_bytes = Encoding.UTF8.GetBytes(post_data);
+            HttpResponseMessage response = null!;            
+            HttpClient client=new();
+            try
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+                response = client.PostAsync(AcceptUrl, new StringContent(post_data)).GetAwaiter().GetResult();
+                var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult(); ;
+            }
+            catch (WebException e)
+            {
+                Logger.LogInfo("Invite", "Failed uploading public key to " + AcceptUrl + "", e);
                 return false;
             }
 
-            if (response != null && response.StatusCode == HttpStatusCode.OK) {
-                Logger.LogInfo ("Invite", "Uploaded public key to " + AcceptUrl);
+            if (response != null && response.StatusCode == HttpStatusCode.OK)
+            {
+                Logger.LogInfo("Invite", "Uploaded public key to " + AcceptUrl);
                 return true;
             }
 
@@ -99,18 +102,21 @@ namespace Sparkles {
         }
 
 
-        string ReadField (string name)
+        string ReadField(string name)
         {
-            try {
-                XmlNode node = SelectSingleNode ("/sparkleshare/invite/" + name + "/text()");
+            try
+            {
+                XmlNode? node = SelectSingleNode("/sparkleshare/invite/" + name + "/text()");
 
                 if (node != null)
-                    return node.Value;
+                    return node.Value!;
 
                 return "";
 
-            } catch (XmlException e) {
-                Logger.LogInfo ("Invite", "Error reading field '" + name + "'", e);
+            }
+            catch (XmlException e)
+            {
+                Logger.LogInfo("Invite", "Error reading field '" + name + "'", e);
                 return "";
             }
         }

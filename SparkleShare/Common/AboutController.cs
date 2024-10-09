@@ -17,6 +17,8 @@
 
 using System;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Threading;
 
 using Sparkles;
@@ -63,21 +65,24 @@ namespace SparkleShare {
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            var web_client = new WebClient ();
+            HttpClient web_client = new();
             var uri = new Uri ("https://www.sparkleshare.org/version");
+            HttpClient client = new();
+            HttpResponseMessage response = null!;
 
-            try {
-                string latest_version = web_client.DownloadString (uri);
-                latest_version = latest_version.Trim ();
-            
-                if (new Version (latest_version) > new Version (RunningVersion))
-                    UpdateLabelEvent ("An update (version " + latest_version + ") is available!");
+            try
+            {
+                string latest_version = client.GetStringAsync(uri).GetAwaiter().GetResult();
+
+                if (new Version(latest_version) > new Version(RunningVersion))
+                    UpdateLabelEvent("An update (version " + latest_version + ") is available!");
                 else
-                    UpdateLabelEvent ("✓ You are running the latest version");
-
-            } catch (Exception e) {
-                Logger.LogInfo ("UI", "Failed to download " + uri , e);
-                UpdateLabelEvent ("Couldn’t check for updates\t");
+                    UpdateLabelEvent("✓ You are running the latest version");
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("UI", "Failed to download " + uri, e);
+                UpdateLabelEvent("Couldn’t check for updates\t");
             }
         }
     }

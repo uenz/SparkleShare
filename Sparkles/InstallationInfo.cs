@@ -18,9 +18,11 @@
 using System;
 using System.Reflection;
 
-namespace Sparkles {
-    
-    public enum OS {
+namespace Sparkles
+{
+
+    public enum OS
+    {
         Unknown,
         macOS,
         Windows,
@@ -29,32 +31,41 @@ namespace Sparkles {
     }
 
 
-    public partial class InstallationInfo {
+    public partial class InstallationInfo
+    {
 
         static OS operating_system = OS.Unknown;
 
-        public static OS OperatingSystem {
-            get {
+        public static OS OperatingSystem
+        {
+            get
+            {
                 if (operating_system != OS.Unknown)
                     return operating_system;
 
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
                     operating_system = OS.Windows;
                     return operating_system;
                 }
 
-                var uname = new Command ("uname", "-a", write_output: false);
-                string output = uname.StartAndReadStandardOutput ();
+                var uname = new Command("uname", "-a", write_output: false);
+                string output = uname.StartAndReadStandardOutput();
 
                 // Environment.OSVersion.Platform.PlatformID.MacOSX is broken in Mono
                 // for historical reasons, so check manually
-                if (output.StartsWith ("Darwin", StringComparison.InvariantCulture)) {
+                if (output.StartsWith("Darwin", StringComparison.InvariantCulture))
+                {
                     operating_system = OS.macOS;
 
-                } else if (output.Contains ("Ubuntu")) {
+                }
+                else if (output.Contains("Ubuntu"))
+                {
                     operating_system = OS.Ubuntu;
 
-                } else {
+                }
+                else
+                {
                     operating_system = OS.GNOME;
                 }
 
@@ -63,67 +74,77 @@ namespace Sparkles {
         }
 
 
-        public static string OperatingSystemVersion {
-            get {
-                if (OperatingSystem == OS.macOS) {
-                    var uname = new Command ("sw_vers", "-productVersion", write_output: false);
-                    string version = uname.StartAndReadStandardOutput ();
+        public static string OperatingSystemVersion
+        {
+            get
+            {
+                if (OperatingSystem == OS.macOS)
+                {
+                    var uname = new Command("sw_vers", "-productVersion", write_output: false);
+                    string version = uname.StartAndReadStandardOutput();
 
                     // 
-                    string[] version_elements= version.Split('.');
+                    string[] version_elements = version.Split('.');
 
                     string release = "Unreleased Version";
 
-                    if ((version_elements.Length) >= 2) {
-                        switch (int.Parse (version_elements [0])) {
-                        case 10:
-                            // Parse the version number between the periods (e.g. "10.12.1" -> 12)
-                            switch (int.Parse (version_elements [0])) {
-                            case 7: release = "Lion"; break;
-                            case 8: release = "Mountain Lion"; break;
-                            case 9: release = "Mavericks"; break;
-                            case 10: release = "Yosemite"; break;
-                            case 11: release = "El Capitan"; break;
-                            case 12: release = "Sierra"; break;
-                            case 13: release = "High Sierra"; break;
-                            case 14: release = "Mojave"; break;
-                            case 15: release = "Catalina"; break;
-                            }
-                            break;
+                    if ((version_elements.Length) >= 2)
+                    {
+                        switch (int.Parse(version_elements[0]))
+                        {
+                            case 10:
+                                // Parse the version number between the periods (e.g. "10.12.1" -> 12)
+                                switch (int.Parse(version_elements[0]))
+                                {
+                                    case 7: release = "Lion"; break;
+                                    case 8: release = "Mountain Lion"; break;
+                                    case 9: release = "Mavericks"; break;
+                                    case 10: release = "Yosemite"; break;
+                                    case 11: release = "El Capitan"; break;
+                                    case 12: release = "Sierra"; break;
+                                    case 13: release = "High Sierra"; break;
+                                    case 14: release = "Mojave"; break;
+                                    case 15: release = "Catalina"; break;
+                                }
+                                break;
 
-                        case 11:
-                            release = "BigSur"; break;
-                        case 12:
-                            release = "Monterey"; break;
-                        case 13:
-                            release = "Ventura"; break;
-                        case 14:
-                            release = "Sonoma"; break;
-                        case 15:
-                            release = "Sequoia"; break;                            
+                            case 11:
+                                release = "BigSur"; break;
+                            case 12:
+                                release = "Monterey"; break;
+                            case 13:
+                                release = "Ventura"; break;
+                            case 14:
+                                release = "Sonoma"; break;
+                            case 15:
+                                release = "Sequoia"; break;
                         }
                     }
 
-                    return string.Format ("{0} ({1})", version, release);
+                    return string.Format("{0} ({1})", version, release);
                 }
 
-                string os_version = Environment.OSVersion.ToString ();
-                return string.Format ("({0})", os_version.Replace ("Unix", "Linux"));
+                string os_version = Environment.OSVersion.ToString();
+                return string.Format("({0})", os_version.Replace("Unix", "Linux"));
             }
         }
 
 
-        public static string Version {
-            get {
-                string version = "" + Assembly.GetExecutingAssembly ().GetName ().Version;
-                return version.Substring (0, version.Length - 2);
+        public static string Version
+        {
+            get
+            {
+                string version = "" + Assembly.GetExecutingAssembly().GetName().Version;
+                return version.Substring(0, version.Length - 2);
             }
         }
 
 
-        public static bool IsFlatpak {
-            get {
-                return Directory.StartsWith ("/app", StringComparison.InvariantCulture);
+        public static bool IsFlatpak
+        {
+            get
+            {
+                return Directory.StartsWith("/app", StringComparison.InvariantCulture);
             }
         }
     }

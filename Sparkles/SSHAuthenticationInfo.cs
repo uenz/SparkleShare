@@ -20,107 +20,118 @@ using System.Net;
 
 using IO = System.IO;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class SSHAuthenticationInfo : AuthenticationInfo {
+    public class SSHAuthenticationInfo : AuthenticationInfo
+    {
 
-        public static SSHAuthenticationInfo DefaultAuthenticationInfo;
+        public static SSHAuthenticationInfo DefaultAuthenticationInfo = null!;
 
-        public string PrivateKeyFilePath { get; private set; }
-        public string PrivateKey { get; private set; }
+        public string PrivateKeyFilePath { get; private set; } = null!;
+        public string PrivateKey { get; private set; } = null!;
 
-        public string PublicKeyFilePath { get; private set; }
-        public string PublicKey { get; private set; }
+        public string PublicKeyFilePath { get; private set; } = null!;
+        public string PublicKey { get; private set; } = null!;
 
-        public string KnownHostsFilePath { get; private set; }
+        public string KnownHostsFilePath { get; private set; } = null!;
 
         readonly string Path;
 
 
-        public SSHAuthenticationInfo ()
+        public SSHAuthenticationInfo()
         {
-            Path = IO.Path.Combine (Configuration.DefaultConfiguration.DirectoryPath, "ssh");
+            Path = IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "ssh");
 
-            KnownHostsFilePath = IO.Path.Combine (Path, "known_hosts");
-            KnownHostsFilePath = MakeWindowsDomainAccountSafe (KnownHostsFilePath);
+            KnownHostsFilePath = IO.Path.Combine(Path, "known_hosts");
+            KnownHostsFilePath = MakeWindowsDomainAccountSafe(KnownHostsFilePath);
 
-            if (IO.Directory.Exists (Path)) {
-                ImportKeys ();
+            if (IO.Directory.Exists(Path))
+            {
+                ImportKeys();
 
-            } else {
-                IO.Directory.CreateDirectory (Path);
-                CreateKeyPair ();
+            }
+            else
+            {
+                IO.Directory.CreateDirectory(Path);
+                CreateKeyPair();
             }
         }
 
 
-        void ImportKeys ()
+        void ImportKeys()
         {
             bool key_found = false;
 
-            foreach (string file_path in IO.Directory.GetFiles (Path)) {
-                if (file_path.EndsWith (".key", StringComparison.InvariantCultureIgnoreCase)) {
+            foreach (string file_path in IO.Directory.GetFiles(Path))
+            {
+                if (file_path.EndsWith(".key", StringComparison.InvariantCultureIgnoreCase))
+                {
                     PrivateKeyFilePath = file_path;
-                    PublicKeyFilePath  = file_path + ".pub";
+                    PublicKeyFilePath = file_path + ".pub";
 
                     key_found = true;
                     break;
                 }
             }
 
-            if (key_found) {
-                PrivateKeyFilePath = MakeWindowsDomainAccountSafe (PrivateKeyFilePath);
-                PublicKeyFilePath  = MakeWindowsDomainAccountSafe (PublicKeyFilePath);
+            if (key_found)
+            {
+                PrivateKeyFilePath = MakeWindowsDomainAccountSafe(PrivateKeyFilePath);
+                PublicKeyFilePath = MakeWindowsDomainAccountSafe(PublicKeyFilePath);
 
-                PrivateKey = IO.File.ReadAllText (PrivateKeyFilePath);
-                PublicKey  = IO.File.ReadAllText (PublicKeyFilePath);
+                PrivateKey = IO.File.ReadAllText(PrivateKeyFilePath);
+                PublicKey = IO.File.ReadAllText(PublicKeyFilePath);
 
-            } else {
-                CreateKeyPair ();
-                ImportKeys ();
+            }
+            else
+            {
+                CreateKeyPair();
+                ImportKeys();
             }
         }
 
 
-        bool CreateKeyPair ()
+        bool CreateKeyPair()
         {
-            string key_file_name = DateTime.Now.ToString ("yyyy-MM-dd_HH\\hmm") + ".key";
-            string computer_name = Dns.GetHostName ();
+            string key_file_name = DateTime.Now.ToString("yyyy-MM-dd_HH\\hmm") + ".key";
+            string computer_name = Dns.GetHostName();
 
-            if (computer_name.EndsWith (".local",  StringComparison.InvariantCultureIgnoreCase) ||
-                computer_name.EndsWith (".config", StringComparison.InvariantCultureIgnoreCase))
+            if (computer_name.EndsWith(".local", StringComparison.InvariantCultureIgnoreCase) ||
+                computer_name.EndsWith(".config", StringComparison.InvariantCultureIgnoreCase))
 
-                computer_name = computer_name.Substring (0,
-                    computer_name.LastIndexOf (".", StringComparison.InvariantCulture));
+                computer_name = computer_name.Substring(0,
+                    computer_name.LastIndexOf(".", StringComparison.InvariantCulture));
 
             string arguments =
-                "-t ecdsa "  + // Crypto type
+                "-t ecdsa " + // Crypto type
                 "-b 521 " + // Key size
                 "-P \"\" " + // No password
                 "-C \"" + computer_name + " (SparkleShare)\" " + // Key comment
                 "-f \"" + key_file_name + "\"";
 
-            var ssh_keygen = new SSHCommand (SSHCommand.SSHKeyGenCommandPath, arguments);
+            var ssh_keygen = new SSHCommand(SSHCommand.SSHKeyGenCommandPath, arguments);
             ssh_keygen.StartInfo.WorkingDirectory = Path;
-            ssh_keygen.StartAndWaitForExit ();
+            ssh_keygen.StartAndWaitForExit();
 
-            if (ssh_keygen.ExitCode == 0) {
-                Logger.LogInfo ("Auth", "Created key pair: " + key_file_name);
-                ImportKeys ();
+            if (ssh_keygen.ExitCode == 0)
+            {
+                Logger.LogInfo("Auth", "Created key pair: " + key_file_name);
+                ImportKeys();
 
                 return true;
             }
 
-            Logger.LogInfo ("Auth", "Could not create key pair");
+            Logger.LogInfo("Auth", "Could not create key pair");
             return false;
         }
 
 
         // Use forward slashes in paths when dealing with Windows domain accounts
-        string MakeWindowsDomainAccountSafe (string path)
+        string MakeWindowsDomainAccountSafe(string path)
         {
-            if (path.StartsWith ("\\\\", StringComparison.InvariantCulture))
-                return path.Replace ("\\", "/");
+            if (path.StartsWith("\\\\", StringComparison.InvariantCulture))
+                return path.Replace("\\", "/");
 
             return path;
         }

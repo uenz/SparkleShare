@@ -23,8 +23,8 @@ namespace Sparkles.Git {
 
     public class GitFetcher : SSHFetcher {
 
-        GitCommand git_clone;
-        SSHAuthenticationInfo auth_info;
+        GitCommand git_clone=null!;
+        SSHAuthenticationInfo auth_info = null!;
 
         string password_salt = Path.GetRandomFileName ().SHA256 ().Substring (0, 16);
 
@@ -109,7 +109,7 @@ namespace Sparkles.Git {
             string information = "";
 
             while (!output_stream.EndOfStream) {
-                string line = output_stream.ReadLine ();
+                string line = output_stream.ReadLine ()!;
 
                 ErrorStatus error = GitCommand.ParseProgress (line, out percentage, out speed, out information);
 

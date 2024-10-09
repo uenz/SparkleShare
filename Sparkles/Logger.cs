@@ -18,26 +18,28 @@
 using System;
 using System.IO;
 
-namespace Sparkles {
-    
-    public static class Logger {
+namespace Sparkles
+{
 
-        static StreamWriter log_writer = File.CreateText (Configuration.DefaultConfiguration.LogFilePath);
-        static object log_writer_lock = new object ();
+    public static class Logger
+    {
+
+        static StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
+        static object log_writer_lock = new object();
 
 
-        public static void LogInfo (string type, string message)
+        public static void LogInfo(string type, string message)
         {
-            LogInfo (type, message, null);
+            LogInfo(type, message, null);
         }
 
 
-        public static void LogInfo (string type, string message, Exception exception)
+        public static void LogInfo(string type, string message, Exception? exception)
         {
-            string timestamp = DateTime.Now.ToString ("HH:mm:ss");
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
             string line;
 
-            if (string.IsNullOrEmpty (type))
+            if (string.IsNullOrEmpty(type))
                 line = timestamp + " " + message;
             else
                 line = timestamp + " " + type + " | " + message;
@@ -46,32 +48,36 @@ namespace Sparkles {
                 line += ": " + exception.Message + " " + exception.StackTrace;
 
             if (Configuration.DebugMode)
-                Console.WriteLine (line);
+                Console.WriteLine(line);
 
-            lock (log_writer_lock) {
-                try {
-                    log_writer.WriteLine (line);
-                    log_writer.Flush ();
+            lock (log_writer_lock)
+            {
+                try
+                {
+                    log_writer.WriteLine(line);
+                    log_writer.Flush();
 
-                } catch (Exception e) {
-                    Console.WriteLine (string.Format ("Could not write to log {0}: {1} {2}",
-                        (log_writer.BaseStream as FileStream).Name, e.Message, e.StackTrace));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(string.Format("Could not write to log {0}: {1} {2}",
+                        (log_writer.BaseStream as FileStream)!.Name, e.Message, e.StackTrace));
                 }
             }
         }
 
 
-        public static void WriteCrashReport (Exception e)
+        public static void WriteCrashReport(Exception e)
         {
             if (log_writer != null)
-                log_writer.Close ();
+                log_writer.Close();
 
-            string home_path = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+            string home_path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
             if (InstallationInfo.OperatingSystem == OS.Windows)
-                home_path = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+                home_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            string crash_report_file_path = Path.Combine (home_path, "SparkleShare", "crash_report.txt");
+            string crash_report_file_path = Path.Combine(home_path, "SparkleShare", "crash_report.txt");
 
             string n = Environment.NewLine;
             string crash_report =
@@ -85,24 +91,25 @@ namespace Sparkles {
                 "------" + n +
                 n;
 
-            crash_report += e.GetType () + ": " + e.Message + n + e.StackTrace + n + n;
+            crash_report += e.GetType() + ": " + e.Message + n + e.StackTrace + n + n;
 
             if (e.InnerException != null)
                 crash_report += n + e.InnerException.Message + n + e.InnerException.StackTrace + n;
 
-            if (Configuration.DefaultConfiguration != null && File.Exists (Configuration.DefaultConfiguration.LogFilePath)) {
-                string debug_log      = File.ReadAllText (Configuration.DefaultConfiguration.LogFilePath);
-                string [] debug_lines = debug_log.Split (Environment.NewLine.ToCharArray ()); 
-                int line_count        = 50;
-                    
+            if (Configuration.DefaultConfiguration != null && File.Exists(Configuration.DefaultConfiguration.LogFilePath))
+            {
+                string debug_log = File.ReadAllText(Configuration.DefaultConfiguration.LogFilePath);
+                string[] debug_lines = debug_log.Split(Environment.NewLine.ToCharArray());
+                int line_count = 50;
+
                 if (debug_lines.Length > line_count)
-                    crash_report += string.Join (n, debug_lines, (debug_lines.Length - line_count), line_count) + n;
+                    crash_report += string.Join(n, debug_lines, (debug_lines.Length - line_count), line_count) + n;
                 else
                     crash_report += debug_log + n;
             }
 
-            File.WriteAllText (crash_report_file_path, crash_report);
-            Console.WriteLine (DateTime.Now.ToString ("HH:mm:ss") + " | Wrote crash report to " + crash_report_file_path);
+            File.WriteAllText(crash_report_file_path, crash_report);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " | Wrote crash report to " + crash_report_file_path);
         }
     }
 }

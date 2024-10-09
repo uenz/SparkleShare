@@ -1,19 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <ProjectGuid>{728483AA-E34B-4441-BF2C-C8BC2901E4E0}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AssemblyName>SparkleShare.Windows</AssemblyName>
-    <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>SparkleShare.Windows</RootNamespace>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -32,93 +20,35 @@
     <ApplicationIcon>Images\sparkleshare-app.ico</ApplicationIcon>
     <ReleaseVersion>
     </ReleaseVersion>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>.\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>.\bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>.\bin</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <OutputPath>..\..\bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWindows|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>.\bin</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="..\Common\SparkleShare.projitems" Label="Shared" Condition="Exists('..\Common\SparkleShare.projitems')" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Xml" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="System.Xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="UserInterface\About.cs" />
-    <Compile Include="UserInterface\Bubbles.cs" />
-    <Compile Include="UserInterface\EventLog.cs" />
-    <Compile Include="UserInterface\Controller.cs" />
-    <Compile Include="UserInterface\Note.xaml.cs">
-      <DependentUpon>Note.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserInterface\NotifyIcon.cs" />
-    <Compile Include="UserInterface\ProtocolHandler.cs" />
-    <Compile Include="UserInterface\Setup.cs" />
-    <Compile Include="UserInterface\SetupWindow.cs" />
-    <Compile Include="UserInterface\Shortcut.cs" />
-    <Compile Include="UserInterface\Spinner.cs" />
-    <Compile Include="UserInterface\StatusIcon.cs" />
-    <Compile Include="UserInterface\UserInterface.cs" />
-    <Compile Include="UserInterface\UserInterfaceHelpers.cs" />
-  </ItemGroup>
   <ProjectExtensions>
     <VisualStudio />
   </ProjectExtensions>
@@ -223,7 +153,6 @@
       <Link>Presets\bitbucket.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Presets\bitbucket.xml">
@@ -268,22 +197,22 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UserInterface\Note.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <ProjectReference Include="..\..\Sparkles\Sparkles.csproj" />
+    <ProjectReference Include="..\..\Sparkles\Git\Sparkles.Git.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sparkles\Sparkles.csproj">
-      <Project>{2C914413-B31C-4362-93C7-1AE34F09112A}</Project>
-      <Name>Sparkles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Sparkles\Git\Sparkles.Git.csproj">
-      <Project>{009FDCD7-1D57-4202-BB6D-8477D8C6B8EE}</Project>
-      <Name>Sparkles.Git</Name>
-    </ProjectReference>
+    <Compile Remove="SparkleShareInviteOpener\Properties\AssemblyInfo.cs" />
+    <Compile Remove="SparkleShareInviteOpener\sparkleshare-invite-opener.cs" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)\postBuild.cmd" "$(TargetDir)git_scm"</PostBuildEvent>
-  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="&quot;$(ProjectDir)postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;$(ProjectDir)postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
+  </Target>
+  <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
 </Project>

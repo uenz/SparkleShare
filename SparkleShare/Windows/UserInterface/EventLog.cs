@@ -337,7 +337,7 @@ namespace SparkleShare
         }
     }
 
-    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+    // TODO: find replacement [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [ComVisible(true)]
     public class SparkleScriptingObject
     {
