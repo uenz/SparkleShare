@@ -32,8 +32,9 @@ namespace Sparkles
 
                     if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
                         app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
-
-                    string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
+                    // TODO: Compiler switch
+                    //string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
+                    string config_path = Path.Combine(app_data_path, "org.debug.sparkleshare.SparkleShare");
 
                     return new Configuration(config_path, "projects.xml");
                 });
@@ -50,7 +51,7 @@ namespace Sparkles
         public string AvatarProvider = null!;
 
         public readonly string LogFilePath;
-
+        public readonly string CrashReportFilePath;
 
         public static string HomePath
         {
@@ -70,14 +71,22 @@ namespace Sparkles
             {
                 if (GetConfigOption("folders_path") != null)
                     return GetConfigOption("folders_path")!;
-
-                return Path.Combine(HomePath, "SparkleShare");
+                // TODO: Compiler switch
+                //return Path.Combine(HomePath, "SparkleShare");
+                return Path.Combine(HomePath, "SparkleShareDebug");
             }
         }
 
 
         public Configuration(string config_path, string config_file_name)
         {
+            string home_path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+
+            if (InstallationInfo.OperatingSystem == OS.Windows)
+                home_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+            CrashReportFilePath = Path.Combine(home_path, "SparkleShare", "crash_report.txt");
+
             FilePath = Path.Combine(config_path, config_file_name);
             DirectoryPath = config_path;
 

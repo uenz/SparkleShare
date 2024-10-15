@@ -66,6 +66,7 @@ namespace SparkleShare {
             try {
                 Logger.WriteCrashReport (exception_args.Exception);
             } finally {
+                // TODO: open log file here
                 Environment.Exit (-1);
             }
         }

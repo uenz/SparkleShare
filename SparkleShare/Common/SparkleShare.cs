@@ -16,6 +16,7 @@
 
 
 using System;
+using System.DirectoryServices.ActiveDirectory;
 using System.Threading;
 
 using Sparkles;
@@ -42,7 +43,7 @@ namespace SparkleShare {
             }
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             Controller = new Controller (Configuration.DefaultConfiguration);
             Controller.Initialize ();
 
@@ -61,6 +62,10 @@ namespace SparkleShare {
         {
             var exception = (Exception) exception_args.ExceptionObject;
             Logger.WriteCrashReport (exception);
+            Controller.OpenFile(Configuration.DefaultConfiguration.CrashReportFilePath);
+        }
+        static void OnProcessExit(object sender, EventArgs e)
+        {
         }
     }
 }

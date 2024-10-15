@@ -24,8 +24,8 @@ namespace Sparkles
     public static class Logger
     {
 
-        static StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
-        static object log_writer_lock = new object();
+        //static StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
+        //static object log_writer_lock = new object();
 
 
         public static void LogInfo(string type, string message)
@@ -49,13 +49,14 @@ namespace Sparkles
 
             if (Configuration.DebugMode)
                 Console.WriteLine(line);
-
-            lock (log_writer_lock)
+            StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
+            //lock (log_writer_lock)
             {
                 try
                 {
                     log_writer.WriteLine(line);
                     log_writer.Flush();
+                    log_writer.Close();
 
                 }
                 catch (Exception e)
@@ -69,16 +70,9 @@ namespace Sparkles
 
         public static void WriteCrashReport(Exception e)
         {
-            if (log_writer != null)
-                log_writer.Close();
-
-            string home_path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-
-            if (InstallationInfo.OperatingSystem == OS.Windows)
-                home_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-
-            string crash_report_file_path = Path.Combine(home_path, "SparkleShare", "crash_report.txt");
-
+            /*if (log_writer != null)
+                log_writer.Close();*/
+            string crash_report_file_path= Configuration.DefaultConfiguration.CrashReportFilePath;
             string n = Environment.NewLine;
             string crash_report =
                 "Oops! SparkleShare has crashed... :(" + n +

@@ -73,17 +73,7 @@ namespace Sparkles
             if (write_output)
                 Logger.LogInfo("Cmd", folder + Path.GetFileName(StartInfo.FileName) + " " + StartInfo.Arguments);
 
-            try
-            {
-                base.Start();
-
-            }
-            catch (Exception e)
-            {
-                Logger.LogInfo("Cmd", "Couldn't execute command: "
-                    + StartInfo.FileName + "," + e.Message);
-                Environment.Exit(-1);
-            }
+            base.Start();
         }
 
 

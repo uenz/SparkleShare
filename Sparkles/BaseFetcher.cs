@@ -117,15 +117,9 @@ namespace Sparkles
                 address = "ssh://" + address;
 
             TargetFolder = info.TargetDirectory;
-            // TODO: fix this hack
-            RemoteUrl = new UriBuilder
-            {
-                Scheme = "ssh",
-                Host = "github.com",
-                Path = remote_path,
-                UserName = "git"
-            }.Uri;
-            IsActive = false;
+
+            RemoteUrl = new Uri (address + remote_path);
+            IsActive  = false;
         }
 
 

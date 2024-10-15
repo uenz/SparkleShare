@@ -5,7 +5,8 @@ IF [%1]==[]  (SET "OUTDIR=%~dp0bin\git_scm") ELSE (SET OUTDIR="%~1")
 
 IF EXIST %OUTDIR% GOTO skipgitdownload
 ECHO installing git
-REM download git
+
+ECHO download git
 FOR /F "usebackq tokens=1" %%i IN ("%~dp0git.download") DO SET url=%%i
 FOR /F "usebackq tokens=2" %%i IN ("%~dp0git.download") DO SET md5hash=%%i
 CALL :downloadandverify %url% "%~dp0PortableGit.7z.exe" %md5hash%

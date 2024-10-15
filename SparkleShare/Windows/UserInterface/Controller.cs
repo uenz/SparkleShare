@@ -163,12 +163,20 @@ namespace SparkleShare {
 
         public override void OpenFile (string path)
         {
-            Process.Start (path);
+            var psi = new ProcessStartInfo(path)
+            {
+                UseShellExecute = true
+            };
+            Process.Start (psi);
         }
 
 
         public override void OpenFolder (string path)
         {
+            var psi = new ProcessStartInfo(path)
+            {
+                UseShellExecute = true
+            };
             Process.Start (path);
         }
 
