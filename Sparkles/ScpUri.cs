@@ -33,10 +33,8 @@ namespace Sparkles
             }
         }
 
-        public ScpUri([StringSyntax("Uri")] string uriString, bool use_scp_style)
-
+        public ScpUri([StringSyntax("Uri")] string uriString, bool use_scp_style) : this(uriString)
         {
-            Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out uri);
             scp_style = use_scp_style;
         }
 
@@ -71,7 +69,10 @@ namespace Sparkles
         {
             get
             {
-                return uri.Port;
+                if (scp_style == false)
+                    return uri.Port;
+                else
+                    return -1;
             }
         }
 

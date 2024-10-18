@@ -33,7 +33,7 @@ namespace Sparkles
                     if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
                         app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
                     // TODO: rename Compiler switch
-#if DEBUG
+#if DEBUG_DATASET
                     string config_path = Path.Combine(app_data_path, "org.debug.sparkleshare.SparkleShare");
 #else
                     string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
@@ -74,7 +74,7 @@ namespace Sparkles
                 if (GetConfigOption("folders_path") != null)
                     return GetConfigOption("folders_path")!;
 
-#if DEBUG  // TODO: rename compiler switch
+#if DEBUG_DATASET  // TODO: rename compiler switch
                 return Path.Combine(HomePath, "SparkleShareDebug");
 #else
                 return Path.Combine(HomePath, "SparkleShare");
