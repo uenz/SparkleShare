@@ -32,10 +32,12 @@ namespace Sparkles
 
                     if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
                         app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
-                    // TODO: Compiler switch
-                    //string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
+                    // TODO: rename Compiler switch
+#if DEBUG
                     string config_path = Path.Combine(app_data_path, "org.debug.sparkleshare.SparkleShare");
-
+#else
+                    string config_path = Path.Combine(app_data_path, "org.sparkleshare.SparkleShare");
+#endif
                     return new Configuration(config_path, "projects.xml");
                 });
         private static readonly Lazy<Configuration> ConfigLazy = lazy;
@@ -71,9 +73,12 @@ namespace Sparkles
             {
                 if (GetConfigOption("folders_path") != null)
                     return GetConfigOption("folders_path")!;
-                // TODO: Compiler switch
-                //return Path.Combine(HomePath, "SparkleShare");
+
+#if DEBUG  // TODO: rename compiler switch
                 return Path.Combine(HomePath, "SparkleShareDebug");
+#else
+                return Path.Combine(HomePath, "SparkleShare");
+#endif
             }
         }
 

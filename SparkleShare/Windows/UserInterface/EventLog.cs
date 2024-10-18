@@ -254,7 +254,11 @@ namespace SparkleShare
             html = html.Replace("<!-- $document-edited-background-image -->", pixmaps_path + "/document-edited-12.png");
             html = html.Replace("<!-- $document-deleted-background-image -->", pixmaps_path + "/document-deleted-12.png");
             html = html.Replace("<!-- $document-moved-background-image -->", pixmaps_path + "/document-moved-12.png");
-
+            html.Replace("<!-- $midnight -->", "100000000");
+            using (StreamWriter outputFile = new StreamWriter(System.IO.Path.Combine(@"c:\temp", "page.html")))
+            {
+                outputFile.WriteLine(html);
+            }
             this.spinner.Stop();
 
             this.webbrowser.ObjectForScripting = new SparkleScriptingObject();

@@ -40,7 +40,7 @@ namespace Sparkles
         public string Revision = null!;
         public DateTime Timestamp;
         public DateTime FirstTimestamp;
-        public Uri RemoteUrl = null!;
+        public ScpUri RemoteUrl = null!;
 
         public List<Change> Changes = new List<Change>();
 
@@ -92,7 +92,7 @@ namespace Sparkles
                     return Path.Combine(custom_path, Name);
 
                 return Path.Combine(Configuration.DefaultConfiguration.FoldersPath,
-                                        new Uri(Configuration.DefaultConfiguration.UrlByName(Name)!).Host,
+                                        new ScpUri(Configuration.DefaultConfiguration.UrlByName(Name)!).Host,
                                         Name);
             }
         }

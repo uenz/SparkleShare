@@ -66,7 +66,7 @@ namespace Sparkles
         public readonly List<StorageTypeInfo> AvailableStorageTypes = new List<StorageTypeInfo>();
 
 
-        public Uri RemoteUrl { get; protected set; }
+        public ScpUri RemoteUrl { get; protected set; }
         public string RequiredFingerprint { get; protected set; }
         public readonly bool FetchPriorHistory;
         public string TargetFolder { get; protected set; }
@@ -109,16 +109,16 @@ namespace Sparkles
 
             if (address.EndsWith("/", StringComparison.InvariantCulture))
                 address = address.Substring(0, address.Length - 1);
-
+    /*
             if (!remote_path.StartsWith("/", StringComparison.InvariantCulture))
-                remote_path = "/" + remote_path;
+                remote_path = "/" + remote_path;*/
 
             if (!address.Contains("://"))
                 address = "ssh://" + address;
 
             TargetFolder = info.TargetDirectory;
 
-            RemoteUrl = new Uri (address + remote_path);
+            RemoteUrl = new ScpUri (address + remote_path);
             IsActive  = false;
         }
 
@@ -210,7 +210,7 @@ namespace Sparkles
             string n = Environment.NewLine;
             string file_path = Path.Combine(TargetFolder, "SparkleShare.txt");
 
-            var uri_builder = new UriBuilder(RemoteUrl);
+            var uri_builder = new UriBuilder(RemoteUrl.ToString());
 
             // Don't expose possible username or password
             if (RemoteUrl.Scheme.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))

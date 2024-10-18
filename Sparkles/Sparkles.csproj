@@ -101,6 +101,7 @@
     <Compile Include="OpenSSLCommand.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ScpUri.cs" />
     <Compile Include="SSHCommand.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -335,7 +335,7 @@ namespace SparkleShare {
             // so the user can easily use the same host again
             if (SelectedPresetIndex == 0) {
                 Preset new_preset;
-                Uri uri = new Uri (remote_url);
+                ScpUri uri = new ScpUri (remote_url);
 
                 try {
                     string address = remote_url.Replace (uri.AbsolutePath, "");

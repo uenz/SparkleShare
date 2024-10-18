@@ -14,7 +14,7 @@
     </address>
     <path>
       <value/>
-      <example>/username/project</example>
+      <example>:username/project</example>
       <uses_lower_case>True</uses_lower_case>
     </path>
   </preset>

@@ -82,7 +82,6 @@ namespace SparkleShare {
         public NotifyIcon() {
             VisibilityProperty.OverrideMetadata(typeof(NotifyIcon), new PropertyMetadata(OnVisibilityChanged));
 
-            // TODO ContextMenu wird nicht mehr unterstützt. Verwenden Sie stattdessen ContextMenuStrip. Weitere Informationen finden Sie unter: https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             Notification = new Forms.NotifyIcon {
                 Text = Text,
                 Visible = true,

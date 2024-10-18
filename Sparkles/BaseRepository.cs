@@ -114,7 +114,7 @@ namespace Sparkles
 
         public readonly string LocalPath;
         public readonly string Name;
-        public readonly Uri RemoteUrl;
+        public readonly ScpUri RemoteUrl;
         public List<ChangeSet> ChangeSets { get; set; } = null!;
         public SyncStatus Status { get; set; }
         public ErrorStatus Error { get; protected set; }
@@ -206,7 +206,7 @@ namespace Sparkles
             this.local_config = config;
             LocalPath = path;
             Name = Path.GetFileName(LocalPath);
-            RemoteUrl = new Uri(this.local_config.UrlByName(Name)!);
+            RemoteUrl = new ScpUri(this.local_config.UrlByName(Name)!);
             IsBuffering = false;
             this.identifier = Identifier;
 

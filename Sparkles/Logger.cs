@@ -17,6 +17,7 @@
 
 using System;
 using System.IO;
+using System.Xml.Schema;
 
 namespace Sparkles
 {
@@ -49,20 +50,17 @@ namespace Sparkles
 
             if (Configuration.DebugMode)
                 Console.WriteLine(line);
-            StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
             //lock (log_writer_lock)
             {
                 try
                 {
-                    log_writer.WriteLine(line);
-                    log_writer.Flush();
-                    log_writer.Close();
-
+                    File.AppendAllLines(Configuration.DefaultConfiguration.LogFilePath, new List<string>([line]));
                 }
+             
                 catch (Exception e)
                 {
                     Console.WriteLine(string.Format("Could not write to log {0}: {1} {2}",
-                        (log_writer.BaseStream as FileStream)!.Name, e.Message, e.StackTrace));
+                        Configuration.DefaultConfiguration.LogFilePath, e.Message, e.StackTrace));
                 }
             }
         }
@@ -72,13 +70,15 @@ namespace Sparkles
         {
             /*if (log_writer != null)
                 log_writer.Close();*/
+
+            // TODO: get link to issues from static configuration
             string crash_report_file_path= Configuration.DefaultConfiguration.CrashReportFilePath;
             string n = Environment.NewLine;
             string crash_report =
                 "Oops! SparkleShare has crashed... :(" + n +
                 n +
                 "If you want to help fix this crash, please report it at " + n +
-                "https://github.com/hbons/SparkleShare/issues and include the lines below." + n +
+                "https://github.com/uenz/SparkleShare/issues and include the lines below." + n +
                 n +
                 "Remove any sensitive information like file names, IP addresses, domain names, etc. if needed." + n +
                 n +
