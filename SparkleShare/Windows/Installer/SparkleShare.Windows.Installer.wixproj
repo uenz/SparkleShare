@@ -1,0 +1,67 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>..\build\setup\x64\Debug\</OutputPath>
+    <Platforms>x86;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>build\setup\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutputPath>..\build\setup\x86\Release\</OutputPath>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutputPath>..\build\setup\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="LaunchAppOnExit.wxi" />
+    <Content Include="Predefines.wxi" />
+    <Content Include="productVersion.wxi" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Heat" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\git_scm">
+      <ComponentGroupName>GIT_SCM_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressCom>true</SuppressCom>
+      <SuppressRegistry>true</SuppressRegistry>
+      <Link>git_scm</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\git_scm" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\runtimes">
+      <ComponentGroupName>RUNTIMES_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <Link>runtimes</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\runtimes" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\Images">
+      <ComponentGroupName>IMAGES_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <Link>Images</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\Images" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\Presets">
+      <ComponentGroupName>PRESETS_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <Link>Presets</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\Presets" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SparkleShare.Windows.csproj" />
+  </ItemGroup>
+</Project>

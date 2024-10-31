@@ -20,12 +20,14 @@
     <FileAlignment>512</FileAlignment>
     <ReleaseVersion>
     </ReleaseVersion>
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\..\bin\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1701;1702;CA1416;IDE0055;IDE0040;CA1822;IDE0044;IDE0011;IDE0060;IDE0008;CA1822;CA1510;CA2211;IDE0036;CA2101;CA1816;CA1825;CA1866;CA1845;CA1861;CA1847;CA2208;CA1806;CA1859;IDE0051</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -33,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <DefineConstants>TRACE DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1701;1702;CA1416;IDE0055;IDE0040;CA1822;IDE0044;IDE0011;IDE0060;IDE0008;CA1822;CA1510;CA2211;IDE0036;CA2101;CA1816;CA1825;CA1866;CA1845;CA1861;CA1847;CA2208;CA1806;CA1859;IDE0051</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <Optimize>True</Optimize>
