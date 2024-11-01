@@ -34,21 +34,21 @@
     </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>.\bin</OutputPath>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <NoWarn>1701;1702;CA1416;IDE0055;IDE0040;CA1822;IDE0044;IDE0011;IDE0060;IDE0008;CA1822;CA1510;CA2211;IDE0036;CA2101;CA1816;CA1825;CA1866;CA1845;CA1861;CA1847;CA2208;CA1806;CA1859;IDE0051</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>.\bin\</OutputPath>
     <DebugType>full</DebugType>
-    <NoWarn>1701;1702;CA1416;IDE0055;IDE0040;CA1822;IDE0044;IDE0011;IDE0060;IDE0008;CA1822;CA1510;CA2211;IDE0036;CA2101;CA1816;CA1825;CA1866;CA1845;CA1861;CA1847;CA2208;CA1806;CA1859;IDE0051</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>.\bin</OutputPath>
     <Optimize>true</Optimize>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <OutputPath>..\..\bin\</OutputPath>
@@ -58,7 +58,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWindows|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>.\bin</OutputPath>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio />
@@ -178,6 +178,7 @@
       <Link>Presets\own-server.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="E:\SparkleShare\SparkleShare\Windows\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\folder.png">
@@ -223,8 +224,11 @@
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
     <Exec Command="&quot;$(ProjectDir)postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
   </Target>
   <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
+  <ItemGroup>
+   <None Include="$(SolutionDir)\.editorconfig" />
+  </ItemGroup>
 </Project>

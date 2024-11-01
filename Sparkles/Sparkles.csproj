@@ -77,14 +77,14 @@
     <OutputPath>.\Windows\bin\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|AnyCPU'">
     <OutputPath>.\Windows\bin\</OutputPath>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AuthenticationInfo.cs" />
@@ -119,6 +119,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(SolutionDir)\.editorconfig" />
     <None Include="InstallationInfo.Directory.cs.in" />
   </ItemGroup>
 </Project>
