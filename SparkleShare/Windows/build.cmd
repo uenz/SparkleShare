@@ -5,17 +5,17 @@ REM dotnet tool install wix --create-manifest-if-needed
 REM set WinDirNet=%WinDir%\Microsoft.NET\Framework
 REM set msbuild="%WinDirNet%\v4.0\msbuild.exe"
 REM if not exist %msbuild% set msbuild="%WinDirNet%\v4.0.30319\msbuild.exe"
-set WIX=C:\Program Files (x86)\WiX Toolset v3.14
-set wixBinDir=%WIX%\bin
-set OutputDir=%~dp0bin
-if not exist "%OutputDir%" mkdir "%OutputDir%"
+REM set WIX=C:\Program Files (x86)\WiX Toolset v3.14
+REM set wixBinDir=%WIX%\bin
+REM set OutputDir=%~dp0bin
+REM if not exist "%OutputDir%" mkdir "%OutputDir%"
 
 dotnet build "%~dp0..\..\SparkleShare.sln" /target:SparkleShare_Windows:Rebuild /p:Configuration=ReleaseWindows /p:Platform="Any CPU" -m
 
 if "%1"=="installer" (
-	rem dotnet tool install --global wix
+	REM dotnet tool install --global wix
 	dotnet restore
-	rem dotnet tool install wix --create-manifest-if-needed
+	REM dotnet tool install wix --create-manifest-if-needed
 	dotnet build "%~dp0..\..\SparkleShare.sln" /target:SparkleShare_Windows_Installer:Rebuild /p:Configuration=ReleaseWindows /p:Platform="Any CPU" -m
 	REM if exist "%wixBinDir%" (
 	REM   if exist "%~dp0\SparkleShare.msi" del "%~dp0\SparkleShare.msi"
