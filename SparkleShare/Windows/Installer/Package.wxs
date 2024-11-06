@@ -95,10 +95,10 @@
         -->
         <Feature Id="Main" Title="SparkleShare" AllowAbsent="no" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="The core elements that must be installed">
             <ComponentGroupRef Id="Components" />
-           <!-- <ComponentGroupRef Id="RUNTIMES_DIR"/>
+            <ComponentGroupRef Id="RUNTIMES_DIR"/>
             <ComponentGroupRef Id="IMAGES_DIR"/>
             <ComponentGroupRef Id="PRESETS_DIR"/>
-            <ComponentGroupRef Id="GIT_SCM_DIR"/> -->
+            <ComponentGroupRef Id="GIT_SCM_DIR"/>
 
         </Feature>
         
