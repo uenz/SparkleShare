@@ -1,4 +1,4 @@
 <!-- This file is expected to be included by another WiX file -->
 <Include>
-<?define ProductVersion="3.38.1"?>
+<?define ProductVersion="3.39.0"?>
 </Include>

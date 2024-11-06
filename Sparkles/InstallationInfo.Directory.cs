@@ -18,7 +18,7 @@
 using System.Reflection;
 
 [assembly:AssemblyTitle ("Sparkles")]
-[assembly:AssemblyVersion ("3.38.1")]
+[assembly:AssemblyVersion ("3.39.0")]
 [assembly:AssemblyCopyright ("Copyright (c) 2010 Hylke Bons and others")]
 
 namespace Sparkles
