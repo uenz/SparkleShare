@@ -85,7 +85,7 @@ namespace SparkleShare {
             Notification = new Forms.NotifyIcon {
                 Text = Text,
                 Visible = true,
-                ContextMenu = new Forms.ContextMenu()
+                ContextMenuStrip = new Forms.ContextMenuStrip()
             };
             Notification.MouseDown += OnMouseDown;
             Notification.MouseUp += OnMouseUp;

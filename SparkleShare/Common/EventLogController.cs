@@ -407,7 +407,7 @@ namespace SparkleShare {
         {
             if (change_sets == null || change_sets.Count == 0)
                 return SparkleShare.Controller.EventLogHTML.Replace ("<!-- $event-log-content -->",
-                    "<div class='day-entry'><div class='day-entry-header'>This project does not keep a history.</div></div>");
+                    "<div class='day-entry'><div class='day-entry-header'>This project does not keep a history.</div></div>").Replace("<!-- $midnight -->", "100000000");
 
             List <ActivityDay> activity_days = new List <ActivityDay> ();
 

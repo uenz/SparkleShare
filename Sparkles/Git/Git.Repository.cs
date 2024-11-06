@@ -30,7 +30,7 @@ namespace Sparkles.Git {
         bool user_is_set;
 
 
-        string cached_branch;
+        string cached_branch = null!;
 
         string branch {
             get {
@@ -157,7 +157,7 @@ namespace Sparkles.Git {
                 if (git.ExitCode == 0)
                     return output;
 
-                return null;
+                return null!;
             }
         }
 
@@ -210,7 +210,7 @@ namespace Sparkles.Git {
             string message = base.status_message;
 
             if (string.IsNullOrEmpty (message))
-                message = FormatCommitMessage ();
+                message = FormatCommitMessage ()!;
 
             if (message != null)
                 Commit (message);
@@ -293,7 +293,7 @@ namespace Sparkles.Git {
             string information = "";
 
             while (!output_stream.EndOfStream) {
-                string line = output_stream.ReadLine ();
+                string line = output_stream.ReadLine ()!;
                 ErrorStatus error = GitCommand.ParseProgress (line, out percentage, out speed, out information);
 
                 if (error != ErrorStatus.None) {
@@ -412,7 +412,7 @@ namespace Sparkles.Git {
         // Merges the fetched changes
         bool Merge ()
         {
-            string message = FormatCommitMessage ();
+            string message = FormatCommitMessage ()!;
 
             if (message != null) {
                 Add ();
@@ -554,8 +554,8 @@ namespace Sparkles.Git {
 
                     string abs_conflicting_file_path = Path.Combine (LocalPath, conflicting_file_path);
 
-                    string abs_file_path_A = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path), file_name_A);
-                    string abs_file_path_B = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path), file_name_B);
+                    string abs_file_path_A = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_A);
+                    string abs_file_path_B = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_B);
 
 
                     // Recover local version
@@ -658,7 +658,7 @@ namespace Sparkles.Git {
             git.StartAndWaitForExit ();
 
             if (target_file_path.StartsWith (LocalPath))
-                new Thread (() => OnFileActivity (null)).Start ();
+                new Thread (() => OnFileActivity (null!)).Start ();
         }
 
 
@@ -671,7 +671,7 @@ namespace Sparkles.Git {
 
         public override List<ChangeSet> GetChangeSets ()
         {
-            return GetChangeSetsInternal (null);
+            return GetChangeSetsInternal (null!);
         }
 
         public override List<ChangeSet> GetChangeSets (string path)
@@ -786,7 +786,7 @@ namespace Sparkles.Git {
 
             // Set the name and email
             if (match.Groups ["name"].Value == "SparkleShare")
-                return null;
+                return null!;
 
             change_set.Folder = new SparkleFolder (Name);
             change_set.Revision = match.Groups ["commit"].Value;
@@ -813,7 +813,7 @@ namespace Sparkles.Git {
                 int.Parse (match.Groups ["hour"].Value), int.Parse (match.Groups ["minute"].Value), int.Parse (match.Groups ["second"].Value));
 
             string time_zone = match.Groups ["timezone"].Value;
-            int our_offset = TimeZone.CurrentTimeZone.GetUtcOffset (DateTime.Now).Hours;
+            int our_offset = TimeZoneInfo.Local.GetUtcOffset (DateTime.Now).Hours;
             int their_offset = int.Parse (time_zone.Substring (0, 3));
 
             change_set.Timestamp = change_set.Timestamp.AddHours (their_offset * -1);
@@ -827,7 +827,7 @@ namespace Sparkles.Git {
         {
             // Skip lines containing backspace characters or the .sparkleshare file
             if (line.Contains ("\\177") || line.Contains (".sparkleshare"))
-                return null;
+                return null!;
 
             // File lines start with a change type letter and then a tab character
             if (!line.StartsWith ("A\t") &&
@@ -835,10 +835,10 @@ namespace Sparkles.Git {
                 !line.StartsWith ("D\t") &&
                 !line.StartsWith ("R100\t")) {
 
-                return null;
+                return null!;
             }
 
-            Change change = new Change () { Type = ChangeType.Added };
+            Change change = new Change () { Type = ChangeType.Added }!;
             string file_path;
 
             int first_tab_pos = line.IndexOf ('\t');
@@ -905,7 +905,7 @@ namespace Sparkles.Git {
                 chmod.StartAndWaitForExit ();
             }
 
-            Directory.CreateDirectory (Path.GetDirectoryName (pre_push_hook_path));
+            Directory.CreateDirectory (Path.GetDirectoryName (pre_push_hook_path)!);
             File.WriteAllText (pre_push_hook_path, pre_push_hook_content);
         }
 
@@ -970,11 +970,11 @@ namespace Sparkles.Git {
         {
             List<Change> changes = new List<Change> ();
 
-            var git_status = new GitCommand (LocalPath, "status --porcelain");
+            var git_status = new GitCommand (LocalPath, "status --porcelain")!;
             git_status.Start ();
 
             while (!git_status.StandardOutput.EndOfStream) {
-                string line = git_status.StandardOutput.ReadLine ();
+                string line = git_status.StandardOutput.ReadLine ()!;
                 line = line.Trim ();
 
                 if (line.EndsWith (".empty") || line.EndsWith (".empty\""))
@@ -1016,7 +1016,7 @@ namespace Sparkles.Git {
 
 
         // Creates a pretty commit message based on what has changed
-        string FormatCommitMessage ()
+        string? FormatCommitMessage ()
         {
             string message = "";
 

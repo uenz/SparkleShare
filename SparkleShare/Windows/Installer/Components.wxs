@@ -1,0 +1,115 @@
+<!--
+    Define all the Components for this install package.  Components are the
+    smallest unit that can be installed.  Components can be collected together
+    in a ComponentGroup and treated as a single Component.  Components and
+    ComponentGroups cannot be nested.
+    
+    Strings containing square brackets ('[' ']') are in strings that are treated
+    as Formatted Text types (a Windows Installer type.  See
+    https://learn.microsoft.com/en-us/windows/win32/msi/formatted).
+    
+    Strings containing $() are a WiX construct and will be replaced by the
+    contents of the variable or property described therein (for example,
+    $(var.VARIABLE) or $(var.PROJECTNAME.PROPERTY)).  For project properties,
+    the project being referenced must be added to the WiX project as a project
+    dependency. All variables and property names are case-sensitive.
+    
+    Wix Documentation for:
+    - Component: https://wixtoolset.org/docs/schema/wxs/component/
+    - ComponentGroup: https://wixtoolset.org/docs/schema/wxs/componentgroup/
+    - File: https://wixtoolset.org/docs/schema/wxs/file/
+    - Fragment: https://wixtoolset.org/docs/schema/wxs/fragment/
+    - RegistryValue: https://wixtoolset.org/docs/schema/wxs/registryvalue/
+    - RemoveFolder: https://wixtoolset.org/docs/schema/wxs/removefolder/
+    - Shortcut: https://wixtoolset.org/docs/schema/wxs/shortcut/
+-->
+
+<!--
+    Bring in globally defined variables for this project.
+    These are accessed with $(var.NAME).
+-->
+<?include Predefines.wxi ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Fragment>
+        <ComponentGroup Id="Components" >
+            <Component Guid="$(var.ProductComponentGUID)" Directory="INSTALLFOLDER">
+                <!-- The file represented by this component -->
+                <!--<File Id="SparkleShareAppexe" Source="$(var.SparkleShare.Windows.TargetPath)" Checksum="yes" />-->
+                <File Id="SparkleShareAppexe" Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.exe"  Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.Git.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.runtimeconfig.json" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Diagnostics.EventLog.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Configuration.ConfigurationManager.dll" Checksum="yes" />  
+                <!-- Start Menu shortcut to run the program -->
+                <Shortcut Id="ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder" Advertise="no"
+                    Icon="icon.ico" Name="$(var.Name)"
+                    Description="Launch $(var.Name) application"
+                    Target="[#SparkleShareAppexe]"
+                    Arguments="--pause"
+                    WorkingDirectory="INSTALLFOLDER" />
+                    
+                <!-- Start Menu shortcut to uninstall the program -->
+                <Shortcut Id="UninstallProduct" Directory="ApplicationProgramsFolder" Advertise="no"
+                    Icon="icon.ico"
+                    Name="$(var.Name) uninstall"
+                    Description="Uninstalls $(var.Name)"
+                    Target="[System64Folder]msiexec.exe"
+                    Arguments="/x [ProductCode]" />
+               
+                <!--
+                    Program folder to remove during uninstall.
+                    INSTALLFOLDER defined in Folders.wxs.
+                -->
+                <RemoveFolder Id="INSTALLFOLDER" On="uninstall" />
+                <!--
+                    Start Menu folder to remove during uninstall.
+                    ApplicationProgramsFolder defined in Folders.wxs.
+                -->
+                <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+                <!--
+                    Define the key path for the parent component.  If the key
+                    path is not present, the component is not installed;
+                    otherwise, if the key path is present, the installer
+                    performs an upgrade, repair, or remove.
+
+                    Note: A key path must be unique across all components.
+                -->
+                <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.Name)" Name="installed" Type="integer" KeyPath="yes" Value="1" />
+            </Component>
+
+            <Component Directory="DesktopFolder" Condition="ADDDESKTOPSHORTCUT">
+                <!--
+                    Desktop shortcut to run the program
+                    
+                    Note: The target uses [!SparkleShareAppexe] to get around an ICE69
+                    warning complaining that [#SparkleShareAppexe] references a file
+                    in another component (but both components are in the same
+                    feature; if the components were in separate features, the
+                    warning would become an error).  Using [!] apparently
+                    bypasses the ICE69 check and, in this case, the target is a
+                    file not a registry value so [!] is basically treated the
+                    same as [#].  Yes, this is a hack.
+                -->
+                <Shortcut Id="ApplicationDesktopShortcut" Directory="DesktopFolder" Advertise="no"
+                    Icon="icon.ico" Name="$(var.Name)"
+                    Description="Launch $(var.Name) application"
+                    Target="[!SparkleShareAppexe]"
+                    Arguments="--pause"
+                    WorkingDirectory="INSTALLFOLDER" />
+                <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.Name)" Name="shortcut_installed" Type="integer" Value="1" KeyPath="yes" />
+
+            </Component>                        
+        </ComponentGroup>
+        <!--
+            The key path for this component is the directory/subdirectory name
+            of this component.
+        
+        <Component Id="SparkleShareDocs" Directory="INSTALLFOLDER" Subdirectory="Docs" KeyPath="yes" Guid="$(var.AppDocsGUID)">
+            <File Id="readmetxt" Source="$(var.SparkleShare.Windows.ProjectDir)\README.md" Checksum="yes" Vital="no" />
+        </Component>
+        -->
+    </Fragment>
+</Wix>

@@ -1,5 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+<!--     <Version>1.2.3.4</Version>
+    <Authors>Author 1</Authors>
+    <Company>Company XYZ</Company>
+    <Product>Product 2</Product>
+    <PackageId>MyApp</PackageId>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Description>Description here</Description>
+    <Copyright>Copyright</Copyright>
+    <PackageLicenseUrl>License URL</PackageLicenseUrl>
+    <PackageProjectUrl>Project URL</PackageProjectUrl>
+    <PackageIconUrl>Icon URL</PackageIconUrl>
+    <RepositoryUrl>Repo URL</RepositoryUrl>
+    <RepositoryType>Repo type</RepositoryType>
+    <PackageTags>Tags</PackageTags>
+    <PackageReleaseNotes>Release</PackageReleaseNotes> -->
+    <!-- check if info should mve from cs.in to project file -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+  <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,18 +35,19 @@
     <ProjectGuid>{2C914413-B31C-4362-93C7-1AE34F09112A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Sparkles</RootNamespace>
-    <AssemblyName>Sparkles</AssemblyName>
+    <!-- <AssemblyName>Sparkles</AssemblyName> -->
     <ReleaseVersion>
     </ReleaseVersion>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <NoWarn>1701;1702;SPELL</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -27,6 +55,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG</DefineConstants>
+    <NoWarn>1701;1702;SPELL</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -48,20 +77,15 @@
     <OutputPath>.\Windows\bin\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|AnyCPU'">
     <OutputPath>.\Windows\bin\</OutputPath>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticationInfo.cs" />
     <Compile Include="BaseFetcher.cs" />
@@ -79,6 +103,7 @@
     <Compile Include="OpenSSLCommand.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ScpUri.cs" />
     <Compile Include="SSHCommand.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -93,9 +118,8 @@
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="$(SolutionDir)\.editorconfig" />
     <None Include="InstallationInfo.Directory.cs.in" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

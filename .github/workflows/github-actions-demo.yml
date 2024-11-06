@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-12,  
+        os: [ # macos-12,  
               # ubuntu-20.04, 
               windows-latest
             ]
@@ -49,7 +49,7 @@ jobs:
       - name: Install Dependencies (Windows)
         run: |
           echo "Windows {{matrix.config.os}}"
-          choco install -y wixtoolset --version=3.14.1
+          # choco install -y wixtoolset --version=3.14.1
           choco install tartool
           choco install unzip
         if: matrix.os == 'windows-latest'
@@ -78,7 +78,7 @@ jobs:
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
-          cp ./SparkleShare/Windows/SparkleShare.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
+          cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
         if: matrix.os == 'windows-latest'
       - name: Publish
         uses: softprops/action-gh-release@v1

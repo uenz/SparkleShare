@@ -18,7 +18,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -42,9 +42,9 @@ namespace SparkleShare
             email = email.ToLower ();
 
             if (skipped_avatars.Contains (email))
-                return null;
+                return null!;
 
-            string avatars_path = Path.Combine (Path.GetDirectoryName (target_path), "avatars", size + "x" + size);
+            string avatars_path = Path.Combine (Path.GetDirectoryName (target_path)!, "avatars", size + "x" + size);
 
             // Search avatars by file name, ignore extension
             // Delete files over a day old
@@ -65,10 +65,10 @@ namespace SparkleShare
 
             } catch (InvalidOperationException e) {
                 Logger.LogInfo ("Avatars", "Error fetching avatar for " + email, e);
-                return null;
+                return null!;
             }
 
-            var client = new WebClient ();
+            //HttpClient client = new();
             string url = "";
 
             if (provider == "libravatar")
@@ -77,38 +77,55 @@ namespace SparkleShare
                 url =  "https://secure.gravatar.com/avatar/" + email.MD5 () + ".png?s=" + size + "&d=404";
 
             try {
-                byte [] buffer = client.DownloadData (url);
+                using (HttpClient client = new HttpClient())
+                {
+                    // Send a GET request to the specified URL
+                    HttpResponseMessage response = client.GetAsync(url).GetAwaiter().GetResult();
 
-                if (client.ResponseHeaders ["content-type"].Equals (MediaTypeNames.Image.Jpeg, StringComparison.InvariantCultureIgnoreCase)) {
-                    avatar_file_path += ".jpg";
+                    // Ensure the request was successful
+                    response.EnsureSuccessStatusCode();
 
-                } else if (client.ResponseHeaders ["content-type"].Equals (MediaTypeNames.Image.Gif, StringComparison.InvariantCultureIgnoreCase)) {
-                    avatar_file_path += ".gif";
+                    // Check the headers for content type and other information
+                    var contentType = response.Content.Headers.ContentType;
+                    var contentLength = response.Content.Headers.ContentLength;
 
-                } else {
-                    avatar_file_path += ".png";
-                }
 
-                if (buffer.Length > 255) {
-                    if (!Directory.Exists (avatars_path)) {
-                        Directory.CreateDirectory (avatars_path);
-                        Logger.LogInfo ("Avatars", "Created '" + avatars_path + "'");
+                    byte[] buffer = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                    
+                                        if (contentType.MediaType.Equals (MediaTypeNames.Image.Jpeg, StringComparison.InvariantCultureIgnoreCase)) {
+                                        avatar_file_path += ".jpg";
+
+                                    } else if (contentType.MediaType.Equals (MediaTypeNames.Image.Gif, StringComparison.InvariantCultureIgnoreCase)) {
+                                        avatar_file_path += ".gif";
+
+                                    } else {
+                                        avatar_file_path += ".png";
+                                    }
+
+                    if (buffer.Length > 255)
+                    {
+                        if (!Directory.Exists(avatars_path))
+                        {
+                            Directory.CreateDirectory(avatars_path);
+                            Logger.LogInfo("Avatars", "Created '" + avatars_path + "'");
+                        }
+
+                        File.WriteAllBytes(avatar_file_path, buffer);
+                        Logger.LogInfo("Avatars", "Fetched " + size + "x" + size + " avatar for " + email);
+
+                        return avatar_file_path;
+
                     }
-
-                    File.WriteAllBytes (avatar_file_path, buffer);
-                    Logger.LogInfo ("Avatars", "Fetched " + size + "x" + size + " avatar for " + email);
-
-                    return avatar_file_path;
-
-                } else {
-                    return null;
+                    else
+                    {
+                        return null!;
+                    }
                 }
-
             } catch (Exception e) {
                 Logger.LogInfo ("Avatars", "Error fetching avatar for " + email, e);
                 skipped_avatars.Add (email);
 
-                return null;
+                return null!;
             }
         }
 

@@ -17,15 +17,18 @@
 
 using System.IO;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
     public class SSHCommand : Command
     {
-        public static string SSHPath = Path.GetDirectoryName(LocateCommand("ssh")).Replace("\\", "/");
+        public static string SSHPath = Path.GetDirectoryName(LocateCommand("ssh"))!.Replace("\\", "/");
 
-        public static string SSHCommandPath {
-            get {
-                return LocateCommand("ssh").Replace ("\\", "/");
+        public static string SSHCommandPath
+        {
+            get
+            {
+                return LocateCommand("ssh").Replace("\\", "/");
             }
         }
         public static string SSHKeyScanCommandPath
@@ -44,13 +47,13 @@ namespace Sparkles {
         }
 
 
-        public SSHCommand (string command, string args) : this (command, args, null)
+        public SSHCommand(string command, string args) : this(command, args, null)
         {
         }
 
 
-        public SSHCommand (string command, string args, SSHAuthenticationInfo auth_info) :
-            base (command, args)
+        public SSHCommand(string command, string args, SSHAuthenticationInfo? auth_info) :
+            base(command, args)
         {
         }
         public static string SSHVersion
@@ -66,7 +69,7 @@ namespace Sparkles {
         {
             get
             {
-                var ssh_version = new Command(SSHKeyScanCommandPath, "",false);
+                var ssh_version = new Command(SSHKeyScanCommandPath, "", false);
                 ssh_version.StartAndWaitForExit(); // call to check if exists
                 return "found";
             }
@@ -82,7 +85,7 @@ namespace Sparkles {
                 "-P \"\" " + // No password
                 "-C \"test\" " + // Key comment
                 "-f \"" + System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey") + "\"";
-                var ssh_version = new Command(SSHKeyGenCommandPath, arguments,false);
+                var ssh_version = new Command(SSHKeyGenCommandPath, arguments, false);
                 ssh_version.StartAndWaitForExit(); // call to check if exists
                 if (File.Exists(System.IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "tmp", "testkey")))
                 {

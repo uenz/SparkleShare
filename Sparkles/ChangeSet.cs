@@ -19,9 +19,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public enum ChangeType {
+    public enum ChangeType
+    {
         Added,
         Edited,
         Deleted,
@@ -29,83 +31,91 @@ namespace Sparkles {
     }
 
 
-    public class ChangeSet {
+    public class ChangeSet
+    {
 
-        public User User = new User ("Unknown", "Unknown");
+        public User User = new User("Unknown", "Unknown");
 
-        public SparkleFolder Folder;
-        public string Revision;
+        public SparkleFolder Folder = null!;
+        public string Revision = null!;
         public DateTime Timestamp;
         public DateTime FirstTimestamp;
-        public Uri RemoteUrl;
+        public ScpUri RemoteUrl = null!;
 
-        public List<Change> Changes = new List<Change> ();
+        public List<Change> Changes = new List<Change>();
 
-        public string ToMessage ()
+        public string ToMessage()
         {
             string message = "added: {0}";
 
-            switch (Changes [0].Type) {
-            case ChangeType.Edited:  message = "edited: {0}"; break;
-            case ChangeType.Deleted: message = "deleted: {0}"; break;
-            case ChangeType.Moved:   message = "moved: {0}"; break;
+            switch (Changes[0].Type)
+            {
+                case ChangeType.Edited: message = "edited: {0}"; break;
+                case ChangeType.Deleted: message = "deleted: {0}"; break;
+                case ChangeType.Moved: message = "moved: {0}"; break;
             }
 
             if (Changes.Count > 0)
-                return string.Format (message, Changes [0].Path);
+                return string.Format(message, Changes[0].Path);
             else
                 return "did something magical";
         }
     }
 
 
-    public class Change {
+    public class Change
+    {
 
         public ChangeType Type;
         public DateTime Timestamp;
         public bool IsFolder;
 
-        public string Path;
-        public string MovedToPath;
+        public string Path = null!;
+        public string MovedToPath = null!;
     }
 
 
-    public class SparkleFolder {
+    public class SparkleFolder
+    {
 
-        public string Name;
-        public Uri RemoteAddress;
+        public string Name = null!;
+        public Uri RemoteAddress = null!;
 
-        public string FullPath {
-            get {
-                string custom_path = Configuration.DefaultConfiguration.GetFolderOptionalAttribute (Name, "path");
+        public string FullPath
+        {
+            get
+            {
+
+                string? custom_path = Configuration.DefaultConfiguration.GetFolderOptionalAttribute(Name, "path");
 
                 if (custom_path != null)
-                    return Path.Combine (custom_path, Name);
+                    return Path.Combine(custom_path, Name);
 
-                return Path.Combine (Configuration.DefaultConfiguration.FoldersPath,
-                                     new Uri (Configuration.DefaultConfiguration.UrlByName (Name)).Host,
-                                     Name);
+                return Path.Combine(Configuration.DefaultConfiguration.FoldersPath,
+                                        new ScpUri(Configuration.DefaultConfiguration.UrlByName(Name)!).Host,
+                                        Name);
             }
         }
 
 
-        public SparkleFolder (string name)
+        public SparkleFolder(string name)
         {
             Name = name;
         }
     }
 
 
-    public class Announcement {
+    public class Announcement
+    {
 
         public readonly string FolderIdentifier;
         public readonly string Message;
 
 
-        public Announcement (string folder_identifier, string message)
+        public Announcement(string folder_identifier, string message)
         {
             FolderIdentifier = folder_identifier;
-            Message          = message;
+            Message = message;
         }
     }
 }

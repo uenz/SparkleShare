@@ -23,16 +23,16 @@ namespace Sparkles.Git {
 
     public class GitCommand : SSHCommand {
 
-        public static string ExecPath;
+        public static string ExecPath = null!;
 
 
-        static string git_path;
-        static string git_lfs_path;
+        static string git_path = null!;
+        static string git_lfs_path = null!;
         
         public static string GitPath {
             get {
                 if (git_path == null)
-                    git_path = LocateCommand ("git").Replace("\\", "/");
+                    git_path = LocateCommand ("git")!.Replace("\\", "/");
 
                 return git_path;
             }
@@ -45,7 +45,7 @@ namespace Sparkles.Git {
         public static string GitLfsPath {
             get {
                 if (git_lfs_path == null)
-                    git_lfs_path = LocateCommand ("git-lfs").Replace("\\","/");
+                    git_lfs_path = LocateCommand ("git-lfs")!.Replace("\\","/");
 
                 return git_lfs_path;
             }
@@ -81,7 +81,7 @@ namespace Sparkles.Git {
         }
 
 
-        public GitCommand (string working_dir, string args) : this (working_dir, args, null)
+        public GitCommand (string working_dir, string args) : this (working_dir, args, null!)
         {
         }
 

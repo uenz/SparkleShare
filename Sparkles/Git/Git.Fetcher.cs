@@ -23,8 +23,8 @@ namespace Sparkles.Git {
 
     public class GitFetcher : SSHFetcher {
 
-        GitCommand git_clone;
-        SSHAuthenticationInfo auth_info;
+        GitCommand git_clone=null!;
+        SSHAuthenticationInfo auth_info = null!;
 
         string password_salt = Path.GetRandomFileName ().SHA256 ().Substring (0, 16);
 
@@ -42,8 +42,8 @@ namespace Sparkles.Git {
         public GitFetcher (SparkleFetcherInfo fetcher_info, SSHAuthenticationInfo auth_info) : base (fetcher_info)
         {
             this.auth_info = auth_info;
-            var uri_builder = new UriBuilder (RemoteUrl);
-
+            var uri_builder = new UriBuilder (RemoteUrl.ToUriString());
+            // TODO debug this section
             if (!RemoteUrl.Scheme.Equals ("ssh") && !RemoteUrl.Scheme.Equals ("git"))
                 uri_builder.Scheme = "ssh";
 
@@ -63,8 +63,9 @@ namespace Sparkles.Git {
             } else if (string.IsNullOrEmpty (RemoteUrl.UserInfo)) {
                 uri_builder.UserName = "storage";
             }
+            bool tmp = RemoteUrl.scp_style;
 
-            RemoteUrl = uri_builder.Uri;
+            RemoteUrl = new ScpUri(uri_builder.Uri.ToString(),tmp);
 
             AvailableStorageTypes.Add (
                 new StorageTypeInfo (StorageType.Encrypted, "Encrypted Storage",
@@ -109,7 +110,7 @@ namespace Sparkles.Git {
             string information = "";
 
             while (!output_stream.EndOfStream) {
-                string line = output_stream.ReadLine ();
+                string line = output_stream.ReadLine ()!;
 
                 ErrorStatus error = GitCommand.ParseProgress (line, out percentage, out speed, out information);
 
@@ -307,11 +308,12 @@ namespace Sparkles.Git {
 
         StorageType? DetermineStorageType ()
         {
+            // TODO bad hack, because ls-remote cant handle scp_like syntax
             var git_ls_remote = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
-                string.Format ("ls-remote --heads \"{0}\"", RemoteUrl), auth_info);
+                string.Format ("ls-remote --heads \"{0}\"", RemoteUrl.ToString()), auth_info);
 
             string output = git_ls_remote.StartAndReadStandardOutput ();
-
+            // TODO handle exit codes 128,129,130 related to keys https://mazack.org/unix/errno.php 
             if (git_ls_remote.ExitCode != 0)
                 return null;
 

@@ -22,9 +22,11 @@ using System.Threading;
 
 using Timers = System.Timers;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public enum StorageType {
+    public enum StorageType
+    {
         Unknown,
         Plain,
         LargeFiles,
@@ -32,7 +34,8 @@ namespace Sparkles {
     }
 
 
-    public class StorageTypeInfo {
+    public class StorageTypeInfo
+    {
 
         public readonly StorageType Type;
 
@@ -40,7 +43,7 @@ namespace Sparkles {
         public readonly string Description;
 
 
-        public StorageTypeInfo (StorageType storage_type, string name, string description)
+        public StorageTypeInfo(StorageType storage_type, string name, string description)
         {
             Type = storage_type;
 
@@ -49,7 +52,8 @@ namespace Sparkles {
         }
     }
 
-    public enum SyncStatus {
+    public enum SyncStatus
+    {
         Idle,
         Paused,
         SyncUp,
@@ -57,7 +61,8 @@ namespace Sparkles {
         Error
     }
 
-    public enum ErrorStatus {
+    public enum ErrorStatus
+    {
         None,
         HostUnreachable,
         HostIdentityChanged,
@@ -70,11 +75,12 @@ namespace Sparkles {
     }
 
 
-    public abstract class BaseRepository {
+    public abstract class BaseRepository
+    {
 
-        public abstract bool SyncUp ();
-        public abstract bool SyncDown ();
-        public abstract void RestoreFile (string path, string revision, string target_file_path);
+        public abstract bool SyncUp();
+        public abstract bool SyncDown();
+        public abstract void RestoreFile(string path, string revision, string target_file_path);
         public abstract bool HasUnsyncedChanges { get; set; }
         public abstract bool HasLocalChanges { get; }
         public abstract bool HasRemoteChanges { get; }
@@ -85,8 +91,8 @@ namespace Sparkles {
 
         public abstract List<string> ExcludePaths { get; }
         public abstract List<Change> UnsyncedChanges { get; }
-        public abstract List<ChangeSet> GetChangeSets ();
-        public abstract List<ChangeSet> GetChangeSets (string path);
+        public abstract List<ChangeSet> GetChangeSets();
+        public abstract List<ChangeSet> GetChangeSets(string path);
 
         protected StorageType StorageType = StorageType.Plain;
 
@@ -94,13 +100,13 @@ namespace Sparkles {
 
 
         public event SyncStatusChangedEventHandler SyncStatusChanged = delegate { };
-        public delegate void SyncStatusChangedEventHandler (SyncStatus new_status);
+        public delegate void SyncStatusChangedEventHandler(SyncStatus new_status);
 
         public event ProgressChangedEventHandler ProgressChanged = delegate { };
-        public delegate void ProgressChangedEventHandler ();
+        public delegate void ProgressChangedEventHandler();
 
         public event NewChangeSetEventHandler NewChangeSet = delegate { };
-        public delegate void NewChangeSetEventHandler (ChangeSet change_set);
+        public delegate void NewChangeSetEventHandler(ChangeSet change_set);
 
         public event Action ConflictResolved = delegate { };
         public event Action ChangesDetected = delegate { };
@@ -108,52 +114,60 @@ namespace Sparkles {
 
         public readonly string LocalPath;
         public readonly string Name;
-        public readonly Uri RemoteUrl;
-        public List<ChangeSet> ChangeSets { get; set; }
+        public readonly ScpUri RemoteUrl;
+        public List<ChangeSet> ChangeSets { get; set; } = null!;
         public SyncStatus Status { get; set; }
         public ErrorStatus Error { get; protected set; }
         public bool IsBuffering { get; set; }
 
         public double ProgressPercentage { get; private set; }
         public double ProgressSpeed { get; private set; }
-        public string ProgressInformation { get; private set; }
+        public string ProgressInformation { get; private set; } = null!;
 
-        public DateTime LastSync {
-            get {
+        public DateTime LastSync
+        {
+            get
+            {
                 if (ChangeSets != null && ChangeSets.Count > 0)
-                    return ChangeSets [0].Timestamp;
+                    return ChangeSets[0].Timestamp;
                 else
                     return DateTime.MinValue;
             }
         }
 
-        public virtual string Identifier {
-            get {
+        public virtual string Identifier
+        {
+            get
+            {
                 if (this.identifier != null)
                     return this.identifier;
 
-                string id_path = Path.Combine (LocalPath, ".sparkleshare");
+                string id_path = Path.Combine(LocalPath, ".sparkleshare");
 
-                if (File.Exists (id_path)) {
-                    File.SetAttributes (id_path, FileAttributes.Hidden);
-                    this.identifier = File.ReadAllText (id_path).Trim ();
+                if (File.Exists(id_path))
+                {
+                    File.SetAttributes(id_path, FileAttributes.Hidden);
+                    this.identifier = File.ReadAllText(id_path).Trim();
                 }
 
-                if (!string.IsNullOrEmpty (this.identifier)) {
+                if (!string.IsNullOrEmpty(this.identifier))
+                {
                     return this.identifier;
 
-                } else {
-                    string config_identifier = this.local_config.IdentifierByName (Name);
+                }
+                else
+                {
+                    string? config_identifier = this.local_config.IdentifierByName(Name);
 
-                    if (!string.IsNullOrEmpty (config_identifier))
+                    if (!string.IsNullOrEmpty(config_identifier))
                         this.identifier = config_identifier;
                     else
-                        this.identifier = Path.GetRandomFileName ().SHA256 ();
+                        this.identifier = Path.GetRandomFileName().SHA256();
 
-                    File.WriteAllText (id_path, this.identifier);
-                    File.SetAttributes (id_path, FileAttributes.Hidden);
+                    File.WriteAllText(id_path, this.identifier);
+                    File.SetAttributes(id_path, FileAttributes.Hidden);
 
-                    Logger.LogInfo ("Local", Name + " | Assigned identifier: " + this.identifier);
+                    Logger.LogInfo("Local", Name + " | Assigned identifier: " + this.identifier);
 
                     return this.identifier;
                 }
@@ -164,174 +178,190 @@ namespace Sparkles {
         protected Configuration local_config;
 
         string identifier;
-        BaseListener listener = null;
-        Watcher watcher;
-        TimeSpan poll_interval        = PollInterval.Short;
-        DateTime last_poll            = DateTime.Now;
-        Timers.Timer remote_timer     = new Timers.Timer () { Interval = 5000 };
+        BaseListener listener = null!;
+        Watcher watcher = null!;
+        TimeSpan poll_interval = PollInterval.Short;
+        DateTime last_poll = DateTime.Now;
+        Timers.Timer remote_timer = new Timers.Timer() { Interval = 5000 };
         DisconnectReason last_disconnect_reason = DisconnectReason.None;
 
-        bool is_syncing {
+        bool is_syncing
+        {
             get { return (Status == SyncStatus.SyncUp || Status == SyncStatus.SyncDown || IsBuffering); }
         }
 
-        static class PollInterval {
-            public static readonly TimeSpan Short = new TimeSpan (0, 0, 5, 0);
-            public static readonly TimeSpan Long  = new TimeSpan (0, 0, 15, 0);
+        static class PollInterval
+        {
+            public static readonly TimeSpan Short = new TimeSpan(0, 0, 5, 0);
+            public static readonly TimeSpan Long = new TimeSpan(0, 0, 15, 0);
         }
 
 
-        public BaseRepository (string path, Configuration config)
+        public BaseRepository(string path, Configuration config)
         {
-            Logger.LogInfo (path, "Initializing...");
+            Logger.LogInfo(path, "Initializing...");
 
-            Status            = SyncStatus.Idle;
-            Error             = ErrorStatus.None;
+            Status = SyncStatus.Idle;
+            Error = ErrorStatus.None;
             this.local_config = config;
-            LocalPath         = path;
-            Name              = Path.GetFileName (LocalPath);
-            RemoteUrl         = new Uri (this.local_config.UrlByName (Name));
-            IsBuffering       = false;
-            this.identifier   = Identifier;
+            LocalPath = path;
+            Name = Path.GetFileName(LocalPath);
+            RemoteUrl = new ScpUri(this.local_config.UrlByName(Name)!);
+            IsBuffering = false;
+            this.identifier = Identifier;
 
-            string storage_type = this.local_config.GetFolderOptionalAttribute (Name, "storage_type");
+            string storage_type = this.local_config.GetFolderOptionalAttribute(Name, "storage_type")!;
 
-            if (!string.IsNullOrEmpty (storage_type))
-                StorageType = (StorageType) Enum.Parse (typeof (StorageType), storage_type);
+            if (!string.IsNullOrEmpty(storage_type))
+                StorageType = (StorageType)Enum.Parse(typeof(StorageType), storage_type);
 
-            string is_paused = this.local_config.GetFolderOptionalAttribute (Name, "paused");
-            if (is_paused != null && is_paused.Equals (bool.TrueString))
+            string is_paused = this.local_config.GetFolderOptionalAttribute(Name, "paused")!;
+            if (is_paused != null && is_paused.Equals(bool.TrueString))
                 Status = SyncStatus.Paused;
 
-            string identifier_file_path = Path.Combine (LocalPath, ".sparkleshare");
-            File.SetAttributes (identifier_file_path, FileAttributes.Hidden);
+            string identifier_file_path = Path.Combine(LocalPath, ".sparkleshare");
+            File.SetAttributes(identifier_file_path, FileAttributes.Hidden);
 
             if (!UseCustomWatcher)
-                this.watcher = new Watcher (LocalPath);
+                this.watcher = new Watcher(LocalPath);
 
-            new Thread (() => CreateListener ()).Start ();
+            new Thread(() => CreateListener()).Start();
 
             this.remote_timer.Elapsed += RemoteTimerElapsedDelegate;
         }
 
 
-        void RemoteTimerElapsedDelegate (object sender, EventArgs args)
+        void RemoteTimerElapsedDelegate(Object? sender, System.Timers.ElapsedEventArgs? args)
         {
             if (this.is_syncing || IsBuffering || Status == SyncStatus.Paused)
                 return;
-            
-            int time_comparison = DateTime.Compare (this.last_poll, DateTime.Now.Subtract (this.poll_interval));
-            
-            if (time_comparison < 0) {
+
+            int time_comparison = DateTime.Compare(this.last_poll, DateTime.Now.Subtract(this.poll_interval));
+
+            if (time_comparison < 0)
+            {
                 if (HasUnsyncedChanges && !this.is_syncing)
-                    SyncUpBase ();
-                
+                    SyncUpBase();
+
                 this.last_poll = DateTime.Now;
-                
+
                 if (HasRemoteChanges && !this.is_syncing)
-                    SyncDownBase ();
-                
+                    SyncDownBase();
+
                 // if (this.listener.IsConnected)
                 //    this.poll_interval = PollInterval.Long;
             }
-            
+
             // In the unlikely case that we haven't synced up our
             // changes or the server was down, sync up again
             if (HasUnsyncedChanges && !this.is_syncing && Error == ErrorStatus.None)
-                SyncUpBase ();
-            
-            if (Status != SyncStatus.Idle && Status != SyncStatus.Error) {
+                SyncUpBase();
+
+            if (Status != SyncStatus.Idle && Status != SyncStatus.Error)
+            {
                 Status = SyncStatus.Idle;
-                SyncStatusChanged (Status);
+                SyncStatusChanged(Status);
             }
         }
 
 
-        public void Initialize ()
+        public void Initialize()
         {
-            ChangeSets = GetChangeSets ();
+            ChangeSets = GetChangeSets();
 
             // Sync up everything that changed since we've been offline
-            new Thread (() => {
-                if (Status != SyncStatus.Paused) {
+            new Thread(() =>
+            {
+                if (Status != SyncStatus.Paused)
+                {
                     if (HasRemoteChanges)
-                        SyncDownBase ();
+                        SyncDownBase();
 
-                    if (HasUnsyncedChanges || HasLocalChanges) {
-                        do {
-                            SyncUpBase ();
+                    if (HasUnsyncedChanges || HasLocalChanges)
+                    {
+                        do
+                        {
+                            SyncUpBase();
 
                         } while (HasLocalChanges);
                     }
                 }
-                
+
                 if (!UseCustomWatcher)
                     this.watcher.ChangeEvent += OnFileActivity;
 
-                this.remote_timer.Start ();
-            
-            }).Start ();
+                this.remote_timer.Start();
+
+            }).Start();
         }
 
 
-        Object buffer_lock = new Object ();
+        Object buffer_lock = new Object();
 
-        public void OnFileActivity (FileSystemEventArgs args)
+        public void OnFileActivity(FileSystemEventArgs args)
         {
             if (IsBuffering || this.is_syncing)
                 return;
 
-            if (args != null) {
-                foreach (string exclude_path in ExcludePaths) {
-                    if (args.FullPath.Contains (Path.DirectorySeparatorChar + exclude_path))
+            if (args != null)
+            {
+                foreach (string exclude_path in ExcludePaths)
+                {
+                    if (args.FullPath.Contains(Path.DirectorySeparatorChar + exclude_path))
                         return;
                 }
             }
-            
-            if (Status == SyncStatus.Paused) {
-                ChangesDetected ();
+
+            if (Status == SyncStatus.Paused)
+            {
+                ChangesDetected();
                 return;
             }
 
-            lock (this.buffer_lock) {
+            lock (this.buffer_lock)
+            {
                 if (IsBuffering || this.is_syncing || !HasLocalChanges)
                     return;
 
                 IsBuffering = true;
             }
 
-            ChangesDetected ();
+            ChangesDetected();
 
             if (!UseCustomWatcher)
-                this.watcher.Disable ();
+                this.watcher.Disable();
 
-            Logger.LogInfo ("Local", Name + " | Activity detected, waiting for it to settle...");
+            Logger.LogInfo("Local", Name + " | Activity detected, waiting for it to settle...");
 
-            List<double> size_buffer = new List<double> ();
-            DirectoryInfo info = new DirectoryInfo (LocalPath);
+            List<double> size_buffer = new List<double>();
+            DirectoryInfo info = new DirectoryInfo(LocalPath);
 
-            do {
+            do
+            {
                 if (size_buffer.Count >= 4)
-                    size_buffer.RemoveAt (0);
+                    size_buffer.RemoveAt(0);
 
-                size_buffer.Add (CalculateSize (info));
+                size_buffer.Add(CalculateSize(info));
 
                 if (size_buffer.Count >= 4 &&
-                    size_buffer [0].Equals (size_buffer [1]) &&
-                    size_buffer [1].Equals (size_buffer [2]) &&
-                    size_buffer [2].Equals (size_buffer [3])) {
+                    size_buffer[0].Equals(size_buffer[1]) &&
+                    size_buffer[1].Equals(size_buffer[2]) &&
+                    size_buffer[2].Equals(size_buffer[3]))
+                {
 
-                    Logger.LogInfo ("Local", Name + " | Activity has settled");
+                    Logger.LogInfo("Local", Name + " | Activity has settled");
                     IsBuffering = false;
 
                     bool first_sync = true;
 
-                    if (HasLocalChanges && Status == SyncStatus.Idle) {
-                        do {
+                    if (HasLocalChanges && Status == SyncStatus.Idle)
+                    {
+                        do
+                        {
                             if (!first_sync)
-                                Logger.LogInfo ("Local", Name + " | More changes found");
+                                Logger.LogInfo("Local", Name + " | More changes found");
 
-                            SyncUpBase ();
+                            SyncUpBase();
 
                             if (Error == ErrorStatus.UnreadableFiles)
                                 return;
@@ -339,75 +369,79 @@ namespace Sparkles {
                             first_sync = false;
 
                         } while (HasLocalChanges);
-                    } 
-
-                    if (Status != SyncStatus.Idle && Status != SyncStatus.Error) {
-                        Status = SyncStatus.Idle;
-                        SyncStatusChanged (Status);
                     }
 
-                } else {
-                    Thread.Sleep (500);
+                    if (Status != SyncStatus.Idle && Status != SyncStatus.Error)
+                    {
+                        Status = SyncStatus.Idle;
+                        SyncStatusChanged(Status);
+                    }
+
+                }
+                else
+                {
+                    Thread.Sleep(500);
                 }
 
             } while (IsBuffering);
 
             if (!UseCustomWatcher)
-                this.watcher.Enable ();
+                this.watcher.Enable();
         }
 
 
-        public void ForceRetry ()
+        public void ForceRetry()
         {
             if (Error != ErrorStatus.None && !this.is_syncing)
-                SyncUpBase ();
+                SyncUpBase();
         }
 
 
-        protected void OnConflictResolved ()
+        protected void OnConflictResolved()
         {
-            ConflictResolved ();
+            ConflictResolved();
         }
 
 
         DateTime progress_last_change = DateTime.Now;
 
-        protected void OnProgressChanged (double percentage, double speed, string information)
+        protected void OnProgressChanged(double percentage, double speed, string information)
         {
             if (percentage < 1)
                 return;
 
             // Only trigger the ProgressChanged event once per second
-            if (DateTime.Compare (this.progress_last_change, DateTime.Now.Subtract (new TimeSpan (0, 0, 0, 1))) >= 0)
+            if (DateTime.Compare(this.progress_last_change, DateTime.Now.Subtract(new TimeSpan(0, 0, 0, 1))) >= 0)
                 return;
 
             if (percentage == 100.0)
                 percentage = 99.0;
 
-			progress_last_change = DateTime.Now;
+            progress_last_change = DateTime.Now;
 
             ProgressPercentage = percentage;
             ProgressSpeed = speed;
             ProgressInformation = information;
 
-            ProgressChanged ();
+            ProgressChanged();
         }
 
 
-        void SyncUpBase ()
+        void SyncUpBase()
         {
             if (!UseCustomWatcher)
-                this.watcher.Disable ();
+                this.watcher.Disable();
 
-            Logger.LogInfo ("SyncUp", Name + " | Initiated");
+            Logger.LogInfo("SyncUp", Name + " | Initiated");
             HasUnsyncedChanges = true;
 
             Status = SyncStatus.SyncUp;
-            SyncStatusChanged (Status);
+            SyncStatusChanged(Status);
 
-            if (SyncUp ()) {
-                Logger.LogInfo ("SyncUp", Name + " | Done");
-                ChangeSets = GetChangeSets ();
+            if (SyncUp())
+            {
+                Logger.LogInfo("SyncUp", Name + " | Done");
+                ChangeSets = GetChangeSets();
 
                 HasUnsyncedChanges = false;
                 this.poll_interval = PollInterval.Long;
@@ -415,115 +449,127 @@ namespace Sparkles {
                 // this.listener.Announce (new Announcement (Identifier, CurrentRevision));
 
                 Status = SyncStatus.Idle;
-                SyncStatusChanged (Status);
+                SyncStatusChanged(Status);
 
-            } else {
-                Logger.LogInfo ("SyncUp", Name + " | Error");
-                SyncDownBase ();
+            }
+            else
+            {
+                Logger.LogInfo("SyncUp", Name + " | Error");
+                SyncDownBase();
 
                 if (!UseCustomWatcher)
-                    this.watcher.Disable ();
+                    this.watcher.Disable();
 
-                if (Error == ErrorStatus.None && SyncUp ()) {
+                if (Error == ErrorStatus.None && SyncUp())
+                {
                     HasUnsyncedChanges = false;
 
                     // this.listener.Announce (new Announcement (Identifier, CurrentRevision));
 
                     Status = SyncStatus.Idle;
-                    SyncStatusChanged (Status);
+                    SyncStatusChanged(Status);
 
-                } else {
+                }
+                else
+                {
                     this.poll_interval = PollInterval.Short;
 
                     Status = SyncStatus.Error;
-                    SyncStatusChanged (Status);
+                    SyncStatusChanged(Status);
                 }
             }
 
             ProgressPercentage = 0.0;
-            ProgressSpeed      = 0.0;
+            ProgressSpeed = 0.0;
 
             if (!UseCustomWatcher)
-                this.watcher.Enable ();
+                this.watcher.Enable();
 
             this.status_message = "";
         }
 
 
-        void SyncDownBase ()
+        void SyncDownBase()
         {
             if (!UseCustomWatcher)
-                this.watcher.Disable ();
+                this.watcher.Disable();
 
-            Logger.LogInfo ("SyncDown", Name + " | Initiated");
+            Logger.LogInfo("SyncDown", Name + " | Initiated");
 
             Status = SyncStatus.SyncDown;
-            SyncStatusChanged (Status);
+            SyncStatusChanged(Status);
 
             string pre_sync_revision = CurrentRevision;
 
-            if (SyncDown ()) {
+            if (SyncDown())
+            {
                 Error = ErrorStatus.None;
 
-                string identifier_file_path = Path.Combine (LocalPath, ".sparkleshare");
-                File.SetAttributes (identifier_file_path, FileAttributes.Hidden);
+                string identifier_file_path = Path.Combine(LocalPath, ".sparkleshare");
+                File.SetAttributes(identifier_file_path, FileAttributes.Hidden);
 
-                ChangeSets = GetChangeSets ();
+                ChangeSets = GetChangeSets();
 
-                if (!pre_sync_revision.Equals (CurrentRevision) &&
+                if (!pre_sync_revision.Equals(CurrentRevision) &&
                     ChangeSets != null && ChangeSets.Count > 0 &&
-                    !ChangeSets [0].User.Name.Equals (this.local_config.User.Name)) {
+                    !ChangeSets[0].User.Name.Equals(this.local_config.User.Name))
+                {
 
                     bool emit_change_event = true;
 
-                    foreach (Change change in ChangeSets [0].Changes) {
-                        if (change.Path.EndsWith (".sparkleshare")) {
+                    foreach (Change change in ChangeSets[0].Changes)
+                    {
+                        if (change.Path.EndsWith(".sparkleshare"))
+                        {
                             emit_change_event = false;
                             break;
                         }
                     }
-                    
+
                     if (emit_change_event)
-                        NewChangeSet (ChangeSets [0]);
+                        NewChangeSet(ChangeSets[0]);
                 }
 
-                Logger.LogInfo ("SyncDown", Name + " | Done");
+                Logger.LogInfo("SyncDown", Name + " | Done");
 
                 // There could be changes from a resolved
                 // conflict. Tries only once, then lets
                 // the timer try again periodically
-                if (HasUnsyncedChanges) {
+                if (HasUnsyncedChanges)
+                {
                     Status = SyncStatus.SyncUp;
-                    SyncStatusChanged (Status);
-                    
-                    if (SyncUp ())
+                    SyncStatusChanged(Status);
+
+                    if (SyncUp())
                         HasUnsyncedChanges = false;
                 }
 
                 Status = SyncStatus.Idle;
-                SyncStatusChanged (Status);
+                SyncStatusChanged(Status);
 
-            } else {
-                Logger.LogInfo ("SyncDown", Name + " | Error");
+            }
+            else
+            {
+                Logger.LogInfo("SyncDown", Name + " | Error");
 
-                ChangeSets = GetChangeSets ();
+                ChangeSets = GetChangeSets();
 
                 Status = SyncStatus.Error;
-                SyncStatusChanged (Status);
+                SyncStatusChanged(Status);
             }
 
             ProgressPercentage = 0.0;
-            ProgressSpeed      = 0.0;
+            ProgressSpeed = 0.0;
 
             Status = SyncStatus.Idle;
-            SyncStatusChanged (Status);
+            SyncStatusChanged(Status);
 
             if (!UseCustomWatcher)
-                this.watcher.Enable ();
+                this.watcher.Enable();
         }
 
 
-        void CreateListener ()
+        void CreateListener()
         {
             // this.listener = ListenerFactory.CreateListener (Name, Identifier);
 
@@ -538,93 +584,101 @@ namespace Sparkles {
             //    this.listener.Connect ();
         }
 
-        
-        void ListenerConnectedDelegate ()
+
+        void ListenerConnectedDelegate()
         {
-            if (this.last_disconnect_reason == DisconnectReason.SystemSleep) {
+            if (this.last_disconnect_reason == DisconnectReason.SystemSleep)
+            {
                 this.last_disconnect_reason = DisconnectReason.None;
 
                 if (HasRemoteChanges && !this.is_syncing)
-                    SyncDownBase ();
+                    SyncDownBase();
             }
 
             this.poll_interval = PollInterval.Long;
         }
 
 
-        void ListenerDisconnectedDelegate (DisconnectReason reason)
+        void ListenerDisconnectedDelegate(DisconnectReason reason)
         {
-            Logger.LogInfo (Name, "Falling back to regular polling");
+            Logger.LogInfo(Name, "Falling back to regular polling");
             this.poll_interval = PollInterval.Short;
 
             this.last_disconnect_reason = reason;
 
-            if (reason == DisconnectReason.SystemSleep) {
-                this.remote_timer.Stop ();
+            if (reason == DisconnectReason.SystemSleep)
+            {
+                this.remote_timer.Stop();
 
                 int backoff_time = 2;
 
-                do {
-                    Logger.LogInfo (Name, "Next reconnect attempt in " + backoff_time + " seconds");
-                    Thread.Sleep (backoff_time * 1000);
-                    this.listener.Connect ();
+                do
+                {
+                    Logger.LogInfo(Name, "Next reconnect attempt in " + backoff_time + " seconds");
+                    Thread.Sleep(backoff_time * 1000);
+                    this.listener.Connect();
                     backoff_time *= 2;
-                
+
                 } while (backoff_time < 64 && !this.listener.IsConnected);
 
-                this.remote_timer.Start ();
+                this.remote_timer.Start();
             }
         }
 
 
-        void ListenerAnnouncementReceivedDelegate (Announcement announcement)
+        void ListenerAnnouncementReceivedDelegate(Announcement announcement)
         {
             string identifier = Identifier;
 
-            if (!announcement.FolderIdentifier.Equals (identifier))
+            if (!announcement.FolderIdentifier.Equals(identifier))
                 return;
-                
-            if (!announcement.Message.Equals (CurrentRevision)) {
-                while (this.is_syncing)
-                    Thread.Sleep (100);
 
-                Logger.LogInfo (Name, "Syncing due to announcement");
+            if (!announcement.Message.Equals(CurrentRevision))
+            {
+                while (this.is_syncing)
+                    Thread.Sleep(100);
+
+                Logger.LogInfo(Name, "Syncing due to announcement");
 
                 if (Status == SyncStatus.Paused)
-                    Logger.LogInfo (Name, "We're paused, skipping sync");
+                    Logger.LogInfo(Name, "We're paused, skipping sync");
                 else
-                    SyncDownBase ();
+                    SyncDownBase();
             }
         }
 
 
         // Recursively gets a folder's size in bytes
-        long CalculateSize (DirectoryInfo parent)
+        long CalculateSize(DirectoryInfo parent)
         {
-            if (ExcludePaths.Contains (parent.Name))
+            if (ExcludePaths.Contains(parent.Name))
                 return 0;
 
             long size = 0;
 
-            try {
-                foreach (DirectoryInfo directory in parent.GetDirectories ())
-                    size += CalculateSize (directory);
+            try
+            {
+                foreach (DirectoryInfo directory in parent.GetDirectories())
+                    size += CalculateSize(directory);
 
-                foreach (FileInfo file in parent.GetFiles ())
+                foreach (FileInfo file in parent.GetFiles())
                     size += file.Length;
 
-            } catch (Exception e) {
-                Logger.LogInfo ("Local", "Error calculating directory size", e);
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Local", "Error calculating directory size", e);
             }
 
             return size;
         }
 
 
-        public void Pause ()
+        public void Pause()
         {
-            if (Status == SyncStatus.Idle) {
-                this.local_config.SetFolderOptionalAttribute (Name, "paused", bool.TrueString);
+            if (Status == SyncStatus.Idle)
+            {
+                this.local_config.SetFolderOptionalAttribute(Name, "paused", bool.TrueString);
                 Status = SyncStatus.Paused;
             }
         }
@@ -632,31 +686,35 @@ namespace Sparkles {
 
         protected string status_message = "";
 
-        public void Resume (string message)
+        public void Resume(string message)
         {
             this.status_message = message;
 
-            if (Status == SyncStatus.Paused) {
-                this.local_config.SetFolderOptionalAttribute (Name, "paused", bool.FalseString);
+            if (Status == SyncStatus.Paused)
+            {
+                this.local_config.SetFolderOptionalAttribute(Name, "paused", bool.FalseString);
                 Status = SyncStatus.Idle;
 
-                if (HasUnsyncedChanges || HasLocalChanges) {
-                    do {
-                        SyncUpBase ();
-                        
+                if (HasUnsyncedChanges || HasLocalChanges)
+                {
+                    do
+                    {
+                        SyncUpBase();
+
                     } while (HasLocalChanges);
                 }
             }
         }
 
 
-        public void Dispose ()
+        public void Dispose()
         {
-            if (remote_timer != null) {
+            if (remote_timer != null)
+            {
                 this.remote_timer.Elapsed -= RemoteTimerElapsedDelegate;
-                this.remote_timer.Stop ();
-                this.remote_timer.Dispose ();
-                this.remote_timer = null;
+                this.remote_timer.Stop();
+                this.remote_timer.Dispose();
+                this.remote_timer = null!;
             }
 
             // this.listener.Disconnected         -= ListenerDisconnectedDelegate;
@@ -665,7 +723,7 @@ namespace Sparkles {
             // this.listener.Dispose ();
 
             if (!UseCustomWatcher && this.watcher != null)
-                this.watcher.Dispose ();
+                this.watcher.Dispose();
         }
     }
 }

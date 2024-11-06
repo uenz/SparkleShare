@@ -17,6 +17,8 @@
 
 using System;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Threading;
 
 using Sparkles;
@@ -30,10 +32,10 @@ namespace SparkleShare {
 
         public event UpdateLabelEventDelegate UpdateLabelEvent = delegate { };
         public delegate void UpdateLabelEventDelegate (string text);
-
-        public readonly string WebsiteLinkAddress       = "https://www.sparkleshare.org/";
-        public readonly string CreditsLinkAddress       = "https://github.com/hbons/SparkleShare/blob/master/.github/AUTHORS.md";
-        public readonly string ReportProblemLinkAddress = "https://www.github.com/hbons/SparkleShare/issues";
+        // TODO: get link to issues from static configuration
+        public readonly string WebsiteLinkAddress       = "https://github.com/uenz/SparkleShare/wiki";
+        public readonly string CreditsLinkAddress       = "https://github.com/uenz/SparkleShare/blob/master/.github/AUTHORS.md";
+        public readonly string ReportProblemLinkAddress = "https://www.github.com/uenz/SparkleShare/issues";
         public readonly string DebugLogLinkAddress      = "file://" + SparkleShare.Controller.Config.LogFilePath;
 
         public string RunningVersion;
@@ -61,23 +63,24 @@ namespace SparkleShare {
             UpdateLabelEvent ("Checking for updates…");
             Thread.Sleep (500);
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
-            var web_client = new WebClient ();
-            var uri = new Uri ("https://www.sparkleshare.org/version");
+            var uri = new Uri ("https://raw.githubusercontent.com/uenz/SparkleShare/refs/heads/master/version-latest");
+            HttpClient client = new();
 
-            try {
-                string latest_version = web_client.DownloadString (uri);
-                latest_version = latest_version.Trim ();
-            
-                if (new Version (latest_version) > new Version (RunningVersion))
-                    UpdateLabelEvent ("An update (version " + latest_version + ") is available!");
+            try
+            {
+                string latest_version = client.GetStringAsync(uri).GetAwaiter().GetResult().Split(' ')[0].Trim();
+
+                if (new Version(latest_version) > new Version(RunningVersion))
+                    UpdateLabelEvent("An update (version " + latest_version + ") is available!");
                 else
-                    UpdateLabelEvent ("✓ You are running the latest version");
-
-            } catch (Exception e) {
-                Logger.LogInfo ("UI", "Failed to download " + uri , e);
-                UpdateLabelEvent ("Couldn’t check for updates\t");
+                    UpdateLabelEvent("✓ You are running the latest version");
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("UI", "Failed to download " + uri, e);
+                UpdateLabelEvent("Couldn’t check for updates\t");
             }
         }
     }

@@ -17,11 +17,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Timers;
 
-namespace Sparkles {
 
-    public enum DisconnectReason {
+namespace Sparkles
+{
+
+    public enum DisconnectReason
+    {
         None,
         TimeOut,
         SystemSleep
@@ -30,160 +32,177 @@ namespace Sparkles {
 
     // A persistent connection to the server that
     // listens for change notifications
-    public abstract class BaseListener {
+    public abstract class BaseListener
+    {
 
         public event Action Connected = delegate { };
 
         public event DisconnectedEventHandler Disconnected = delegate { };
-        public delegate void DisconnectedEventHandler (DisconnectReason reason);
+        public delegate void DisconnectedEventHandler(DisconnectReason reason);
 
         public event AnnouncementReceivedEventHandler AnnouncementReceived = delegate { };
-        public delegate void AnnouncementReceivedEventHandler (Announcement announcement);
+        public delegate void AnnouncementReceivedEventHandler(Announcement announcement);
 
         public readonly Uri Server;
 
-        public abstract void Connect ();
+        public abstract void Connect();
         public abstract bool IsConnected { get; }
         public abstract bool IsConnecting { get; }
 
 
-        protected abstract void AnnounceInternal (Announcement announcent);
-        protected abstract void AlsoListenToInternal (string folder_identifier);
+        protected abstract void AnnounceInternal(Announcement announcent);
+        protected abstract void AlsoListenToInternal(string folder_identifier);
 
-        protected List<string> channels = new List<string> ();
+        protected List<string> channels = new List<string>();
 
 
         private int max_recent_announcements = 10;
 
         private Dictionary<string, List<Announcement>> recent_announcements =
-            new Dictionary<string, List<Announcement>> ();
+            new Dictionary<string, List<Announcement>>();
 
-        private Dictionary<string, Announcement> queue_up   = new Dictionary<string, Announcement> ();
+        private Dictionary<string, Announcement> queue_up = new Dictionary<string, Announcement>();
 
-        private Timer reconnect_timer = new Timer {
+        private System.Timers.Timer? reconnect_timer = new System.Timers.Timer
+        {
             Interval = 60 * 1000,
             Enabled = true
         };
 
 
-        public BaseListener (Uri server, string folder_identifier)
+        public BaseListener(Uri server, string folder_identifier)
         {
             Server = server;
-            this.channels.Add (folder_identifier);
+            this.channels.Add(folder_identifier);
 
             this.reconnect_timer.Elapsed += OnTimerElapsed;
-            this.reconnect_timer.Start ();
+            this.reconnect_timer.Start();
         }
 
-        private void OnTimerElapsed(object sender, EventArgs args)
+        private void OnTimerElapsed(object? sender, EventArgs? args)
         {
             if (!IsConnected && !IsConnecting)
-                Reconnect ();
+                Reconnect();
         }
 
-        public void Announce (Announcement announcement)
+        public void Announce(Announcement announcement)
         {
-            if (!IsRecentAnnouncement (announcement)) {
-                if (IsConnected) {
-                    Logger.LogInfo ("Listener", "Announcing message " + announcement.Message +
+            if (!IsRecentAnnouncement(announcement))
+            {
+                if (IsConnected)
+                {
+                    Logger.LogInfo("Listener", "Announcing message " + announcement.Message +
                         " to " + announcement.FolderIdentifier + " on " + Server);
 
-                    AnnounceInternal (announcement);
-                    AddRecentAnnouncement (announcement);
+                    AnnounceInternal(announcement);
+                    AddRecentAnnouncement(announcement);
 
-                } else {
-                    Logger.LogInfo ("Listener", "Can't send message to " + Server + ". Queuing message");
-                    this.queue_up [announcement.FolderIdentifier] = announcement;
+                }
+                else
+                {
+                    Logger.LogInfo("Listener", "Can't send message to " + Server + ". Queuing message");
+                    this.queue_up[announcement.FolderIdentifier] = announcement;
                 }
 
-            } else {
-                Logger.LogInfo ("Listener", "Already processed message " + announcement.Message +
+            }
+            else
+            {
+                Logger.LogInfo("Listener", "Already processed message " + announcement.Message +
                     " to " + announcement.FolderIdentifier + " from " + Server);
             }
         }
 
 
-        public void AlsoListenTo (string channel)
+        public void AlsoListenTo(string channel)
         {
-            if (!this.channels.Contains (channel))
-                this.channels.Add (channel);
+            if (!this.channels.Contains(channel))
+                this.channels.Add(channel);
 
-            if (IsConnected) {
-                Logger.LogInfo ("Listener", "Subscribing to channel " + channel + " on " + Server);
-                AlsoListenToInternal (channel);
+            if (IsConnected)
+            {
+                Logger.LogInfo("Listener", "Subscribing to channel " + channel + " on " + Server);
+                AlsoListenToInternal(channel);
             }
         }
 
 
-        public void Reconnect ()
+        public void Reconnect()
         {
-            Logger.LogInfo ("Listener", "Trying to reconnect to " + Server);
-            Connect ();
+            Logger.LogInfo("Listener", "Trying to reconnect to " + Server);
+            Connect();
         }
 
 
-        public void OnConnected ()
+        public void OnConnected()
         {
-            foreach (string channel in this.channels.GetRange (0, this.channels.Count)) {
-                Logger.LogInfo ("Listener", "Subscribing to channel " + channel + " on " + Server);
-                AlsoListenToInternal (channel);
+            foreach (string channel in this.channels.GetRange(0, this.channels.Count))
+            {
+                Logger.LogInfo("Listener", "Subscribing to channel " + channel + " on " + Server);
+                AlsoListenToInternal(channel);
             }
 
-            Logger.LogInfo ("Listener", "Listening for announcements on " + Server);
-            Connected ();
+            Logger.LogInfo("Listener", "Listening for announcements on " + Server);
+            Connected();
 
-            if (this.queue_up.Count > 0) {
-                Logger.LogInfo ("Listener", "Delivering " + this.queue_up.Count + " queued messages...");
+            if (this.queue_up.Count > 0)
+            {
+                Logger.LogInfo("Listener", "Delivering " + this.queue_up.Count + " queued messages...");
 
-                foreach (KeyValuePair<string, Announcement> item in this.queue_up) {
+                foreach (KeyValuePair<string, Announcement> item in this.queue_up)
+                {
                     Announcement announcement = item.Value;
-                    Announce (announcement);
+                    Announce(announcement);
                 }
             }
         }
 
 
-        public void OnDisconnected (DisconnectReason reason, string message)
+        public void OnDisconnected(DisconnectReason reason, string message)
         {
-            Logger.LogInfo ("Listener", "Disconnected from " + Server + ": " + message);
-            Disconnected (reason);
+            Logger.LogInfo("Listener", "Disconnected from " + Server + ": " + message);
+            Disconnected(reason);
         }
 
 
-        public void OnAnnouncement (Announcement announcement)
+        public void OnAnnouncement(Announcement announcement)
         {
-            Logger.LogInfo ("Listener", "Got message " + announcement.Message + " from " +
+            Logger.LogInfo("Listener", "Got message " + announcement.Message + " from " +
                 announcement.FolderIdentifier + " on " + Server);
 
-            if (IsRecentAnnouncement (announcement))
+            if (IsRecentAnnouncement(announcement))
                 return;
 
-            AddRecentAnnouncement (announcement);
-            AnnouncementReceived (announcement);
+            AddRecentAnnouncement(announcement);
+            AnnouncementReceived(announcement);
         }
 
 
-        public virtual void Dispose ()
+        public virtual void Dispose()
         {
-            if (this.reconnect_timer != null) {
-                this.reconnect_timer.Stop ();
+            if (this.reconnect_timer != null)
+            {
+                this.reconnect_timer.Stop();
 
                 this.reconnect_timer.Elapsed -= OnTimerElapsed;
-                this.reconnect_timer.Dispose ();
+                this.reconnect_timer.Dispose();
 
                 this.reconnect_timer = null;
             }
         }
 
 
-        private bool IsRecentAnnouncement (Announcement announcement)
+        private bool IsRecentAnnouncement(Announcement announcement)
         {
-            if (!this.recent_announcements.ContainsKey (announcement.FolderIdentifier)) {
+            if (!this.recent_announcements.ContainsKey(announcement.FolderIdentifier))
+            {
                 return false;
 
-            } else {
-                foreach (Announcement recent_announcement in GetRecentAnnouncements (announcement.FolderIdentifier)) {
-                    if (recent_announcement.Message.Equals (announcement.Message))
+            }
+            else
+            {
+                foreach (Announcement recent_announcement in GetRecentAnnouncements(announcement.FolderIdentifier))
+                {
+                    if (recent_announcement.Message.Equals(announcement.Message))
                         return true;
                 }
 
@@ -192,25 +211,25 @@ namespace Sparkles {
         }
 
 
-        private List<Announcement> GetRecentAnnouncements (string folder_identifier)
+        private List<Announcement> GetRecentAnnouncements(string folder_identifier)
         {
-            if (!this.recent_announcements.ContainsKey (folder_identifier))
-                this.recent_announcements [folder_identifier] = new List<Announcement> ();
+            if (!this.recent_announcements.ContainsKey(folder_identifier))
+                this.recent_announcements[folder_identifier] = new List<Announcement>();
 
-            return this.recent_announcements [folder_identifier];
+            return this.recent_announcements[folder_identifier];
         }
 
 
-        private void AddRecentAnnouncement (Announcement announcement)
+        private void AddRecentAnnouncement(Announcement announcement)
         {
             List<Announcement> recent_announcements =
-                GetRecentAnnouncements (announcement.FolderIdentifier);
+                GetRecentAnnouncements(announcement.FolderIdentifier);
 
-            if (!IsRecentAnnouncement (announcement))
-                recent_announcements.Add (announcement);
+            if (!IsRecentAnnouncement(announcement))
+                recent_announcements.Add(announcement);
 
             if (recent_announcements.Count > this.max_recent_announcements)
-                recent_announcements.RemoveRange (0, recent_announcements.Count - this.max_recent_announcements);
+                recent_announcements.RemoveRange(0, recent_announcements.Count - this.max_recent_announcements);
         }
     }
 }

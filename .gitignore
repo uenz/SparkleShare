@@ -26,11 +26,10 @@ _ReSharper.*
 *.msi
 *.wixobj
 *.wixpdb
-*.wxs
 *.dotCover
 SparkleShare/Windows/build/
 .vs/
-
+SparkleShare/Windows/*.wxs
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore

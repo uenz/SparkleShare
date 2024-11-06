@@ -20,36 +20,39 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace Sparkles {
+namespace Sparkles
+{
 
-    public class SparkleFetcherInfo {
-        public string Address; // TODO: Uri object
-        public string RemotePath;
+    public class SparkleFetcherInfo
+    {
+        public string Address = null!; // TODO: Uri object
+        public string RemotePath = null!;
 
-        public string Fingerprint;
+        public string Fingerprint = null!;
 
-        public string Backend;
-        public string TargetDirectory;
+        public string Backend = null!;
+        public string TargetDirectory = null!;
         public bool FetchPriorHistory;
 
-        public string AnnouncementsUrl; // TODO: Uri object
+        public string AnnouncementsUrl = null!; // TODO: Uri object
     }
 
 
-    public abstract class BaseFetcher {
+    public abstract class BaseFetcher
+    {
 
         public event Action Started = delegate { };
         public event Action Failed = delegate { };
 
         public event FinishedEventHandler Finished = delegate { };
-        public delegate void FinishedEventHandler (StorageType storage_type, string [] warnings);
+        public delegate void FinishedEventHandler(StorageType storage_type, string[] warnings);
 
         public event ProgressChangedEventHandler ProgressChanged = delegate { };
-        public delegate void ProgressChangedEventHandler (double percentage, double speed, string information);
+        public delegate void ProgressChangedEventHandler(double percentage, double speed, string information);
 
 
-        public abstract bool Fetch ();
-        public abstract void Stop ();
+        public abstract bool Fetch();
+        public abstract void Stop();
         public bool IsActive { get; protected set; }
         public double ProgressPercentage { get; private set; }
         public double ProgressSpeed { get; private set; }
@@ -57,145 +60,161 @@ namespace Sparkles {
 
         protected abstract bool IsFetchedRepoEmpty { get; }
         public StorageType FetchedRepoStorageType { get; protected set; }
-        public abstract bool IsFetchedRepoPasswordCorrect (string password);
-        public abstract void EnableFetchedRepoCrypto (string password);
+        public abstract bool IsFetchedRepoPasswordCorrect(string password);
+        public abstract void EnableFetchedRepoCrypto(string password);
 
-        public readonly List<StorageTypeInfo> AvailableStorageTypes = new List<StorageTypeInfo> ();
+        public readonly List<StorageTypeInfo> AvailableStorageTypes = new List<StorageTypeInfo>();
 
 
-        public Uri RemoteUrl { get; protected set; }
+        public ScpUri RemoteUrl { get; protected set; }
         public string RequiredFingerprint { get; protected set; }
         public readonly bool FetchPriorHistory;
         public string TargetFolder { get; protected set; }
         public SparkleFetcherInfo OriginalFetcherInfo;
 
 
-        protected List<string> warnings = new List<string> ();
-        protected List<string> errors   = new List<string> ();
+        protected List<string> warnings = new List<string>();
+        protected List<string> errors = new List<string>();
 
-        public string [] Warnings {
-            get {
-                return warnings.ToArray ();
+        public string[] Warnings
+        {
+            get
+            {
+                return warnings.ToArray();
             }
         }
 
-        public string [] Errors {
-            get {
-                return errors.ToArray ();
+        public string[] Errors
+        {
+            get
+            {
+                return errors.ToArray();
             }
         }
 
-        
 
-        protected BaseFetcher (SparkleFetcherInfo info)
+
+        protected BaseFetcher(SparkleFetcherInfo info)
         {
             FetchedRepoStorageType = StorageType.Unknown;
 
-            AvailableStorageTypes.Add (
-                new StorageTypeInfo (StorageType.Plain, "Plain Storage", "Nothing fancy;\nmaximum compatibility"));
+            AvailableStorageTypes.Add(
+                new StorageTypeInfo(StorageType.Plain, "Plain Storage", "Nothing fancy;\nmaximum compatibility"));
 
             OriginalFetcherInfo = info;
             RequiredFingerprint = info.Fingerprint;
-            FetchPriorHistory   = info.FetchPriorHistory;
-            string remote_path  = info.RemotePath.Trim ("/".ToCharArray ());
-            string address      = info.Address;
+            FetchPriorHistory = info.FetchPriorHistory;
+            string remote_path = info.RemotePath.Trim("/".ToCharArray());
+            string address = info.Address;
 
-            if (address.EndsWith ("/", StringComparison.InvariantCulture))
-                address = address.Substring (0, address.Length - 1);
+            if (address.EndsWith("/", StringComparison.InvariantCulture))
+                address = address.Substring(0, address.Length - 1);
+    /*
+            if (!remote_path.StartsWith("/", StringComparison.InvariantCulture))
+                remote_path = "/" + remote_path;*/
 
-            if (!remote_path.StartsWith ("/", StringComparison.InvariantCulture))
-                remote_path = "/" + remote_path;
-
-            if (!address.Contains ("://"))
+            if (!address.Contains("://"))
                 address = "ssh://" + address;
 
             TargetFolder = info.TargetDirectory;
 
-            RemoteUrl = new Uri (address + remote_path);
+            RemoteUrl = new ScpUri (address + remote_path);
             IsActive  = false;
         }
 
 
-        Thread thread;
+        Thread thread = null!;
 
-        public void Start ()
+        public void Start()
         {
             IsActive = true;
-            Started ();
+            Started();
 
-            Logger.LogInfo ("Fetcher", TargetFolder + " | Fetching folder: " + RemoteUrl);
+            Logger.LogInfo("Fetcher", TargetFolder + " | Fetching folder: " + RemoteUrl);
 
-            try {
-                if (Directory.Exists (TargetFolder))
-                    Directory.Delete (TargetFolder, recursive: true);
-            
-            } catch (IOException) {
-                errors.Add ("\"" + TargetFolder + "\" is read-only.");
-                Failed ();
+            try
+            {
+                if (Directory.Exists(TargetFolder))
+                    Directory.Delete(TargetFolder, recursive: true);
+
+            }
+            catch (IOException)
+            {
+                errors.Add("\"" + TargetFolder + "\" is read-only.");
+                Failed();
 
                 return;
             }
 
-            thread = new Thread (() => {
-                if (Fetch ()) {
-                    Thread.Sleep (500);
-                    Logger.LogInfo ("Fetcher", "Finished");
+            thread = new Thread(() =>
+            {
+                if (Fetch())
+                {
+                    Thread.Sleep(500);
+                    Logger.LogInfo("Fetcher", "Finished");
 
                     IsActive = false;
-                    Finished (FetchedRepoStorageType, Warnings);
+                    Finished(FetchedRepoStorageType, Warnings);
 
-                } else {
-                    Thread.Sleep (500);
+                }
+                else
+                {
+                    Thread.Sleep(500);
 
-                    if (IsActive) {
-                        Logger.LogInfo ("Fetcher", "Failed");
-                        Failed ();
-                    
-                    } else {
-                        Logger.LogInfo ("Fetcher", "Failed: cancelled by user");
+                    if (IsActive)
+                    {
+                        Logger.LogInfo("Fetcher", "Failed");
+                        Failed();
+
+                    }
+                    else
+                    {
+                        Logger.LogInfo("Fetcher", "Failed: cancelled by user");
                     }
 
                     IsActive = false;
                 }
             });
 
-            thread.Start ();
+            thread.Start();
         }
 
 
-        public void Complete ()
+        public void Complete()
         {
-            if (FetchedRepoStorageType == StorageType.Unknown) {
-                Complete (StorageType.Plain);
+            if (FetchedRepoStorageType == StorageType.Unknown)
+            {
+                Complete(StorageType.Plain);
                 return;
             }
 
-            this.Complete (FetchedRepoStorageType);
+            this.Complete(FetchedRepoStorageType);
         }
 
 
-        public virtual string Complete (StorageType storage_type)
+        public virtual string Complete(StorageType storage_type)
         {
             FetchedRepoStorageType = storage_type;
 
             if (IsFetchedRepoEmpty)
-                CreateInitialChangeSet ();
-            
-            return Path.GetRandomFileName ().SHA256 ();
+                CreateInitialChangeSet();
+
+            return Path.GetRandomFileName().SHA256();
         }
 
 
         // Create an initial change set when the
         // user has fetched an empty remote folder
-        void CreateInitialChangeSet ()
+        void CreateInitialChangeSet()
         {
-			string n = Environment.NewLine;
-            string file_path = Path.Combine (TargetFolder, "SparkleShare.txt");
+            string n = Environment.NewLine;
+            string file_path = Path.Combine(TargetFolder, "SparkleShare.txt");
 
-            var uri_builder = new UriBuilder (RemoteUrl);
+            var uri_builder = new UriBuilder(RemoteUrl.ToString());
 
             // Don't expose possible username or password
-            if (RemoteUrl.Scheme.StartsWith ("http", StringComparison.InvariantCultureIgnoreCase)) {
+            if (RemoteUrl.Scheme.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+            {
                 uri_builder.UserName = "";
                 uri_builder.Password = "";
             }
@@ -211,50 +230,52 @@ namespace Sparkles {
                 "Have fun! :)" + n;
 
             if (FetchedRepoStorageType == StorageType.Encrypted)
-                text = text.Replace ("a SparkleShare repository", "an encrypted SparkleShare repository");
+                text = text.Replace("a SparkleShare repository", "an encrypted SparkleShare repository");
 
-            File.WriteAllText (file_path, text);
+            File.WriteAllText(file_path, text);
         }
 
 
         DateTime progress_last_change = DateTime.Now;
 
-        protected void OnProgressChanged (double percentage, double speed, string information) {
+        protected void OnProgressChanged(double percentage, double speed, string information)
+        {
             // Only trigger the ProgressChanged event once per second
-            if (DateTime.Compare (this.progress_last_change, DateTime.Now.Subtract (new TimeSpan (0, 0, 0, 1))) >= 0)
+            if (DateTime.Compare(this.progress_last_change, DateTime.Now.Subtract(new TimeSpan(0, 0, 0, 1))) >= 0)
                 return;
 
-            ProgressChanged (percentage, speed, information);
+            ProgressChanged(percentage, speed, information);
         }
 
 
-        public static string GetBackend (string address)
+        public static string GetBackend(string address)
         {
-            if (address.StartsWith ("ssh+", StringComparison.InvariantCultureIgnoreCase)) {
-                string backend = address.Substring (0, address.IndexOf ("://", StringComparison.InvariantCulture));
-                backend = backend.Substring (4);
+            if (address.StartsWith("ssh+", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string backend = address.Substring(0, address.IndexOf("://", StringComparison.InvariantCulture));
+                backend = backend.Substring(4);
 
-                return char.ToUpper (backend [0]) + backend.Substring (1);
+                return char.ToUpper(backend[0]) + backend.Substring(1);
             }
 
             return "Git";
         }
 
 
-        public virtual string FormatName ()
+        public virtual string FormatName()
         {
-            return Path.GetFileName (RemoteUrl.AbsolutePath);
+            return Path.GetFileName(RemoteUrl.AbsolutePath);
         }
 
 
-        public void Dispose ()
+        public void Dispose()
         {
-            if (thread != null)
-                thread.Abort ();
+            if (thread != null) 
+                thread.Interrupt();
         }
 
 
-        protected string [] ExcludeRules = {
+        protected string[] ExcludeRules = {
             "*.autosave", // Various autosaving apps
             "*~", // gedit and emacs
             ".~lock.*", // LibreOffice
