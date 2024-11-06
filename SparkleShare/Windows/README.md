@@ -7,14 +7,14 @@ You can choose to build SparkleShare from source or to run the Windows installer
 Install [VisualStudioCommunity](https://visualstudio.microsoft.com/de/vs/community/)
 or install [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) if you haven't already.
 
-Open a command prompt and execute the following:
+To build from commandline open a command prompt and execute the following:
 
 ```
 cd C:\path\to\SparkleShare-sources
 cd SparkleShare\Windows
 build
 ```
-`C:\path\to\SparkleShare-sources\bin` should now contain `SparkleShare.exe`, which you can run.
+`C:\path\to\SparkleShare-sources\Windows\bin` should now contain `SparkleShare.exe`, which you can run.
 
 
 ### Creating a Windows installer
@@ -26,6 +26,7 @@ build installer
 
 This will create `SparkleShare.msi` in the directory .\Installer\build\setup\x64\Release\en-US.
 
+Or from within Visual studio you need to install the [HeatWave]https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17 extension to build the installer package.
 
 ### Resetting SparkleShare settings
 

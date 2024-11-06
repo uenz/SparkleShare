@@ -5,6 +5,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutputPath>build\setup\x64\Release\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+    <SuppressAllWarnings>false</SuppressAllWarnings>
+    <Pedantic>true</Pedantic>
+    <SuppressIces>ICE57</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <OutputPath>..\build\setup\x86\Release\</OutputPath>
@@ -39,6 +43,7 @@
       <ComponentGroupName>RUNTIMES_DIR</ComponentGroupName>
       <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
       <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressRegistry>true</SuppressRegistry>
       <Link>runtimes</Link>
     </HarvestDirectory>
     <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\runtimes" />
