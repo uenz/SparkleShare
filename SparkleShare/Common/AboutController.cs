@@ -63,15 +63,14 @@ namespace SparkleShare {
             UpdateLabelEvent ("Checking for updates…");
             Thread.Sleep (500);
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
-            HttpClient web_client = new();
-            var uri = new Uri ("https://www.sparkleshare.org/version");
+            var uri = new Uri ("https://raw.githubusercontent.com/uenz/SparkleShare/refs/heads/master/version-latest");
             HttpClient client = new();
 
             try
             {
-                string latest_version = client.GetStringAsync(uri).GetAwaiter().GetResult();
+                string latest_version = client.GetStringAsync(uri).GetAwaiter().GetResult().Split(' ')[0].Trim();
 
                 if (new Version(latest_version) > new Version(RunningVersion))
                     UpdateLabelEvent("An update (version " + latest_version + ") is available!");
