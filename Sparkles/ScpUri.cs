@@ -11,7 +11,7 @@ namespace Sparkles
         public ScpUri([StringSyntax("Uri")] string uriString)
 
         {
-            if (Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out uri) && uriString.Contains("://"))
+            if (Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out uri!) && uriString.Contains("://"))
             {
                 scp_style = false;
             }
@@ -28,7 +28,7 @@ namespace Sparkles
                     uriString = uriString.Remove(place, 1).Insert(place, "/");
                 }
 
-                Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out uri);
+                Uri.TryCreate(uriString, UriKind.RelativeOrAbsolute, out uri!);
                 scp_style = true;
             }
         }
