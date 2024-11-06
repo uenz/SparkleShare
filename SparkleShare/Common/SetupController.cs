@@ -298,7 +298,7 @@ namespace SparkleShare {
 
             ChangePageEvent (PageType.Syncing, null);
 
-            address     = Uri.EscapeUriString (address.Trim ());
+            address     = address.Trim ();
             remote_path = remote_path.Trim ();
             remote_path = remote_path.TrimEnd ("/".ToCharArray ());
 
