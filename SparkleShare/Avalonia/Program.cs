@@ -14,22 +14,33 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using Avalonia;
+using Avalonia.ReactiveUI;
 
-namespace SparkleShare {
-    
-    public class Bubbles : IBubbles {
-
-        public BubblesController Controller { get; } = new BubblesController ();
-
-
-        public Bubbles ()
+namespace SparkleShare
+{
+    internal class Program
+    {
+        [STAThread]
+        public static void Main(string[] args)
         {
-            Controller.ShowBubbleEvent += delegate (string title, string subtext, string image_path) {
-                if (!SparkleShare.Controller.NotificationsEnabled)
-                    return;
+            SparkleShare.Initialize(args);
 
-                SparkleShare.UI.StatusIcon.ShowBalloon (title, subtext, image_path);
-            };
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+
+#if !__MonoCS__
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+#endif
         }
+
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .LogToTrace()
+                .UseReactiveUI();
     }
 }

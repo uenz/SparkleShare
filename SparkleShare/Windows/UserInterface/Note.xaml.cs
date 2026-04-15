@@ -100,7 +100,7 @@ namespace SparkleShare {
             ElementHost.EnableModelessKeyboardInterop (this);
         }
 
-        private void OnClosing (object sender, CancelEventArgs cancel_event_args)
+        private void OnClosing (object? sender, CancelEventArgs cancel_event_args)
         {
             Controller.WindowClosed ();
             cancel_event_args.Cancel = true;

@@ -40,17 +40,18 @@ namespace SparkleShare {
         public override string PresetsPath
         {
             get {
-                return Path.Combine (Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location), "Presets");
+                return Path.Combine (Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location) ?? string.Empty, "Presets");
             }
         }
 
 
         public override void Initialize ()
         {
-            string[] search_path = new string[] {   Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw64", "bin"),
-                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","mingw32", "bin"),
-                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","usr","bin"),
-                                                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"git_scm","cmd")};
+            string asm_dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+            string[] search_path = new string[] {   Path.Combine(asm_dir, "git_scm","mingw64", "bin"),
+                                                     Path.Combine(asm_dir, "git_scm","mingw32", "bin"),
+                                                     Path.Combine(asm_dir, "git_scm","usr","bin"),
+                                                     Path.Combine(asm_dir, "git_scm","cmd")};
             Command.SetSearchPath(search_path);
             Environment.SetEnvironmentVariable ("HOME", Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 
@@ -82,7 +83,7 @@ namespace SparkleShare {
 
         public override void SetFolderIcon ()
         {
-            string app_path = Path.GetDirectoryName (Forms.Application.ExecutablePath);
+            string app_path = Path.GetDirectoryName (Forms.Application.ExecutablePath) ?? string.Empty;
             string icon_file_path = Path.Combine (app_path, "Images", "sparkleshare-folder.ico");
 
             if (File.Exists (icon_file_path))

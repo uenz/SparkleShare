@@ -149,7 +149,7 @@ namespace SparkleShare {
 
         public bool LinkCodeItemEnabled {
             get {
-                return !string.IsNullOrEmpty (SparkleShare.Controller.UserAuthenticationInfo.PublicKey);
+                return !string.IsNullOrEmpty (SparkleShare.Controller.UserAuthenticationInfo?.PublicKey);
             }
         }
 
@@ -312,7 +312,7 @@ namespace SparkleShare {
 
         public void CopyToClipboardClicked ()
         {
-            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo.PublicKey);
+            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey);
         }
 
         public void AboutClicked ()
@@ -334,19 +334,19 @@ namespace SparkleShare {
 
         public void PauseClicked (string project)
         {
-            SparkleShare.Controller.GetRepoByName (project).Pause ();
+            SparkleShare.Controller.GetRepoByName (project)!.Pause ();
             UpdateStateText ();
             UpdateMenuEvent (CurrentState);
         }
 
         public void ResumeClicked (string project)
         {
-            if (SparkleShare.Controller.GetRepoByName (project).UnsyncedChanges.Count > 0) {
+            if (SparkleShare.Controller.GetRepoByName (project)!.UnsyncedChanges.Count > 0) {
                 SparkleShare.Controller.ShowNoteWindow (project);
             
             } else {
               new Thread (() => {
-                    SparkleShare.Controller.GetRepoByName (project).Resume ("");
+                    SparkleShare.Controller.GetRepoByName (project)!.Resume ("");
                     
                     UpdateStateText ();
                     UpdateMenuEvent (CurrentState);
@@ -357,7 +357,7 @@ namespace SparkleShare {
 
         public void TryAgainClicked (string project)
         {
-            new Thread (() => SparkleShare.Controller.GetRepoByName (project).ForceRetry ()).Start ();
+            new Thread (() => SparkleShare.Controller.GetRepoByName (project)!.ForceRetry ()).Start ();
         }
 
 

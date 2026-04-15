@@ -14,21 +14,23 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+using Avalonia.Controls;
+using Avalonia.Threading;
 
-namespace SparkleShare {
-    
-    public class Bubbles : IBubbles {
+namespace SparkleShare.UserInterface
+{
+    public class Bubbles : IBubbles
+    {
+        public BubblesController Controller { get; } = new BubblesController();
 
-        public BubblesController Controller { get; } = new BubblesController ();
-
-
-        public Bubbles ()
+        public Bubbles()
         {
-            Controller.ShowBubbleEvent += delegate (string title, string subtext, string image_path) {
-                if (!SparkleShare.Controller.NotificationsEnabled)
-                    return;
-
-                SparkleShare.UI.StatusIcon.ShowBalloon (title, subtext, image_path);
+            // BubblesController uses ShowBubbleEvent, not ShowWindowEvent
+            // Notifications are shown via the StatusIcon (TrayIcon) balloon tips
+            Controller.ShowBubbleEvent += delegate (string title, string subtext, string image_path)
+            {
+                // Show notification via tray icon if available
+                (SparkleShare.UI?.StatusIcon as StatusIcon)?.ShowBalloon(title, subtext);
             };
         }
     }

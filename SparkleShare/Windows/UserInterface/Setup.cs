@@ -165,7 +165,7 @@ namespace SparkleShare {
                         };
                                                     
                         TextBlock address_value = new TextBlock () {
-                            Text  = Controller.PendingInvite.Address,
+                            Text  = Controller.PendingInvite!.Address,
                             Width = 175,
                             FontWeight = FontWeights.Bold
                         };

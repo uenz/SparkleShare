@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BaseController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BubblesController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventLogController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IUserInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoteController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SetupController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SparkleShare.cs" />

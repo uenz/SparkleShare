@@ -77,7 +77,7 @@ namespace SparkleShare {
         public Preset SelectedPreset;
 
         public bool WindowIsOpen { get; private set; }
-        public SparkleInvite PendingInvite { get; private set; }
+        public SparkleInvite? PendingInvite { get; private set; }
         public string PreviousUrl { get; private set; }
         public string PreviousAddress { get; private set; }
         public string PreviousPath { get; private set; }
@@ -141,8 +141,8 @@ namespace SparkleShare {
             SparkleShare.Controller.InviteReceived += delegate (SparkleInvite invite) {
                 PendingInvite = invite;
 
-                ChangePageEvent (PageType.Invite, null);
-                ShowWindowEvent ();
+                    ChangePageEvent (PageType.Invite, Array.Empty<string>());
+                    ShowWindowEvent ();
             };
 
             SparkleShare.Controller.ShowSetupWindowEvent += delegate (PageType page_type) {
@@ -150,7 +150,7 @@ namespace SparkleShare {
                     page_type == PageType.CryptoSetup ||
                     page_type == PageType.CryptoPassword) {
 
-                    ChangePageEvent (page_type, null);
+                    ChangePageEvent (page_type, Array.Empty<string>());
                     return;
                 }
 
@@ -169,18 +169,18 @@ namespace SparkleShare {
                     return;
                 }
 
-                if (page_type == PageType.Add) {
+                if (this.current_page == PageType.Add) {
                     if (WindowIsOpen) {
                         if (this.current_page == PageType.Error ||
                             this.current_page == PageType.Finished ||
                             this.current_page == PageType.None) {
 
-                            ChangePageEvent (PageType.Add, null);
+                            ChangePageEvent (PageType.Add, Array.Empty<string>());
                         }
 
                     } else if (!SparkleShare.Controller.FirstRun) {
                         WindowIsOpen = true;
-                        ChangePageEvent (PageType.Add, null);
+                        ChangePageEvent (PageType.Add, Array.Empty<string>());
                     }
 
                     ShowWindowEvent ();
@@ -188,7 +188,7 @@ namespace SparkleShare {
                 }
 
                 WindowIsOpen = true;
-                ChangePageEvent (page_type, null);
+                ChangePageEvent (page_type, Array.Empty<string>());
                 ShowWindowEvent ();
             };
         }
@@ -233,7 +233,7 @@ namespace SparkleShare {
             SparkleShare.Controller.CurrentUser = new User (full_name, email);
             new Thread (() => SparkleShare.Controller.CreateStartupItem ()).Start ();
 
-            ChangePageEvent (PageType.Add, null);
+            ChangePageEvent (PageType.Add, Array.Empty<string>());
         }
 
       
@@ -296,7 +296,7 @@ namespace SparkleShare {
             SyncingFolder = SyncingFolder.ReplaceUnderscoreWithSpace ();
             ProgressBarPercentage = 1.0;
 
-            ChangePageEvent (PageType.Syncing, null);
+            ChangePageEvent (PageType.Syncing, Array.Empty<string>());
 
             address     = address.Trim ();
             remote_path = remote_path.Trim ();
@@ -314,11 +314,11 @@ namespace SparkleShare {
 
             SparkleFetcherInfo info = new SparkleFetcherInfo {
                 Address           = address,
-                Fingerprint       = SelectedPreset.Fingerprint,
+                Fingerprint       = SelectedPreset.Fingerprint ?? string.Empty,
                 RemotePath        = remote_path,
                 FetchPriorHistory = this.fetch_prior_history,
-                AnnouncementsUrl  = SelectedPreset.AnnouncementsUrl,
-                Backend           = SelectedPreset.Backend 
+                AnnouncementsUrl  = SelectedPreset.AnnouncementsUrl ?? string.Empty,
+                Backend           = SelectedPreset.Backend ?? string.Empty
             };
 
             new Thread (() => { SparkleShare.Controller.StartFetcher (info); }).Start ();
@@ -334,12 +334,11 @@ namespace SparkleShare {
             // Create a local preset for succesfully added projects, so
             // so the user can easily use the same host again
             if (SelectedPresetIndex == 0) {
-                Preset new_preset;
                 ScpUri uri = new ScpUri (remote_url);
 
                 try {
                     string address = remote_url.Replace (uri.AbsolutePath, "");
-                    new_preset = Preset.Create (uri.Host, address, address, "", "", "/path/to/project");
+                    Preset? new_preset = Preset.Create (uri.Host, address, address, "", "", "/path/to/project");
     
                     if (new_preset != null) {
                         Presets.Insert (1, new_preset);
@@ -351,7 +350,7 @@ namespace SparkleShare {
                 }
             }
 
-            ChangePageEvent (PageType.Finished, warnings);
+            ChangePageEvent (PageType.Finished, warnings ?? Array.Empty<string>());
 
             SparkleShare.Controller.FolderFetched    -= AddPageFetchedDelegate;
             SparkleShare.Controller.FolderFetchError -= AddPageFetchErrorDelegate;
@@ -383,7 +382,7 @@ namespace SparkleShare {
 
         public void InvitePageCompleted ()
         {
-            SyncingFolder = Path.GetFileName (PendingInvite.RemotePath);
+            SyncingFolder = Path.GetFileName (PendingInvite!.RemotePath);
 
             if (PendingInvite.RemotePath.EndsWith (".git"))
                 SyncingFolder = PendingInvite.RemotePath.Substring (0, PendingInvite.RemotePath.Length - 4);
@@ -392,10 +391,10 @@ namespace SparkleShare {
             PreviousAddress = PendingInvite.Address;
             PreviousPath    = PendingInvite.RemotePath;
 
-            ChangePageEvent (PageType.Syncing, null);
+            ChangePageEvent (PageType.Syncing, Array.Empty<string>());
 
             new Thread (() => {
-                if (!PendingInvite.Accept (SparkleShare.Controller.UserAuthenticationInfo.PublicKey)) {
+                if (!PendingInvite!.Accept (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey)) {
                     PreviousUrl = PendingInvite.Address + PendingInvite.RemotePath.TrimStart ("/".ToCharArray ());
                     ChangePageEvent (PageType.Error, new string [] { "error: Failed to upload the public key" });
                     return;
@@ -406,11 +405,11 @@ namespace SparkleShare {
                 SparkleShare.Controller.FolderFetching   += SyncingPageFetchingDelegate;
 
                 SparkleFetcherInfo info = new SparkleFetcherInfo {
-                    Address           = PendingInvite.Address,
-                    Fingerprint       = PendingInvite.Fingerprint,
+                    Address           = PendingInvite!.Address,
+                    Fingerprint       = PendingInvite.Fingerprint ?? string.Empty,
                     RemotePath        = PendingInvite.RemotePath,
-                    FetchPriorHistory = false, // TODO: checkbox on invite page
-                    AnnouncementsUrl  = PendingInvite.AnnouncementsUrl
+                    FetchPriorHistory = false,
+                    AnnouncementsUrl  = PendingInvite.AnnouncementsUrl ?? string.Empty
                 };
 
                 SparkleShare.Controller.StartFetcher (info);
@@ -424,9 +423,9 @@ namespace SparkleShare {
         private void InvitePageFetchedDelegate (string remote_url, string [] warnings)
         {
             SyncingFolder   = "";
-            PendingInvite = null;
+            PendingInvite = null!;
 
-            ChangePageEvent (PageType.Finished, warnings);
+            ChangePageEvent (PageType.Finished, warnings ?? Array.Empty<string>());
 
             SparkleShare.Controller.FolderFetched    -= AddPageFetchedDelegate;
             SparkleShare.Controller.FolderFetchError -= AddPageFetchErrorDelegate;
@@ -438,7 +437,7 @@ namespace SparkleShare {
             SyncingFolder = "";
             PreviousUrl   = remote_url;
 
-            ChangePageEvent (PageType.Error, errors);
+            ChangePageEvent (PageType.Error, errors ?? Array.Empty<string>());
 
             SparkleShare.Controller.FolderFetched    -= AddPageFetchedDelegate;
             SparkleShare.Controller.FolderFetchError -= AddPageFetchErrorDelegate;
@@ -451,30 +450,30 @@ namespace SparkleShare {
             SparkleShare.Controller.StopFetcher ();
 
             if (PendingInvite != null)
-                ChangePageEvent (PageType.Invite, null);
+                ChangePageEvent (PageType.Invite, Array.Empty<string>());
             else
-                ChangePageEvent (PageType.Add, null);
+                ChangePageEvent (PageType.Add, Array.Empty<string>());
         }
 
 
         public void ErrorPageCompleted ()
         {
             if (PendingInvite != null)
-                ChangePageEvent (PageType.Invite, null);
+                ChangePageEvent (PageType.Invite, Array.Empty<string>());
             else
-                ChangePageEvent (PageType.Add, null);
+                ChangePageEvent (PageType.Add, Array.Empty<string>());
         }
 
 
         public void StoragePageCompleted (StorageType storage_type)
         {
             if (storage_type == StorageType.Encrypted) {
-                ChangePageEvent (PageType.CryptoSetup, null);
+                ChangePageEvent (PageType.CryptoSetup, Array.Empty<string>());
                 return;
             }
 
             ProgressBarPercentage = 100.0;
-            ChangePageEvent (PageType.Syncing, null);
+            ChangePageEvent (PageType.Syncing, Array.Empty<string>());
 
             new Thread (() => {
                 Thread.Sleep (1000);
@@ -515,7 +514,7 @@ namespace SparkleShare {
         public void CryptoPasswordPageCompleted (string password)
         {
             ProgressBarPercentage = 100.0;
-            ChangePageEvent (PageType.Syncing, null);
+            ChangePageEvent (PageType.Syncing, Array.Empty<string>());
 
             new Thread (() => {
                 Thread.Sleep (1000);
@@ -527,7 +526,7 @@ namespace SparkleShare {
 
         public void CopyToClipboardClicked ()
         {
-            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo.PublicKey);
+            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey);
         }
 
 

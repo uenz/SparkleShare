@@ -33,8 +33,8 @@ namespace SparkleShare {
         
         public Canvas ContentCanvas  = new Canvas ();
         public List <Button> Buttons = new List <Button> ();
-        public string Header;
-        public string Description;
+        public string Header      = string.Empty;
+        public string Description  = string.Empty;
         
         private Image side_splash;
         private Rectangle bar;
@@ -167,7 +167,7 @@ namespace SparkleShare {
                     
                     right += (int) button.Width + 9;
 
-					if ((button.Content as string).Equals ("Continue")) {
+                    if ((button.Content as string)?.Equals ("Continue") == true) {
 						Buttons [Buttons.Count - 1].IsDefault = false;
 						button.IsDefault      = true;
 					}
@@ -178,7 +178,7 @@ namespace SparkleShare {
         }
     
         
-        private void Close (object sender, CancelEventArgs args)
+        private void Close (object? sender, CancelEventArgs args)
         {
             args.Cancel = true;    
         }

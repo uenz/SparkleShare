@@ -51,7 +51,7 @@ namespace SparkleShare {
         }
 
 
-        public BaseRepository GetRepoByName (string name)
+        public BaseRepository? GetRepoByName (string name)
         {
             lock (this.repo_lock) {
                 foreach (BaseRepository repo in this.repositories)
@@ -125,12 +125,12 @@ namespace SparkleShare {
             set { Config.User = value; }
         }
 
-        public SSHAuthenticationInfo UserAuthenticationInfo;
+        public SSHAuthenticationInfo? UserAuthenticationInfo;
 
 
         public bool NotificationsEnabled {
             get {
-                string notifications_enabled = Config.GetConfigOption ("notifications");
+                string? notifications_enabled = Config.GetConfigOption ("notifications");
 
                 if (string.IsNullOrEmpty (notifications_enabled)) {
                     Config.SetConfigOption ("notifications", bool.TrueString);
@@ -144,7 +144,7 @@ namespace SparkleShare {
 
         public bool AvatarsEnabled {
             get {
-                string fetch_avatars_option = Config.GetConfigOption ("fetch_avatars");
+                string? fetch_avatars_option = Config.GetConfigOption ("fetch_avatars");
 
                 if (fetch_avatars_option == null || fetch_avatars_option.Equals (bool.FalseString))
                     return false;
@@ -155,7 +155,7 @@ namespace SparkleShare {
 
         public string AvatarsProvider {
             get {
-                string avatars_provider_string = Config.GetConfigOption ("avatars_provider");
+                string? avatars_provider_string = Config.GetConfigOption ("avatars_provider");
 
                 if (avatars_provider_string == null)
                     return "gravatar";
@@ -199,8 +199,8 @@ namespace SparkleShare {
         public abstract string EventEntryHTML { get; }
 
 
-        BaseFetcher fetcher;
-        FileSystemWatcher watcher;
+        BaseFetcher? fetcher;
+        FileSystemWatcher? watcher;
         object repo_lock = new object ();
         object check_repos_lock = new object ();
         List<BaseRepository> repositories = new List<BaseRepository> ();
@@ -278,7 +278,7 @@ namespace SparkleShare {
         {
             if (this.lost_folders_path) {
                 SparkleShare.UI.Bubbles.Controller.ShowBubble ("Where's your SparkleShare folder?",
-                                                          "Did you put it on a detached drive?", null);
+                                                          "Did you put it on a detached drive?", string.Empty);
 
                 Environment.Exit (-1);
             }
@@ -336,7 +336,7 @@ namespace SparkleShare {
 
         public void ToggleNotifications ()
         {
-            bool notifications_enabled = Config.GetConfigOption ("notifications").Equals (bool.TrueString);
+            bool notifications_enabled = (Config.GetConfigOption ("notifications") ?? bool.TrueString).Equals (bool.TrueString);
             Config.SetConfigOption ("notifications", (!notifications_enabled).ToString ());
         }
 
@@ -371,7 +371,7 @@ namespace SparkleShare {
                     if (!Config.IdentifierExists (identifier))
                         continue;
 
-                    RemoveRepository (GetRepoByName (folder_name));
+                    RemoveRepository (GetRepoByName (folder_name)!);
                     Config.RenameFolder (identifier, folder_name);
 
                     string new_folder_path = Path.Combine (group_path, folder_name);
@@ -391,7 +391,7 @@ namespace SparkleShare {
 
                 if (!Directory.Exists (folder_path)) {
                     Config.RemoveFolder (folder_name);
-                    RemoveRepository (GetRepoByName (folder_name));
+                    RemoveRepository (GetRepoByName (folder_name)!);
 
                     Logger.LogInfo ("Controller", "Removed folder '" + folder_name + "' from config");
 
@@ -404,14 +404,14 @@ namespace SparkleShare {
 
         void AddRepository (string folder_path)
         {
-            BaseRepository repo = null;
+            BaseRepository? repo = null;
             string folder_name = Path.GetFileName (folder_path);
             string backend = Config.BackendByName (folder_name);
 
             try {
                 repo = (BaseRepository) Activator.CreateInstance (
-                    Type.GetType ("Sparkles." + backend + "." + backend + "Repository, Sparkles." + backend),
-                        new object [] { folder_path, Config, SSHAuthenticationInfo.DefaultAuthenticationInfo });
+                    Type.GetType ("Sparkles." + backend + "." + backend + "Repository, Sparkles." + backend)!,
+                        new object [] { folder_path, Config, SSHAuthenticationInfo.DefaultAuthenticationInfo })!;
 
             } catch (Exception e) {
                 Logger.LogInfo ("Controller", "Failed to load backend '" + backend + "' for '" + folder_name + "': ", e);
@@ -571,7 +571,7 @@ namespace SparkleShare {
 
         public List<StorageTypeInfo> FetcherAvailableStorageTypes {
             get {
-                return this.fetcher.AvailableStorageTypes;
+                return this.fetcher!.AvailableStorageTypes;
             }
         }
 
@@ -591,8 +591,8 @@ namespace SparkleShare {
 
             try {
                 this.fetcher = (BaseFetcher) Activator.CreateInstance (
-                    Type.GetType ("Sparkles." + backend + "." + backend + "Fetcher, Sparkles." + backend),
-                        new object [] { info, UserAuthenticationInfo});
+                    Type.GetType ("Sparkles." + backend + "." + backend + "Fetcher, Sparkles." + backend)!,
+                        new object [] { info, UserAuthenticationInfo!})!;
 
             } catch (Exception e) {
                 Logger.LogInfo ("Controller",
@@ -630,7 +630,7 @@ namespace SparkleShare {
 
         void FetcherFailedDelegate ()
         {
-            FolderFetchError (this.fetcher.RemoteUrl.ToString (), this.fetcher.Errors);
+            FolderFetchError (this.fetcher!.RemoteUrl.ToString (), this.fetcher.Errors);
             StopFetcher ();
         }
 
@@ -643,37 +643,37 @@ namespace SparkleShare {
 
         public void StopFetcher ()
         {
-            this.fetcher.Stop ();
+            this.fetcher!.Stop ();
             this.fetcher.Dispose ();
 
-            this.fetcher = null;
-            this.watcher.EnableRaisingEvents = true;
+            this.fetcher = null!;
+            this.watcher!.EnableRaisingEvents = true;
         }
 
 
         public bool CheckPassword (string password)
         {
-            return this.fetcher.IsFetchedRepoPasswordCorrect (password);
+            return this.fetcher!.IsFetchedRepoPasswordCorrect (password);
         }
 
 
         public void FinishFetcher (StorageType selected_storage_type, string password)
         {
-            this.fetcher.EnableFetchedRepoCrypto (password);
+            this.fetcher!.EnableFetchedRepoCrypto (password);
             FinishFetcher (StorageType.Encrypted);
         }
 
 
         public void FinishFetcher (StorageType selected_storage_type)
         {
-            this.watcher.EnableRaisingEvents = false;
-            string identifier = this.fetcher.Complete (selected_storage_type);
+            this.watcher!.EnableRaisingEvents = false;
+            string identifier = this.fetcher!.Complete (selected_storage_type);
 
             string target_folder_path = DetermineFolderPath ();
             string target_folder_name = Path.GetFileName (target_folder_path);
 
             try {
-                Directory.Move (this.fetcher.TargetFolder, target_folder_path);
+                Directory.Move (this.fetcher!.TargetFolder, target_folder_path);
 
             } catch (Exception e) {
                 Logger.LogInfo ("Controller", "Error moving directory, trying again...", e);
@@ -686,13 +686,13 @@ namespace SparkleShare {
                     Logger.LogInfo ("Controller", "Error moving directory", x);
 
                     this.fetcher.Dispose ();
-                    this.fetcher = null;
-                    this.watcher.EnableRaisingEvents = true;
+                    this.fetcher = null!;
+                    this.watcher!.EnableRaisingEvents = true;
                     return;
                 }
             }
 
-            string backend = BaseFetcher.GetBackend (this.fetcher.RemoteUrl.ToString ());
+            string backend = BaseFetcher.GetBackend (this.fetcher!.RemoteUrl.ToString ());
 
             Config.AddFolder (target_folder_name, identifier, this.fetcher.RemoteUrl.ToString (), backend);
 
@@ -710,18 +710,17 @@ namespace SparkleShare {
             RepositoriesLoaded = true;
 
             FolderListChanged ();
-            FolderFetched (this.fetcher.RemoteUrl.ToString (), this.fetcher.Warnings.ToArray ());
+            FolderFetched (this.fetcher!.RemoteUrl.ToString (), this.fetcher.Warnings.ToArray ());
 
             this.fetcher.Dispose ();
-            this.fetcher = null;
-
-            this.watcher.EnableRaisingEvents = true;
+            this.fetcher = null!;
+            this.watcher!.EnableRaisingEvents = true;
         }
 
 
         string DetermineFolderPath ()
         {
-            string folder_name = this.fetcher.FormatName ();
+            string folder_name = this.fetcher!.FormatName ();
             string folder_group_path = Path.Combine (Config.FoldersPath, this.fetcher.RemoteUrl.Host);
             string folder_path = Path.Combine (Config.FoldersPath, folder_group_path, folder_name);
 

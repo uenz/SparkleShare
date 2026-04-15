@@ -14,22 +14,25 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace SparkleShare {
-    
-    public class Bubbles : IBubbles {
 
-        public BubblesController Controller { get; } = new BubblesController ();
+    public interface IStatusIcon {
+        void Dispose ();
+        void ShowBalloon (string title, string subtext, string image_path);
+    }
 
+    public interface IBubbles {
+        BubblesController Controller { get; }
+    }
 
-        public Bubbles ()
-        {
-            Controller.ShowBubbleEvent += delegate (string title, string subtext, string image_path) {
-                if (!SparkleShare.Controller.NotificationsEnabled)
-                    return;
+    public interface IEventLog {
+        EventLogController Controller { get; }
+    }
 
-                SparkleShare.UI.StatusIcon.ShowBalloon (title, subtext, image_path);
-            };
-        }
+    public interface IUserInterface {
+        IStatusIcon StatusIcon { get; }
+        IBubbles Bubbles { get; }
+        IEventLog EventLog { get; }
+        void Run (string [] args);
     }
 }

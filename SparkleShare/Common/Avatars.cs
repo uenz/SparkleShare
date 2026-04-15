@@ -92,7 +92,7 @@ namespace SparkleShare
 
                     byte[] buffer = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                     
-                                        if (contentType.MediaType.Equals (MediaTypeNames.Image.Jpeg, StringComparison.InvariantCultureIgnoreCase)) {
+                    if (contentType!.MediaType!.Equals (MediaTypeNames.Image.Jpeg, StringComparison.InvariantCultureIgnoreCase)) {
                                         avatar_file_path += ".jpg";
 
                                     } else if (contentType.MediaType.Equals (MediaTypeNames.Image.Gif, StringComparison.InvariantCultureIgnoreCase)) {
@@ -133,7 +133,7 @@ namespace SparkleShare
         private static bool GetGravatarValidationCallBack (Object sender,
             X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)
         {
-            X509Certificate2 certificate2 = new X509Certificate2 (certificate.GetRawCertData ());
+            X509Certificate2 certificate2 = X509CertificateLoader.LoadCertificate (certificate.GetRawCertData ());
 
             // On some systems (mostly Linux) we can't assume the needed certificates are
             // available, so we have to check the certificate's SHA-1 fingerprint manually.
