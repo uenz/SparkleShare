@@ -40,7 +40,7 @@ namespace SparkleShare {
             };
 
             SparkleShare.Controller.NotificationRaised += delegate (ChangeSet change_set) {
-                ShowBubble (change_set.User.Name, change_set.ToMessage (), change_set.User.AvatarFilePath);
+                ShowBubble (change_set.User.Name, change_set.ToMessage (), change_set.User.AvatarFilePath ?? string.Empty);
             };
         }
 

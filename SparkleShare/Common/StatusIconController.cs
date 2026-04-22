@@ -312,7 +312,8 @@ namespace SparkleShare {
 
         public void CopyToClipboardClicked ()
         {
-            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey);
+            if (SparkleShare.Controller.UserAuthenticationInfo?.PublicKey != null)
+                SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo.PublicKey);
         }
 
         public void AboutClicked ()

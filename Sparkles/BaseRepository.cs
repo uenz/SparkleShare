@@ -85,7 +85,7 @@ namespace Sparkles
         public abstract bool HasLocalChanges { get; }
         public abstract bool HasRemoteChanges { get; }
 
-        public abstract string CurrentRevision { get; }
+        public abstract string? CurrentRevision { get; }
         public abstract double Size { get; }
         public abstract double HistorySize { get; }
 
@@ -112,24 +112,24 @@ namespace Sparkles
         public event Action ChangesDetected = delegate { };
 
 
-        public readonly string LocalPath;
-        public readonly string Name;
-        public readonly ScpUri RemoteUrl;
-        public List<ChangeSet> ChangeSets { get; set; } = null!;
+        public readonly string LocalPath = null!;
+        public readonly string Name = null!;
+        public readonly ScpUri RemoteUrl = null!;
+        public List<ChangeSet> ChangeSets { get; set; } = new List<ChangeSet>();
         public SyncStatus Status { get; set; }
         public ErrorStatus Error { get; protected set; }
         public bool IsBuffering { get; set; }
 
         public double ProgressPercentage { get; private set; }
         public double ProgressSpeed { get; private set; }
-        public string ProgressInformation { get; private set; } = null!;
+        public string? ProgressInformation { get; private set; } = null;
 
         public DateTime LastSync
         {
             get
             {
                 if (ChangeSets != null && ChangeSets.Count > 0)
-                    return ChangeSets[0].Timestamp;
+                    return ChangeSets[0]!.Timestamp;
                 else
                     return DateTime.MinValue;
             }
@@ -178,8 +178,8 @@ namespace Sparkles
         protected Configuration local_config;
 
         string identifier;
-        BaseListener listener = null!;
-        Watcher watcher = null!;
+        BaseListener? listener = null;
+        Watcher? watcher = null;
         TimeSpan poll_interval = PollInterval.Short;
         DateTime last_poll = DateTime.Now;
         Timers.Timer remote_timer = new Timers.Timer() { Interval = 5000 };
@@ -197,33 +197,33 @@ namespace Sparkles
         }
 
 
-        public BaseRepository(string path, Configuration config)
+        public BaseRepository(string? path, Configuration config)
         {
-            Logger.LogInfo(path, "Initializing...");
+            Logger.LogInfo(path ?? "Repository", "Initializing...");
 
             Status = SyncStatus.Idle;
             Error = ErrorStatus.None;
             this.local_config = config;
-            LocalPath = path;
-            Name = Path.GetFileName(LocalPath);
-            RemoteUrl = new ScpUri(this.local_config.UrlByName(Name)!);
+            LocalPath = path ?? throw new ArgumentNullException(nameof(path), "Repository path cannot be null");
+            Name = Path.GetFileName(LocalPath) ?? "unknown";
+            RemoteUrl = new ScpUri(this.local_config.UrlByName(Name ?? "unknown")!);
             IsBuffering = false;
             this.identifier = Identifier;
 
-            string storage_type = this.local_config.GetFolderOptionalAttribute(Name, "storage_type")!;
+            string storage_type = this.local_config.GetFolderOptionalAttribute(Name ?? "unknown", "storage_type")!;
 
             if (!string.IsNullOrEmpty(storage_type))
                 StorageType = (StorageType)Enum.Parse(typeof(StorageType), storage_type);
 
-            string is_paused = this.local_config.GetFolderOptionalAttribute(Name, "paused")!;
+            string is_paused = this.local_config.GetFolderOptionalAttribute(Name ?? "unknown", "paused")!;
             if (is_paused != null && is_paused.Equals(bool.TrueString))
                 Status = SyncStatus.Paused;
 
-            string identifier_file_path = Path.Combine(LocalPath, ".sparkleshare");
+            string identifier_file_path = Path.Combine(LocalPath ?? string.Empty, ".sparkleshare");
             File.SetAttributes(identifier_file_path, FileAttributes.Hidden);
 
             if (!UseCustomWatcher)
-                this.watcher = new Watcher(LocalPath);
+                this.watcher = new Watcher(LocalPath ?? string.Empty);
 
             new Thread(() => CreateListener()).Start();
 
@@ -288,9 +288,9 @@ namespace Sparkles
                 }
 
                 if (!UseCustomWatcher)
-                    this.watcher.ChangeEvent += OnFileActivity;
+                    this.watcher!.ChangeEvent += OnFileActivity;
 
-                this.remote_timer.Start();
+                this.remote_timer!.Start();
 
             }).Start();
         }
@@ -329,7 +329,7 @@ namespace Sparkles
             ChangesDetected();
 
             if (!UseCustomWatcher)
-                this.watcher.Disable();
+                this.watcher!.Disable();
 
             Logger.LogInfo("Local", Name + " | Activity detected, waiting for it to settle...");
 
@@ -386,7 +386,7 @@ namespace Sparkles
             } while (IsBuffering);
 
             if (!UseCustomWatcher)
-                this.watcher.Enable();
+                this.watcher!.Enable();
         }
 
 
@@ -430,7 +430,7 @@ namespace Sparkles
         void SyncUpBase()
         {
             if (!UseCustomWatcher)
-                this.watcher.Disable();
+                this.watcher!.Disable();
 
             Logger.LogInfo("SyncUp", Name + " | Initiated");
             HasUnsyncedChanges = true;
@@ -458,7 +458,7 @@ namespace Sparkles
                 SyncDownBase();
 
                 if (!UseCustomWatcher)
-                    this.watcher.Disable();
+                    this.watcher!.Disable();
 
                 if (Error == ErrorStatus.None && SyncUp())
                 {
@@ -483,7 +483,7 @@ namespace Sparkles
             ProgressSpeed = 0.0;
 
             if (!UseCustomWatcher)
-                this.watcher.Enable();
+                this.watcher!.Enable();
 
             this.status_message = "";
         }
@@ -492,14 +492,14 @@ namespace Sparkles
         void SyncDownBase()
         {
             if (!UseCustomWatcher)
-                this.watcher.Disable();
+                this.watcher!.Disable();
 
             Logger.LogInfo("SyncDown", Name + " | Initiated");
 
             Status = SyncStatus.SyncDown;
             SyncStatusChanged(Status);
 
-            string pre_sync_revision = CurrentRevision;
+            string pre_sync_revision = CurrentRevision!;
 
             if (SyncDown())
             {
@@ -565,7 +565,7 @@ namespace Sparkles
             SyncStatusChanged(Status);
 
             if (!UseCustomWatcher)
-                this.watcher.Enable();
+                this.watcher!.Enable();
         }
 
 
@@ -616,7 +616,7 @@ namespace Sparkles
                 {
                     Logger.LogInfo(Name, "Next reconnect attempt in " + backoff_time + " seconds");
                     Thread.Sleep(backoff_time * 1000);
-                    this.listener.Connect();
+                    this.listener!.Connect();
                     backoff_time *= 2;
 
                 } while (backoff_time < 64 && !this.listener.IsConnected);
@@ -723,7 +723,7 @@ namespace Sparkles
             // this.listener.Dispose ();
 
             if (!UseCustomWatcher && this.watcher != null)
-                this.watcher.Dispose();
+                this.watcher!.Dispose();
         }
     }
 }

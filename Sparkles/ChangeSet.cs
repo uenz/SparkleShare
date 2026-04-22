@@ -36,11 +36,11 @@ namespace Sparkles
 
         public User User = new User("Unknown", "Unknown");
 
-        public SparkleFolder Folder = null!;
-        public string Revision = null!;
+        public SparkleFolder? Folder = null;
+        public string? Revision = null;
         public DateTime Timestamp;
         public DateTime FirstTimestamp;
-        public ScpUri RemoteUrl = null!;
+        public ScpUri? RemoteUrl = null;
 
         public List<Change> Changes = new List<Change>();
 
@@ -112,10 +112,10 @@ namespace Sparkles
         public readonly string Message;
 
 
-        public Announcement(string folder_identifier, string message)
+        public Announcement(string? folder_identifier, string? message)
         {
-            FolderIdentifier = folder_identifier;
-            Message = message;
+            FolderIdentifier = folder_identifier ?? string.Empty;
+            Message = message ?? string.Empty;
         }
     }
 }

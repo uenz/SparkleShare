@@ -382,20 +382,26 @@ namespace SparkleShare {
 
         public void InvitePageCompleted ()
         {
-            SyncingFolder = Path.GetFileName (PendingInvite!.RemotePath);
+            string remotePath = PendingInvite!.RemotePath ?? "project";
+            SyncingFolder = Path.GetFileName (remotePath);
 
-            if (PendingInvite.RemotePath.EndsWith (".git"))
-                SyncingFolder = PendingInvite.RemotePath.Substring (0, PendingInvite.RemotePath.Length - 4);
+            if (remotePath.EndsWith (".git"))
+                SyncingFolder = remotePath.Substring (0, remotePath.Length - 4);
 
 			SyncingFolder   = SyncingFolder.ReplaceUnderscoreWithSpace ();
-            PreviousAddress = PendingInvite.Address;
-            PreviousPath    = PendingInvite.RemotePath;
+            PreviousAddress = PendingInvite.Address ?? "";
+            PreviousPath    = remotePath;
 
             ChangePageEvent (PageType.Syncing, Array.Empty<string>());
 
             new Thread (() => {
-                if (!PendingInvite!.Accept (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey)) {
-                    PreviousUrl = PendingInvite.Address + PendingInvite.RemotePath.TrimStart ("/".ToCharArray ());
+                if (PendingInvite == null || SparkleShare.Controller.UserAuthenticationInfo?.PublicKey == null) {
+                    ChangePageEvent (PageType.Error, new string [] { "error: Missing authentication information" });
+                    return;
+                }
+                
+                if (!PendingInvite.Accept (SparkleShare.Controller.UserAuthenticationInfo.PublicKey)) {
+                    PreviousUrl = (PendingInvite.Address ?? "") + (PendingInvite.RemotePath?.TrimStart ("/".ToCharArray ()) ?? "");
                     ChangePageEvent (PageType.Error, new string [] { "error: Failed to upload the public key" });
                     return;
                 }
@@ -526,7 +532,8 @@ namespace SparkleShare {
 
         public void CopyToClipboardClicked ()
         {
-            SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo!.PublicKey);
+            if (SparkleShare.Controller.UserAuthenticationInfo?.PublicKey != null)
+                SparkleShare.Controller.CopyToClipboard (SparkleShare.Controller.UserAuthenticationInfo.PublicKey);
         }
 
 

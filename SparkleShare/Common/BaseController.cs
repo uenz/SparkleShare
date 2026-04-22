@@ -54,8 +54,8 @@ namespace SparkleShare {
         public BaseRepository? GetRepoByName (string name)
         {
             lock (this.repo_lock) {
-                foreach (BaseRepository repo in this.repositories)
-                    if (repo.Name.Equals (name))
+                foreach (BaseRepository? repo in this.repositories)
+                    if (repo != null && repo.Name.Equals (name))
                         return repo;
             }
 
@@ -411,7 +411,7 @@ namespace SparkleShare {
             try {
                 repo = (BaseRepository) Activator.CreateInstance (
                     Type.GetType ("Sparkles." + backend + "." + backend + "Repository, Sparkles." + backend)!,
-                        new object [] { folder_path, Config, SSHAuthenticationInfo.DefaultAuthenticationInfo })!;
+                        new object [] { folder_path, Config, SSHAuthenticationInfo.DefaultAuthenticationInfo ?? UserAuthenticationInfo! })!;
 
             } catch (Exception e) {
                 Logger.LogInfo ("Controller", "Failed to load backend '" + backend + "' for '" + folder_name + "': ", e);
@@ -456,7 +456,7 @@ namespace SparkleShare {
                 }
 
                 if (repo_count == 1)
-                    ProgressInformation = repo.ProgressInformation;
+                    ProgressInformation = repo.ProgressInformation ?? "";
 
                 if (repo_count > 0)
                     ProgressPercentage = percentage / repo_count;
@@ -578,13 +578,13 @@ namespace SparkleShare {
 
         public void StartFetcher (SparkleFetcherInfo info)
         {
-            string canonical_name = Path.GetFileName (info.RemotePath);
-            string backend        = info.Backend;
+            string canonical_name = Path.GetFileName (info.RemotePath) ?? "unknown";
+            string backend        = info.Backend ?? string.Empty;
 
             if (string.IsNullOrEmpty (backend))
-                backend = BaseFetcher.GetBackend (info.Address);
+                backend = BaseFetcher.GetBackend (info.Address ?? string.Empty);
 
-            info.TargetDirectory = Path.Combine (Config.TmpPath, canonical_name);
+            info.TargetDirectory = Path.Combine (Config.TmpPath, canonical_name ?? "temp");
 
             if (Directory.Exists (info.TargetDirectory))
                 Directory.Delete (info.TargetDirectory, recursive: true);
@@ -598,7 +598,7 @@ namespace SparkleShare {
                 Logger.LogInfo ("Controller",
                     "Failed to load '" + backend + "' backend for '" + canonical_name + "' " + e.Message);
 
-                FolderFetchError (Path.Combine (info.Address, info.RemotePath).Replace (@"\", "/"),
+                FolderFetchError (Path.Combine (info.Address ?? string.Empty, info.RemotePath ?? string.Empty).Replace (@"\", "/"),
                                   new string [] {"Failed to load \"" + backend + "\" backend for \"" + canonical_name + "\""});
 
                 return;

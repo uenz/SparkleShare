@@ -24,7 +24,7 @@ namespace Sparkles
         public readonly string Name;
         public readonly string Email;
 
-        public string AvatarFilePath = null!;
+        public string? AvatarFilePath = null;
 
 
         public User(string name, string email)

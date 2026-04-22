@@ -25,16 +25,16 @@ namespace Sparkles
 
     public class SparkleFetcherInfo
     {
-        public string Address = null!; // TODO: Uri object
-        public string RemotePath = null!;
+        public string? Address = null; // TODO: Uri object
+        public string? RemotePath = null;
 
-        public string Fingerprint = null!;
+        public string? Fingerprint = null;
 
-        public string Backend = null!;
-        public string TargetDirectory = null!;
+        public string? Backend = null;
+        public string? TargetDirectory = null;
         public bool FetchPriorHistory;
 
-        public string AnnouncementsUrl = null!; // TODO: Uri object
+        public string? AnnouncementsUrl = null; // TODO: Uri object
     }
 
 
@@ -66,10 +66,10 @@ namespace Sparkles
         public readonly List<StorageTypeInfo> AvailableStorageTypes = new List<StorageTypeInfo>();
 
 
-        public ScpUri RemoteUrl { get; protected set; }
-        public string RequiredFingerprint { get; protected set; }
+        public ScpUri RemoteUrl { get; protected set; } = null!;
+        public string? RequiredFingerprint { get; protected set; }
         public readonly bool FetchPriorHistory;
-        public string TargetFolder { get; protected set; }
+        public string TargetFolder { get; protected set; } = null!;
         public SparkleFetcherInfo OriginalFetcherInfo;
 
 
@@ -102,10 +102,10 @@ namespace Sparkles
                 new StorageTypeInfo(StorageType.Plain, "Plain Storage", "Nothing fancy;\nmaximum compatibility"));
 
             OriginalFetcherInfo = info;
-            RequiredFingerprint = info.Fingerprint;
+            RequiredFingerprint = string.IsNullOrEmpty(info.Fingerprint) ? null : info.Fingerprint;
             FetchPriorHistory = info.FetchPriorHistory;
-            string remote_path = info.RemotePath.Trim("/".ToCharArray());
-            string address = info.Address;
+            string remote_path = info.RemotePath?.Trim("/".ToCharArray()) ?? string.Empty;
+            string address = info.Address ?? string.Empty;
 
             if (address.EndsWith("/", StringComparison.InvariantCulture))
                 address = address.Substring(0, address.Length - 1);
@@ -116,14 +116,14 @@ namespace Sparkles
             if (!address.Contains("://"))
                 address = "ssh://" + address;
 
-            TargetFolder = info.TargetDirectory;
+            TargetFolder = info.TargetDirectory ?? Path.Combine(Configuration.DefaultConfiguration.TmpPath, "temp");
 
-            RemoteUrl = new ScpUri (address + remote_path);
+            RemoteUrl = new ScpUri (address +":"+ remote_path);
             IsActive  = false;
         }
 
 
-        Thread thread = null!;
+        Thread? thread = null;
 
         public void Start()
         {

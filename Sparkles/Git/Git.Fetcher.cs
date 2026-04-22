@@ -110,7 +110,7 @@ namespace Sparkles.Git {
             string information = "";
 
             while (!output_stream.EndOfStream) {
-                string line = output_stream.ReadLine ()!;
+                string line = output_stream.ReadLine()!;
 
                 ErrorStatus error = GitCommand.ParseProgress (line, out percentage, out speed, out information);
 
@@ -310,12 +310,23 @@ namespace Sparkles.Git {
         {
             // TODO bad hack, because ls-remote cant handle scp_like syntax
             var git_ls_remote = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
-                string.Format ("ls-remote --heads \"{0}\"", RemoteUrl.ToString()), auth_info);
+                string.Format ("ls-remote --heads \"{0}\"", RemoteUrl.ToUriString()), auth_info);
 
-            string output = git_ls_remote.StartAndReadStandardOutput ();
+
+            string error_output;
+            string output = git_ls_remote.StartAndReadOutputAndError (out error_output);
             // TODO handle exit codes 128,129,130 related to keys https://mazack.org/unix/errno.php 
-            if (git_ls_remote.ExitCode != 0)
+             if (git_ls_remote.ExitCode != 0) {
+                Logger.LogInfo ("Fetcher", string.Format ("git ls-remote failed with exit code {0}", git_ls_remote.ExitCode));
+                
+                if (!string.IsNullOrEmpty (output))
+                    Logger.LogInfo ("Fetcher", "stdout: " + output);
+                    
+                if (!string.IsNullOrEmpty (error_output))
+                    Logger.LogInfo ("Fetcher", "stderr: " + error_output);
+                    
                 return null;
+            }
 
             if (string.IsNullOrWhiteSpace (output))
                 return StorageType.Unknown;

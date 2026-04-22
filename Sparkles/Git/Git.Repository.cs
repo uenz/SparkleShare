@@ -30,7 +30,7 @@ namespace Sparkles.Git {
         bool user_is_set;
 
 
-        string cached_branch = null!;
+        string? cached_branch = null;
 
         string branch {
             get {
@@ -149,7 +149,7 @@ namespace Sparkles.Git {
         }
 
 
-        public override string CurrentRevision {
+        public override string? CurrentRevision {
             get {
                 var git = new GitCommand (LocalPath, "rev-parse HEAD");
                 string output  = git.StartAndReadStandardOutput ();
@@ -157,7 +157,7 @@ namespace Sparkles.Git {
                 if (git.ExitCode == 0)
                     return output;
 
-                return null!;
+                return null;
             }
         }
 
@@ -165,7 +165,7 @@ namespace Sparkles.Git {
         public override bool HasRemoteChanges {
             get {
                 Logger.LogInfo ("Git", Name + " | Checking for remote changes...");
-                string current_revision = CurrentRevision;
+                string? current_revision = CurrentRevision;
 
                 var git = new GitCommand (LocalPath,
                     "ls-remote --heads --exit-code origin " + this.branch, auth_info);
@@ -207,10 +207,10 @@ namespace Sparkles.Git {
                 return false;
             }
 
-            string message = base.status_message;
+            string? message = base.status_message;
 
             if (string.IsNullOrEmpty (message))
-                message = FormatCommitMessage ()!;
+                message = FormatCommitMessage ();
 
             if (message != null)
                 Commit (message);
@@ -412,7 +412,7 @@ namespace Sparkles.Git {
         // Merges the fetched changes
         bool Merge ()
         {
-            string message = FormatCommitMessage ()!;
+            string? message = FormatCommitMessage ();
 
             if (message != null) {
                 Add ();
@@ -554,8 +554,8 @@ namespace Sparkles.Git {
 
                     string abs_conflicting_file_path = Path.Combine (LocalPath, conflicting_file_path);
 
-                    string abs_file_path_A = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_A);
-                    string abs_file_path_B = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_B);
+                    string? abs_file_path_A = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_A);
+                    string? abs_file_path_B = Path.Combine (Path.GetDirectoryName (abs_conflicting_file_path)!, file_name_B);
 
 
                     // Recover local version
@@ -671,20 +671,20 @@ namespace Sparkles.Git {
 
         public override List<ChangeSet> GetChangeSets ()
         {
-            return GetChangeSetsInternal (null!);
+            return GetChangeSetsInternal (null);
         }
 
-        public override List<ChangeSet> GetChangeSets (string path)
+        public override List<ChangeSet> GetChangeSets (string? path)
         {
             return GetChangeSetsInternal (path);
         }
 
-        List<ChangeSet> GetChangeSetsInternal (string path)
+        List<ChangeSet> GetChangeSetsInternal (string? path)
         {
             var change_sets = new List <ChangeSet> ();
             GitCommand git;
 
-            string log_args = "--since=1.month --name-status --date=iso --find-renames --no-merges --no-color";
+            string? log_args = "--since=1.month --name-status --date=iso --find-renames --no-merges --no-color";
 
             if (path == null) {
                 git = new GitCommand (LocalPath, "--no-pager log " + log_args);
@@ -694,7 +694,7 @@ namespace Sparkles.Git {
                 git = new GitCommand (LocalPath, "--no-pager log " + log_args + " -- \"" + path + "\"");
             }
 
-            string output = git.StartAndReadStandardOutput ();
+            string? output = git.StartAndReadStandardOutput ();
 
             if (path == null && string.IsNullOrWhiteSpace (output)) {
                 git = new GitCommand (LocalPath, "--no-pager log -n 75 " + log_args);

@@ -25,8 +25,7 @@ namespace Sparkles
     public static class Logger
     {
 
-        //static StreamWriter log_writer = File.CreateText(Configuration.DefaultConfiguration.LogFilePath);
-        //static object log_writer_lock = new object();
+        static readonly object log_writer_lock = new object();
 
 
         public static void LogInfo(string type, string message)
@@ -50,13 +49,16 @@ namespace Sparkles
 
             if (Configuration.DebugMode)
                 Console.WriteLine(line);
-            //lock (log_writer_lock)
+            lock (log_writer_lock)
             {
                 try
                 {
-                    File.AppendAllLines(Configuration.DefaultConfiguration.LogFilePath, new List<string>([line]));
+                    using var stream = new FileStream(
+                        Configuration.DefaultConfiguration.LogFilePath,
+                        FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                    using var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
+                    writer.WriteLine(line);
                 }
-             
                 catch (Exception e)
                 {
                     Console.WriteLine(string.Format("Could not write to log {0}: {1} {2}",

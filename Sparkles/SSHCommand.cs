@@ -22,37 +22,37 @@ namespace Sparkles
 
     public class SSHCommand : Command
     {
-        public static string SSHPath = Path.GetDirectoryName(LocateCommand("ssh"))!.Replace("\\", "/");
+        public static string? SSHPath = Path.GetDirectoryName(LocateCommand("ssh") ?? "ssh")?.Replace("\\", "/");
 
-        public static string SSHCommandPath
+        public static string? SSHCommandPath
         {
             get
             {
-                return LocateCommand("ssh").Replace("\\", "/");
+                return LocateCommand("ssh")?.Replace("\\", "/");
             }
         }
         public static string SSHKeyScanCommandPath
         {
             get
             {
-                return LocateCommand("ssh-keyscan").Replace("\\", "/");
+                return LocateCommand("ssh-keyscan")?.Replace("\\", "/") ?? "ssh-keyscan";
             }
         }
         public static string SSHKeyGenCommandPath
         {
             get
             {
-                return LocateCommand("ssh-keygen").Replace("\\", "/");
+                return LocateCommand("ssh-keygen")?.Replace("\\", "/") ?? "ssh-keygen";
             }
         }
 
 
-        public SSHCommand(string command, string args) : this(command, args, null)
+        public SSHCommand(string command, string? args) : this(command, args, null)
         {
         }
 
 
-        public SSHCommand(string command, string args, SSHAuthenticationInfo? auth_info) :
+        public SSHCommand(string command, string? args, SSHAuthenticationInfo? auth_info) :
             base(command, args)
         {
         }
@@ -60,7 +60,7 @@ namespace Sparkles
         {
             get
             {
-                var ssh_version = new Command(SSHCommandPath, "-V", false);
+                var ssh_version = new Command(SSHCommandPath ?? "ssh", "-V", false);
                 string version = ssh_version.StartAndReadStandardError();   //the version is written to StandardError instead of StanderdOutput!
                 return version.Replace("SSH ", "").Split(',')[0];
             }

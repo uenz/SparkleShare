@@ -71,74 +71,95 @@ namespace Sparkles
 
         string? FetchHostKey()
         {
-            Logger.LogInfo("Auth", string.Format("Fetching host key for {0}", RemoteUrl.Host));
-            SSHCommand? ssh_keyscan = new SSHCommand(SSHCommand.SSHKeyScanCommandPath, string.Format("-t rsa -p 22 {0}", RemoteUrl.Host));
+            Logger.LogInfo("Auth", string.Format ("Fetching host key for {0}", RemoteUrl.Host));
+
+            // Scan for all common key types so the correct one is stored in known_hosts,
+            // regardless of which algorithm the server prefers (rsa, ecdsa, ed25519)
+            string key_types = "ecdsa,ed25519,rsa";
+            var ssh_keyscan = new SSHCommand (SSHCommand.SSHKeyScanCommandPath, string.Format ("-t {0} -p 22 {1}", key_types, RemoteUrl.Host));
 
             if (RemoteUrl.Port > 0)
-                ssh_keyscan.StartInfo.Arguments = string.Format("-t rsa -p {0} {1}", RemoteUrl.Port, RemoteUrl.Host);
+                ssh_keyscan.StartInfo.Arguments = string.Format ("-t {0} -p {1} {2}", key_types, RemoteUrl.Port, RemoteUrl.Host);
 
-            string host_key = ssh_keyscan.StartAndReadStandardOutput();
-            //TODO Error handlin if no key is delivered
-            if (ssh_keyscan.ExitCode == 0 && !string.IsNullOrWhiteSpace(host_key))
+            string host_key = ssh_keyscan.StartAndReadStandardOutput ();
+
+            if (ssh_keyscan.ExitCode == 0 && !string.IsNullOrWhiteSpace (host_key))
                 return host_key;
 
+            Logger.LogInfo ("Auth", string.Format ("ssh-keyscan exited with code {0}", ssh_keyscan.ExitCode));
             return null;
         }
 
 
         string? DeriveFingerprint(string public_key)
         {
-            try
-            {
-                //SHA256 sha256 = new SHA256CryptoServiceProvider ();
-                string key = public_key.Split(" ".ToCharArray())[2];
+            try {
+                SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
+                string key = public_key.Split(" ".ToCharArray()) [2];
 
-                string fingerprint = Convert.FromBase64String(key).SHA256();
+                byte [] base64_bytes = Convert.FromBase64String (key);
+                byte [] sha256_bytes = sha256.ComputeHash(base64_bytes);
+
+                string fingerprint = BitConverter.ToString(sha256_bytes);
                 fingerprint = fingerprint.ToLower().Replace("-", ":");
 
                 return fingerprint;
 
-            }
-            catch (Exception e)
-            {
-                Logger.LogInfo("Fetcher", "Failed to create fingerprint: ", e);
+            } catch (Exception e) {
+                Logger.LogInfo ("Fetcher", "Failed to create fingerprint: ", e);
                 return null;
             }
         }
 
 
-        void AcceptHostKey(string host_key, bool warn)
+		void AcceptHostKey(string host_key, bool warn)
         {
             string ssh_config_path = Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "ssh");
             string known_hosts_file_path = Path.Combine(ssh_config_path, "known_hosts");
 
-            if (!File.Exists(known_hosts_file_path))
-            {
+            if (!File.Exists(known_hosts_file_path)) {
                 if (!Directory.Exists(ssh_config_path))
                     Directory.CreateDirectory(ssh_config_path);
 
-                File.Create(known_hosts_file_path).Close();
+                File.Create (known_hosts_file_path).Close ();
             }
 
-            string host = RemoteUrl.Host;
-            string known_hosts = File.ReadAllText(known_hosts_file_path);
-            string[] known_hosts_lines = File.ReadAllLines(known_hosts_file_path);
+            string host                   = RemoteUrl.Host;
+            string known_hosts_content    = File.ReadAllText(known_hosts_file_path);
+            string [] known_hosts_lines   = File.ReadAllLines(known_hosts_file_path);
 
-            foreach (string line in known_hosts_lines)
-            {
-                if (line.StartsWith(host + " ", StringComparison.InvariantCulture))
-                    return;
+            // ssh-keyscan may return multiple lines (one per key type).
+            // Add each line individually if not already present.
+            bool any_added = false;
+
+            foreach (string new_key_line in host_key.Split(new [] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)) {
+                if (string.IsNullOrWhiteSpace(new_key_line) || new_key_line.StartsWith ("#"))
+                    continue;
+
+                // Check if an identical line already exists in known_hosts
+                bool already_known = false;
+
+                foreach (string existing_line in known_hosts_lines) {
+                    if (existing_line.Equals (new_key_line, StringComparison.InvariantCulture)) {
+                        already_known = true;
+                        break;
+                    }
+                }
+
+                if (!already_known) {
+                    if (known_hosts_content.EndsWith("\n", StringComparison.InvariantCulture) || known_hosts_content.Length == 0)
+                        File.AppendAllText(known_hosts_file_path, new_key_line + "\n");
+                    else
+                        File.AppendAllText(known_hosts_file_path, "\n" + new_key_line + "\n");
+
+                    known_hosts_content += new_key_line + "\n";
+                    Logger.LogInfo("Auth", "Accepted host key for " + host + ": " + new_key_line.Split (' ') [1]);
+                    any_added = true;
+                }
             }
 
-            if (known_hosts.EndsWith("\n", StringComparison.InvariantCulture))
-                File.AppendAllText(known_hosts_file_path, host_key + "\n");
-            else
-                File.AppendAllText(known_hosts_file_path, "\n" + host_key + "\n");
-
-            Logger.LogInfo("Auth", "Accepted host key for " + host);
-
-            if (warn)
-                warnings.Add("The following host key has been accepted:\n" + DeriveFingerprint(host_key));
+            if (any_added && warn)
+                warnings.Add("The following host key has been accepted:\n" + DeriveFingerprint (host_key));
         }
     }
 }

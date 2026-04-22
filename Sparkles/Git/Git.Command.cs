@@ -23,16 +23,16 @@ namespace Sparkles.Git {
 
     public class GitCommand : SSHCommand {
 
-        public static string ExecPath = null!;
+        public static string? ExecPath = null;
 
 
-        static string git_path = null!;
-        static string git_lfs_path = null!;
+        static string? git_path = null;
+        static string? git_lfs_path = null;
         
-        public static string GitPath {
+        public static string? GitPath {
             get {
                 if (git_path == null)
-                    git_path = LocateCommand ("git")!.Replace("\\", "/");
+                    git_path = LocateCommand ("git").Replace("\\", "/");
 
                 return git_path;
             }
@@ -42,10 +42,10 @@ namespace Sparkles.Git {
             }
         }
 
-        public static string GitLfsPath {
+        public static string? GitLfsPath {
             get {
                 if (git_lfs_path == null)
-                    git_lfs_path = LocateCommand ("git-lfs")!.Replace("\\","/");
+                    git_lfs_path = LocateCommand ("git-lfs").Replace("\\","/");
 
                 return git_lfs_path;
             }
@@ -57,7 +57,7 @@ namespace Sparkles.Git {
         
         public static string GitVersion {
             get {
-                var git_version = new Command (GitPath, "--version", false);
+                var git_version = new Command (GitPath!, "--version", false);
 
                 if (ExecPath != null)
                     git_version.SetEnvironmentVariable ("GIT_EXEC_PATH", ExecPath);
@@ -70,7 +70,7 @@ namespace Sparkles.Git {
 
         public static string GitLFSVersion {
             get {
-                var git_lfs_version = new Command (GitLfsPath, "version", false);
+                var git_lfs_version = new Command (GitLfsPath!, "version", false);
 
                 if (ExecPath != null)
                     git_lfs_version.SetEnvironmentVariable ("GIT_EXEC_PATH", ExecPath);
@@ -81,19 +81,19 @@ namespace Sparkles.Git {
         }
 
 
-        public GitCommand (string working_dir, string args) : this (working_dir, args, null!)
+        public GitCommand (string working_dir, string? args) : this (working_dir, args, null)
         {
         }
 
 
-        public GitCommand (string working_dir, string args, SSHAuthenticationInfo auth_info) : base (GitPath, args)
+        public GitCommand (string? working_dir, string? args, SSHAuthenticationInfo? auth_info) : base (GitPath!, args)
         {
             StartInfo.WorkingDirectory = working_dir;
 
-            string GIT_SSH_COMMAND = SSHCommand.SSHCommandPath;
+            string GIT_SSH_COMMAND = SSHCommand.SSHCommandPath!;
 
             if (auth_info != null)
-                GIT_SSH_COMMAND = FormatGitSSHCommand (auth_info);
+                GIT_SSH_COMMAND = FormatGitSSHCommand (auth_info!);
 
             if (ExecPath != null)
                 SetEnvironmentVariable ("GIT_EXEC_PATH", ExecPath);
@@ -229,9 +229,8 @@ namespace Sparkles.Git {
         public static string FormatGitSSHCommand (SSHAuthenticationInfo auth_info)
         {
             return "\""+SSHCommandPath + "\" " +
-                "-i \"" + auth_info.PrivateKeyFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
-                "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
-
+                "-i \"" + auth_info.PrivateKeyFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
+                "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
                 "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
                 "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
                 "-F /dev/null"; // Ignore the system's SSH config file

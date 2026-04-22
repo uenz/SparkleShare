@@ -26,15 +26,15 @@ namespace Sparkles
     public class SSHAuthenticationInfo : AuthenticationInfo
     {
 
-        public static SSHAuthenticationInfo DefaultAuthenticationInfo = null!;
+        public static SSHAuthenticationInfo? DefaultAuthenticationInfo = null;
 
-        public string PrivateKeyFilePath { get; private set; } = null!;
-        public string PrivateKey { get; private set; } = null!;
+        public string? PrivateKeyFilePath { get; private set; } = null;
+        public string? PrivateKey { get; private set; } = null;
 
-        public string PublicKeyFilePath { get; private set; } = null!;
-        public string PublicKey { get; private set; } = null!;
+        public string? PublicKeyFilePath { get; private set; } = null;
+        public string? PublicKey { get; private set; } = null;
 
-        public string KnownHostsFilePath { get; private set; } = null!;
+        public string? KnownHostsFilePath { get; private set; } = null;
 
         readonly string Path;
 
@@ -77,8 +77,8 @@ namespace Sparkles
 
             if (key_found)
             {
-                PrivateKeyFilePath = MakeWindowsDomainAccountSafe(PrivateKeyFilePath);
-                PublicKeyFilePath = MakeWindowsDomainAccountSafe(PublicKeyFilePath);
+                PrivateKeyFilePath = MakeWindowsDomainAccountSafe(PrivateKeyFilePath ?? string.Empty);
+                PublicKeyFilePath = MakeWindowsDomainAccountSafe(PublicKeyFilePath ?? string.Empty);
 
                 PrivateKey = IO.File.ReadAllText(PrivateKeyFilePath);
                 PublicKey = IO.File.ReadAllText(PublicKeyFilePath);

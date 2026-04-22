@@ -139,9 +139,10 @@ namespace SparkleShare {
                 Header = "Client ID"
             };
 
-            if(Controller.LinkCodeItemEnabled) {
+            if(Controller.LinkCodeItemEnabled && SparkleShare.Controller.UserAuthenticationInfo?.PublicKey != null) {
+                string publicKey = SparkleShare.Controller.UserAuthenticationInfo.PublicKey;
                 SparkleMenuItem code_item = new SparkleMenuItem {
-                    Header = SparkleShare.Controller.UserAuthenticationInfo!.PublicKey.Substring(0, 20) + "..."
+                    Header = publicKey.Length > 20 ? publicKey.Substring(0, 20) + "..." : publicKey
                 };
 
                 SparkleMenuItem copy_item = new SparkleMenuItem {

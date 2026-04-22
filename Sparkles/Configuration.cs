@@ -50,7 +50,7 @@ namespace Sparkles
         public readonly string DirectoryPath;
         public readonly string FilePath;
         public readonly string TmpPath;
-        public string AvatarProvider = null!;
+        public string? AvatarProvider = null;
 
         public readonly string LogFilePath;
         public readonly string CrashReportFilePath;

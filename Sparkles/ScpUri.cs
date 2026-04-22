@@ -102,7 +102,25 @@ namespace Sparkles
             }
             else
             {
-                return uri.ToString().Replace(uri.Host + "/", uri.Host + ":").Replace(uri.Scheme+"://", ""); // for SCP string scheme needs to be empty
+                // For SCP style: user@host:path (scheme needs to be removed)
+                string result = uri.ToString();
+                
+                // Remove scheme (ssh://)
+                result = result.Replace(uri.Scheme + "://", "");
+                
+                // Ensure there's a colon after the host
+                // Replace "host/" with "host:" if present
+                if (result.Contains(uri.Host + "/"))
+                {
+                    result = result.Replace(uri.Host + "/", uri.Host + ":");
+                }
+                // If no slash after host, add colon directly
+                else if (!result.Contains(uri.Host + ":"))
+                {
+                    result = result.Replace(uri.Host, uri.Host + ":");
+                }
+                
+                return result;
             }
         }
         public string ToUriString()
