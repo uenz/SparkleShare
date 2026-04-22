@@ -1,11 +1,11 @@
 ﻿<#
 .DESCRIPTION
-	This PowerShell script bumps the version in severas source files.
+	This PowerShell script bumps the version in several source files.
 .PARAMETER version
 	String with the new version.
 .EXAMPLE
 	PS> ./bump-version.ps1 3.8.2
-	> pofershell -f bump-version.ps1 3.8.2
+	> powershell -f bump-version.ps1 3.8.2
 .NOTES
 	Author: uenz
 #>
@@ -50,7 +50,7 @@ if (-not $version) {
 
     # Write the updated content back to the plist file
     Set-Content -Path $plistPath -Value $content
-
+    $version | Out-File $PSScriptRoot/../version-latest
     Remove-Item ../meson.build.bak -ErrorAction SilentlyContinue
     Remove-Item ../SparkleShare/Mac/Info.plist.tmp -ErrorAction SilentlyContinue
     Remove-Item ../SparkleShare/Windows/SparkleShare.wxs.bak -ErrorAction SilentlyContinue
