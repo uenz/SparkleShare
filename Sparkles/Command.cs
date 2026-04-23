@@ -28,7 +28,7 @@ namespace Sparkles
     {
 
         bool write_output;
-        static string[] extended_search_path = null!;
+        static string[]? extended_search_path = null;
 
         public static void SetSearchPath(string[] pathes)
         {
@@ -40,12 +40,12 @@ namespace Sparkles
             SetSearchPath(new string[] { path });
         }
 
-        public Command(string path, string args) : this(path, args, write_output: true)
+        public Command(string path, string? args) : this(path, args, write_output: true)
         {
         }
 
 
-        public Command(string path, string args, bool write_output)
+        public Command(string path, string? args, bool write_output)
         {
             this.write_output = write_output;
 
@@ -73,7 +73,14 @@ namespace Sparkles
             if (write_output)
                 Logger.LogInfo("Cmd", folder + Path.GetFileName(StartInfo.FileName) + " " + StartInfo.Arguments);
 
-            base.Start();
+            try {
+                base.Start ();
+
+            } catch (Exception e) {
+                Logger.LogInfo ("Cmd", "Couldn't execute command: " 
+                    +StartInfo.FileName+","+ e.Message);
+                Environment.Exit (-1);
+            }
         }
 
 
@@ -113,7 +120,24 @@ namespace Sparkles
         }
 
 
-        public void SetEnvironmentVariable(string variable, string content)
+        public string StartAndReadOutputAndError(out string error_output)
+        {
+            StartInfo.RedirectStandardError = true;
+            Start ();
+
+            // Reading both streams HAS to go before
+            // WaitForExit, or it will hang forever on output > 4096 bytes
+            string output = StandardOutput.ReadToEnd();
+            error_output = StandardError.ReadToEnd();
+            WaitForExit();
+
+            StartInfo.RedirectStandardError = false;
+
+            return output.TrimEnd();
+        }
+
+
+        public void SetEnvironmentVariable (string variable, string content)
         {
             if (StartInfo.EnvironmentVariables.ContainsKey(variable))
                 StartInfo.EnvironmentVariables[variable] = content;
@@ -133,7 +157,8 @@ namespace Sparkles
             };
 
             List<string> command_paths = new List<string>();
-            command_paths.AddRange(extended_search_path);
+            if (extended_search_path != null)
+                command_paths.AddRange(extended_search_path);
             command_paths.AddRange(possible_command_paths);
 
             foreach (string path in command_paths)
