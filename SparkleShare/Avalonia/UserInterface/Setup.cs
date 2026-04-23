@@ -207,8 +207,8 @@ namespace SparkleShare.UserInterface
             _description.Text = "Do you want to add this project to SparkleShare?";
 
             var form = FormGrid(
-                Label("Address:"),     ReadOnly(Controller.PendingInvite!.Address),
-                Label("Remote Path:"), ReadOnly(Controller.PendingInvite.RemotePath)
+                Label("Address:"),     ReadOnly(Controller.PendingInvite!.Address ?? ""),
+                Label("Remote Path:"), ReadOnly(Controller.PendingInvite.RemotePath ?? "")
             );
             _contentPanel.Children.Add(form);
 

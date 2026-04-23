@@ -243,14 +243,42 @@ namespace SparkleShare.UserInterface
             int pos = 0;
             while (true)
             {
-                int start = html.IndexOf("<div class=\"day-entry\">", pos, StringComparison.OrdinalIgnoreCase);
+                int start = html.IndexOf("class='day-entry'", pos, StringComparison.OrdinalIgnoreCase);
                 if (start < 0) break;
-                int end = html.IndexOf("</div>", start, StringComparison.OrdinalIgnoreCase);
-                if (end < 0) break;
 
-                string block = html.Substring(start, end - start + 6);
+                // Go back to find the opening <div
+                int div_start = html.LastIndexOf("<div", start, StringComparison.OrdinalIgnoreCase);
+                if (div_start < 0) break;
+
+                // Find the matching closing </div> by counting nested divs
+                int depth = 0;
+                int search = div_start;
+                int block_end = -1;
+                while (search < html.Length)
+                {
+                    int next_open  = html.IndexOf("<div",  search, StringComparison.OrdinalIgnoreCase);
+                    int next_close = html.IndexOf("</div>", search, StringComparison.OrdinalIgnoreCase);
+
+                    if (next_close < 0) break;
+
+                    if (next_open >= 0 && next_open < next_close)
+                    {
+                        depth++;
+                        search = next_open + 4;
+                    }
+                    else
+                    {
+                        depth--;
+                        search = next_close + 6;
+                        if (depth == 0) { block_end = next_close + 6; break; }
+                    }
+                }
+
+                if (block_end < 0) break;
+
+                string block = html.Substring(div_start, block_end - div_start);
                 RenderDayEntry(block);
-                pos = end + 6;
+                pos = block_end;
             }
 
             // Fallback: if no structured entries found show plain message
@@ -270,22 +298,20 @@ namespace SparkleShare.UserInterface
         private void RenderDayEntry(string block)
         {
             // Day header
-            var header_start = block.IndexOf("<h2>", StringComparison.OrdinalIgnoreCase);
-            var header_end   = block.IndexOf("</h2>", StringComparison.OrdinalIgnoreCase);
-
-            if (header_start >= 0 && header_end > header_start)
+            string day_text = ExtractDivContent(block, "day-entry-header");
+            if (!string.IsNullOrWhiteSpace(day_text))
             {
-                string day_text = StripTags(block.Substring(header_start + 4, header_end - header_start - 4));
-
                 var day_header = new Border
                 {
-                    Background = new SolidColorBrush(Color.FromRgb(245, 245, 245)),
-                    Padding    = new Thickness(8, 4),
-                    Margin     = new Thickness(0, 8, 0, 2)
+                    Background      = new SolidColorBrush(Color.FromRgb(245, 245, 245)),
+                    BorderBrush     = new SolidColorBrush(Color.FromRgb(220, 220, 220)),
+                    BorderThickness = new Thickness(0, 0, 0, 1),
+                    Padding         = new Thickness(8, 4),
+                    Margin          = new Thickness(0, 8, 0, 4)
                 };
                 day_header.Child = new TextBlock
                 {
-                    Text       = day_text,
+                    Text       = StripTags(day_text),
                     FontWeight = FontWeight.Bold,
                     FontSize   = 13
                 };
@@ -296,78 +322,151 @@ namespace SparkleShare.UserInterface
             int pos = 0;
             while (true)
             {
-                int entry_start = block.IndexOf("<tr", pos, StringComparison.OrdinalIgnoreCase);
+                int entry_start = block.IndexOf("class='event-entry'", pos, StringComparison.OrdinalIgnoreCase);
                 if (entry_start < 0) break;
-                int entry_end = block.IndexOf("</tr>", entry_start, StringComparison.OrdinalIgnoreCase);
+
+                int div_start = block.LastIndexOf("<div", entry_start, StringComparison.OrdinalIgnoreCase);
+                if (div_start < 0) break;
+
+                // Find matching closing </div>
+                int depth = 0, search = div_start, entry_end = -1;
+                while (search < block.Length)
+                {
+                    int next_open  = block.IndexOf("<div",  search, StringComparison.OrdinalIgnoreCase);
+                    int next_close = block.IndexOf("</div>", search, StringComparison.OrdinalIgnoreCase);
+                    if (next_close < 0) break;
+                    if (next_open >= 0 && next_open < next_close) { depth++; search = next_open + 4; }
+                    else { depth--; search = next_close + 6; if (depth == 0) { entry_end = next_close + 6; break; } }
+                }
+
                 if (entry_end < 0) break;
 
-                string row = block.Substring(entry_start, entry_end - entry_start + 5);
-                RenderEventRow(row);
-                pos = entry_end + 5;
+                string entry_block = block.Substring(div_start, entry_end - div_start);
+                RenderEventEntry(entry_block);
+                pos = entry_end;
             }
         }
 
-        private void RenderEventRow(string row)
+        private void RenderEventEntry(string entry_block)
         {
             // Extract user, action, file info from the <tr> block
-            string user   = ExtractTagContent(row, "td", "who");
-            string action = ExtractTagContent(row, "td", "what");
-            string time   = ExtractTagContent(row, "td", "when");
+            string user_name = StripTags(ExtractDivContent(entry_block, "event-user-name"));
 
-            if (string.IsNullOrWhiteSpace(user) && string.IsNullOrWhiteSpace(action))
+            // Extract event content: <!-- $event-entry-content --> is replaced with <dl>...</dl>
+            string content_raw = ExtractDlContent(entry_block);
+
+            // Extract avatar URL from style='background-image: url("...")'
+            string avatar_url = ExtractAvatarUrl(entry_block);
+
+            if (string.IsNullOrWhiteSpace(user_name) && string.IsNullOrWhiteSpace(content_raw))
                 return;
 
-            var entry = new Grid { Margin = new Thickness(4, 2) };
-            entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(32)));
-            entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(140)));
+            var entry_border = new Border
+            {
+                BorderBrush     = new SolidColorBrush(Color.FromRgb(230, 230, 230)),
+                BorderThickness = new Thickness(0, 0, 0, 1),
+                Padding         = new Thickness(4, 6),
+            };
+
+            var entry = new Grid();
+            entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(36)));
             entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
-            entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(70)));
 
             // Avatar placeholder
-            var avatar = new Border
+            var avatar_border = new Border
             {
-                Width  = 24, Height = 24,
-                CornerRadius = new CornerRadius(12),
-                Background   = new SolidColorBrush(Color.FromRgb(160, 160, 160))
+                Width = 28, Height = 28,
+                CornerRadius = new CornerRadius(14),
+                Background   = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 2, 4, 0)
             };
-            Grid.SetColumn(avatar, 0);
-            entry.Children.Add(avatar);
 
             // User name
-            var user_lbl = new TextBlock
+            if (!string.IsNullOrEmpty(avatar_url))
             {
-                Text = StripTags(user),
-                FontWeight = FontWeight.Bold,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            Grid.SetColumn(user_lbl, 1);
-            entry.Children.Add(user_lbl);
+                try
+                {
+                    string local_path = avatar_url.Replace("file://", "").Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+                    if (System.IO.File.Exists(local_path))
+                    {
+                        var bmp = new Bitmap(local_path);
+                        avatar_border.Background = new ImageBrush(bmp) { Stretch = Stretch.UniformToFill };
+                    }
+                }
+                catch { /* use default color */ }
+            }
+
+            Grid.SetColumn(avatar_border, 0);
+            entry.Children.Add(avatar_border);
 
             // Action / file
-            var action_lbl = new TextBlock
+            var right = new StackPanel { Spacing = 2 };
+
+            if (!string.IsNullOrWhiteSpace(user_name))
             {
-                Text = StripTags(action),
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                VerticalAlignment = VerticalAlignment.Center,
-                Opacity = 0.7
-            };
-            Grid.SetColumn(action_lbl, 2);
-            entry.Children.Add(action_lbl);
+                right.Children.Add(new TextBlock
+                {
+                    Text       = user_name,
+                    FontWeight = FontWeight.Bold,
+                    FontSize   = 13,
+                    TextTrimming = TextTrimming.CharacterEllipsis
+                });
+            }
 
             // Time
-            var time_lbl = new TextBlock
+            int dd_pos = 0;
+            while (true)
             {
-                Text = StripTags(time),
-                FontSize  = 11,
-                Opacity   = 0.5,
-                TextAlignment = TextAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            Grid.SetColumn(time_lbl, 3);
-            entry.Children.Add(time_lbl);
+                int dd_start = entry_block.IndexOf("<dd", dd_pos, StringComparison.OrdinalIgnoreCase);
+                if (dd_start < 0) break;
+                int dd_end = entry_block.IndexOf("</dd>", dd_start, StringComparison.OrdinalIgnoreCase);
+                if (dd_end < 0) break;
 
-            _entriesPanel.Children.Add(entry);
+                string dd = entry_block.Substring(dd_start, dd_end - dd_start + 5);
+                string dd_text = StripTags(dd).Trim();
+                string css_class = ExtractAttribute(dd, "class");
+
+                if (!string.IsNullOrWhiteSpace(dd_text))
+                {
+                    // Remove the ? symbol (&#x25BE;) that comes from the HTML time link
+                    dd_text = dd_text.Replace("\u25BE", "").Trim();
+
+                    // Pick icon based on change type using Unicode escape sequences
+                    // \u2795 = ?  \u2796 = ?  \u270F = ?  \u27A1 = ?  \u2022 = •
+                    string icon = css_class switch
+                    {
+                        "added"   => "\u2795",  // ?
+                        "deleted" => "\u2796",  // ?
+                        "edited"  => "\u270F",  // ?
+                        "moved"   => "\u27A1",  // ?
+                        _         => "\u2022"   // •
+                    };
+
+                    var file_row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
+                    file_row.Children.Add(new TextBlock
+                    {
+                        Text    = icon,
+                        Opacity = 0.6,
+                        Width   = 16
+                    });
+                    file_row.Children.Add(new TextBlock
+                    {
+                        Text         = dd_text,
+                        FontSize     = 12,
+                        Opacity      = 0.75,
+                        TextTrimming = TextTrimming.CharacterEllipsis
+                    });
+                    right.Children.Add(file_row);
+                }
+                dd_pos = dd_end + 5;
+            }
+
+            Grid.SetColumn(right, 1);
+            entry.Children.Add(right);
+
+            entry_border.Child = entry;
+            _entriesPanel.Children.Add(entry_border);
         }
 
         // ?? Image export (same as Windows version) ???????????????????????????
@@ -400,10 +499,60 @@ namespace SparkleShare.UserInterface
         private void ShowSpinner()  { _spinnerPanel.IsVisible = true;  _scrollViewer.IsVisible = false; }
         private void ShowContent()  { _spinnerPanel.IsVisible = false; _scrollViewer.IsVisible = true;  }
 
+        // Extract content of first <div class='cssClass'>...</div>
+        private static string ExtractDivContent(string html, string css_class)
+        {
+            string search = $"class='{css_class}'";
+            int class_pos = html.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+            if (class_pos < 0) return "";
+            int content_start = html.IndexOf('>', class_pos) + 1;
+            int content_end   = html.IndexOf("</div>", content_start, StringComparison.OrdinalIgnoreCase);
+            if (content_start <= 0 || content_end < 0) return "";
+            return html.Substring(content_start, content_end - content_start);
+        }
+
+        // Extract content of <dl>...</dl>
+        private static string ExtractDlContent(string html)
+        {
+            int start = html.IndexOf("<dl", StringComparison.OrdinalIgnoreCase);
+            if (start < 0) return "";
+            int end = html.IndexOf("</dl>", start, StringComparison.OrdinalIgnoreCase);
+            if (end < 0) return "";
+            return html.Substring(start, end - start + 5);
+        }
+
+        // Extract avatar URL from style='background-image: url("...")'
+        private static string ExtractAvatarUrl(string html)
+        {
+            string search = "background-image: url(\"";
+            int start = html.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+            if (start < 0) return "";
+            int url_start = start + search.Length;
+            int url_end   = html.IndexOf("\")", url_start, StringComparison.OrdinalIgnoreCase);
+            if (url_end < 0) return "";
+            return html.Substring(url_start, url_end - url_start);
+        }
+
+        // Extract attribute value from an HTML tag
+        private static string ExtractAttribute(string html, string attribute)
+        {
+            // Try class='...' and class="..."
+            foreach (char q in new[] { '\'', '"' })
+            {
+                string search = $"{attribute}={q}";
+                int start = html.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+                if (start < 0) continue;
+                int val_start = start + search.Length;
+                int val_end   = html.IndexOf(q, val_start);
+                if (val_end < 0) continue;
+                return html.Substring(val_start, val_end - val_start);
+            }
+            return "";
+        }
+
         private static string StripTags(string html)
         {
             if (string.IsNullOrEmpty(html)) return "";
-            // Remove all HTML tags
             var result = System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", "");
             return System.Net.WebUtility.HtmlDecode(result).Trim();
         }

@@ -1,4 +1,4 @@
-//   SparkleShare, a collaboration and sharing tool.
+﻿//   SparkleShare, a collaboration and sharing tool.
 //   Copyright (C) 2010  Hylke Bons <hi@planetpeanut.uk>
 //
 //   This program is free software: you can redistribute it and/or modify
@@ -191,65 +191,230 @@ namespace SparkleShare.UserInterface
         {
             if (menu == null) return;
 
-            menu.Items.Clear();
-
-            // Project items
-            if (Controller.Projects.Length > 0)
+            try
             {
-                foreach (ProjectInfo project in Controller.Projects)
-                {
-                    var folder_item = new NativeMenuItem { Header = project.Name };
-                    string project_name = project.Name;
-                    folder_item.Click += (sender, e) => Controller.ProjectClicked(project_name);
-                    menu.Items.Add(folder_item);
-                }
+                menu.Items.Clear();
 
-                menu.Items.Add(new NativeMenuItemSeparator());
-            }
-
-            // Add hosted project
-            var add_item = new NativeMenuItem { Header = "Add Hosted Project\u2026" };
-            add_item.Click += (sender, e) =>
+            // State item (disabled)
+            var state_item = new NativeMenuItem
             {
-                try { Controller.AddHostedProjectClicked(); }
-                catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error in AddHostedProjectClicked", ex); }
+                Header = Controller.StateText,
+                IsEnabled = false
             };
-            menu.Items.Add(add_item);
+            menu.Items.Add(state_item);
+            menu.Items.Add(new NativeMenuItemSeparator());
+
+            // Main "SparkleShare" menu with submenu
+            var sparkleShare_menu = new NativeMenu();
 
             // Recent changes
             var recent_changes_item = new NativeMenuItem
             {
-                Header = "View Recent Changes\u2026",
-                IsEnabled = Controller.RecentEventsItemEnabled
+                Header = "\uD83D\uDCC4 Recent changes\u2026"
             };
             recent_changes_item.Click += (sender, e) =>
             {
                 try { Controller.RecentEventsClicked(); }
                 catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error in RecentEventsClicked", ex); }
             };
-            menu.Items.Add(recent_changes_item);
+            sparkleShare_menu.Items.Add(recent_changes_item);
 
-            menu.Items.Add(new NativeMenuItemSeparator());
+            // Add hosted project
+            var add_item = new NativeMenuItem { Header = "\u2795 Add hosted project\u2026" };
+            add_item.Click += (sender, e) =>
+            {
+                try { Controller.AddHostedProjectClicked(); }
+                catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error in AddHostedProjectClicked", ex); }
+            };
+            sparkleShare_menu.Items.Add(add_item);
+            sparkleShare_menu.Items.Add(new NativeMenuItemSeparator());
+
+            // Notifications toggle with checkbox
+            var notify_item = new NativeMenuItem
+            {
+                Header = GetNotificationMenuText(),
+                ToggleType = NativeMenuItemToggleType.CheckBox
+            };
+            
+            // Set initial checked state
+            try
+            {
+                notify_item.IsChecked = SparkleShare.Controller.NotificationsEnabled;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogInfo("StatusIcon", "Could not set IsChecked, using text indicator only", ex);
+            }
+            
+            notify_item.Click += (sender, e) =>
+            {
+                try
+                {
+                    SparkleShare.Controller.ToggleNotifications();
+                    
+                    // Update both the checkbox and the text
+                    try
+                    {
+                        notify_item.IsChecked = SparkleShare.Controller.NotificationsEnabled;
+                    }
+                    catch { }
+                    
+                    notify_item.Header = GetNotificationMenuText();
+                }
+                catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error toggling notifications", ex); }
+            };
+            sparkleShare_menu.Items.Add(notify_item);
+            sparkleShare_menu.Items.Add(new NativeMenuItemSeparator());
+
+            // Client ID submenu
+            if (Controller.LinkCodeItemEnabled && SparkleShare.Controller.UserAuthenticationInfo?.PublicKey != null)
+            {
+                var link_code_menu = new NativeMenu();
+                
+                string publicKey = SparkleShare.Controller.UserAuthenticationInfo.PublicKey;
+                var code_item = new NativeMenuItem
+                {
+                    Header = publicKey.Length > 20 ? publicKey.Substring(0, 20) + "..." : publicKey,
+                    IsEnabled = false
+                };
+                link_code_menu.Items.Add(code_item);
+                link_code_menu.Items.Add(new NativeMenuItemSeparator());
+                
+                var copy_item = new NativeMenuItem { Header = "\uD83D\uDCCB Copy to Clipboard" };
+                copy_item.Click += (sender, e) =>
+                {
+                    try { Controller.CopyToClipboardClicked(); }
+                    catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error copying to clipboard", ex); }
+                };
+                link_code_menu.Items.Add(copy_item);
+
+                var link_code_item = new NativeMenuItem
+                {
+                    Header = "\uD83D\uDD11 Client ID",
+                    Menu = link_code_menu
+                };
+                sparkleShare_menu.Items.Add(link_code_item);
+                sparkleShare_menu.Items.Add(new NativeMenuItemSeparator());
+            }
 
             // About
-            var about_item = new NativeMenuItem { Header = "About SparkleShare" };
+            var about_item = new NativeMenuItem { Header = "\u2139\uFE0F About SparkleShare" };
             about_item.Click += (sender, e) =>
             {
                 try { Controller.AboutClicked(); }
                 catch (Exception ex) { Logger.LogInfo("StatusIcon", "Error in AboutClicked", ex); }
             };
-            menu.Items.Add(about_item);
+            sparkleShare_menu.Items.Add(about_item);
+
+            var sparkleShare_item = new NativeMenuItem
+            {
+                Header = "\uD83D\uDCC2 SparkleShare",
+                Menu = sparkleShare_menu
+            };
+            menu.Items.Add(sparkleShare_item);
+
+            // Project items with submenus
+            if (Controller.Projects.Length > 0)
+            {
+                foreach (ProjectInfo project in Controller.Projects)
+                {
+                    var project_menu = new NativeMenu();
+                    string project_name = project.Name;
+
+                    // Status message (disabled)
+                    var project_state_item = new NativeMenuItem
+                    {
+                        Header = project.StatusMessage,
+                        IsEnabled = false
+                    };
+                    project_menu.Items.Add(project_state_item);
+                    project_menu.Items.Add(new NativeMenuItemSeparator());
+
+                    // Open folder
+                    var open_item = new NativeMenuItem { Header = "\uD83D\uDCC2 Open folder" };
+                    open_item.Click += Controller.OpenFolderDelegate(project_name);
+                    project_menu.Items.Add(open_item);
+                    project_menu.Items.Add(new NativeMenuItemSeparator());
+
+                    if (project.IsPaused)
+                    {
+                        // Show unsynced changes if any
+                        if (project.UnsyncedChangesInfo.Count > 0)
+                        {
+                            foreach (KeyValuePair<string, string> pair in project.UnsyncedChangesInfo)
+                            {
+                                project_menu.Items.Add(new NativeMenuItem
+                                {
+                                    Header = pair.Key,
+                                    IsEnabled = false
+                                });
+                            }
+
+                            if (!string.IsNullOrEmpty(project.MoreUnsyncedChanges))
+                            {
+                                project_menu.Items.Add(new NativeMenuItem
+                                {
+                                    Header = project.MoreUnsyncedChanges,
+                                    IsEnabled = false
+                                });
+                            }
+
+                            project_menu.Items.Add(new NativeMenuItemSeparator());
+
+                            var resume_item = new NativeMenuItem { Header = "\u25B6\uFE0F Sync and Resume\u2026" };
+                            resume_item.Click += (sender, e) => Controller.ResumeDelegate(project_name)(sender, e);
+                            project_menu.Items.Add(resume_item);
+                        }
+                        else
+                        {
+                            var resume_item = new NativeMenuItem { Header = "\u25B6\uFE0F Resume" };
+                            resume_item.Click += (sender, e) => Controller.ResumeDelegate(project_name)(sender, e);
+                            project_menu.Items.Add(resume_item);
+                        }
+                    }
+                    else
+                    {
+                        if (project.HasError)
+                        {
+                            var try_again_item = new NativeMenuItem { Header = "\u26A0\uFE0F Retry Sync" };
+                            try_again_item.Click += (sender, e) => Controller.TryAgainDelegate(project_name)(sender, e);
+                            project_menu.Items.Add(try_again_item);
+                        }
+                        else
+                        {
+                            var pause_item = new NativeMenuItem { Header = "\u23F8\uFE0F Pause" };
+                            pause_item.Click += (sender, e) => Controller.PauseDelegate(project_name)(sender, e);
+                            project_menu.Items.Add(pause_item);
+                        }
+                    }
+
+                    string folder_icon = project.HasError ? "\u26A0\uFE0F" : "\uD83D\uDCC1";
+                    var folder_item = new NativeMenuItem
+                    {
+                        Header = folder_icon + " " + project.Name.Replace("_", "__"),
+                        Menu = project_menu
+                    };
+                    menu.Items.Add(folder_item);
+                }
+            }
 
             menu.Items.Add(new NativeMenuItemSeparator());
 
-            // Quit
+            // Quit - always visible, header shows sync state
             var quit_item = new NativeMenuItem
             {
-                Header = "Quit",
-                IsEnabled = Controller.QuitItemEnabled
+                Header = Controller.QuitItemEnabled ? "\u274C Exit" : "\u274C Exit (syncing...)"
             };
-            quit_item.Click += (sender, e) => Controller.QuitClicked();
+            quit_item.Click += (sender, e) =>
+            {
+                if (Controller.QuitItemEnabled) Controller.QuitClicked();
+            };
             menu.Items.Add(quit_item);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogInfo("StatusIcon", "Error building menu", ex);
+            }
         }
 
         private void UpdateQuitItem(bool enabled)
@@ -258,9 +423,10 @@ namespace SparkleShare.UserInterface
 
             foreach (var item in menu.Items)
             {
-                if (item is NativeMenuItem menuItem && menuItem.Header?.ToString() == "Quit")
+                if (item is NativeMenuItem menuItem &&
+                    menuItem.Header?.ToString()?.Contains("Exit") == true)
                 {
-                    menuItem.IsEnabled = enabled;
+                    menuItem.Header = enabled ? "\u274C Exit" : "\u274C Exit (syncing...)";
                     break;
                 }
             }
@@ -272,6 +438,47 @@ namespace SparkleShare.UserInterface
             {
                 trayIcon.ToolTipText = "SparkleShare\n" + state_text;
             }
+
+            // Update state item in menu
+            if (menu != null && menu.Items.Count > 0)
+            {
+                if (menu.Items[0] is NativeMenuItem stateItem)
+                {
+                    stateItem.Header = state_text;
+                }
+
+                // Update project status messages
+                int projectIndex = 0;
+                foreach (var item in menu.Items)
+                {
+                    if (item is NativeMenuItem menuItem && menuItem.Menu != null)
+                    {
+                        // Skip the "SparkleShare" main menu
+                        if (menuItem.Header?.ToString() == "SparkleShare")
+                            continue;
+
+                        // This is a project menu
+                        if (projectIndex < Controller.Projects.Length && menuItem.Menu.Items.Count > 0)
+                        {
+                            if (menuItem.Menu.Items[0] is NativeMenuItem projectStateItem)
+                            {
+                                projectStateItem.Header = Controller.Projects[projectIndex].StatusMessage;
+                            }
+                            projectIndex++;
+                        }
+                    }
+                }
+            }
+        }
+
+        private string GetNotificationMenuText()
+        {
+            // Windows-kompatible Unicode-Zeichen
+            // Diese Zeichen werden in den meisten Windows-Schriftarten unterstützt
+            if (SparkleShare.Controller.NotificationsEnabled)
+                return "☑ Notifications";  // U+2611 Ballot Box with Check
+            else
+                return "☐ Notifications";  // U+2610 Ballot Box
         }
     }
 }

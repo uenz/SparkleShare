@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Input.Platform;
+using Avalonia.Platform;
 using Sparkles;
 using Sparkles.Git;
 using SparkleShare.UserInterface;
@@ -242,25 +243,188 @@ namespace SparkleShare
         {
             try
             {
+                // Try to get the clipboard from the application
                 var lifetime = Application.Current?.ApplicationLifetime as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+                
+                IClipboard? clipboard = null;
+                
+                // First try: Get from main window
                 if (lifetime?.MainWindow != null)
                 {
-                    var clipboard = lifetime.MainWindow.Clipboard;
-                    if (clipboard != null)
+                    clipboard = lifetime.MainWindow.Clipboard;
+                }
+                
+                // Second try: Get from any open window
+                if (clipboard == null && lifetime?.Windows != null)
+                {
+                    foreach (var window in lifetime.Windows)
                     {
-                        clipboard.SetTextAsync(text).Wait();
+                        if (window.Clipboard != null)
+                        {
+                            clipboard = window.Clipboard;
+                            break;
+                        }
                     }
+                }
+                
+                // Third try: Use TopLevel service
+                if (clipboard == null)
+                {
+                    var topLevel = Avalonia.Controls.TopLevel.GetTopLevel(lifetime?.MainWindow);
+                    if (topLevel != null)
+                    {
+                        clipboard = topLevel.Clipboard;
+                    }
+                }
+                
+                if (clipboard != null)
+                {
+                    var task = clipboard.SetTextAsync(text);
+                    task.Wait(TimeSpan.FromSeconds(2)); // Timeout after 2 seconds
+                    Logger.LogInfo("Controller", "Text copied to clipboard successfully: " + text.Substring(0, Math.Min(20, text.Length)) + "...");
+                }
+                else
+                {
+                    Logger.LogInfo("Controller", "No clipboard service available - falling back to platform-specific method");
+                    CopyToClipboardFallback(text);
                 }
             }
             catch (Exception e)
             {
                 Logger.LogInfo("Controller", "Copy to clipboard failed", e);
+                CopyToClipboardFallback(text);
+            }
+        }
+
+        private void CopyToClipboardFallback(string text)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Windows-specific clipboard using Win32 API
+                    WindowsClipboard.SetText(text);
+                    Logger.LogInfo("Controller", "Text copied using Windows clipboard API");
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    // macOS clipboard using pbcopy
+                    var process = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "pbcopy",
+                            RedirectStandardInput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+                    process.Start();
+                    process.StandardInput.Write(text);
+                    process.StandardInput.Close();
+                    process.WaitForExit();
+                    Logger.LogInfo("Controller", "Text copied using pbcopy");
+                }
+                else
+                {
+                    // Linux clipboard using xclip
+                    var process = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "xclip",
+                            Arguments = "-selection clipboard",
+                            RedirectStandardInput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+                    process.Start();
+                    process.StandardInput.Write(text);
+                    process.StandardInput.Close();
+                    process.WaitForExit();
+                    Logger.LogInfo("Controller", "Text copied using xclip");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogInfo("Controller", "Fallback clipboard method also failed", ex);
             }
         }
 
         public override void PlatformQuit()
         {
             Environment.Exit(0);
+        }
+    }
+
+    // Windows Clipboard helper using P/Invoke
+    internal static class WindowsClipboard
+    {
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CloseClipboard();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EmptyClipboard();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr GlobalAlloc(uint uFlags, UIntPtr dwBytes);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr GlobalLock(IntPtr hMem);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GlobalUnlock(IntPtr hMem);
+
+        private const uint CF_UNICODETEXT = 13;
+        private const uint GMEM_MOVEABLE = 0x0002;
+
+        public static void SetText(string text)
+        {
+            if (!OpenClipboard(IntPtr.Zero))
+                throw new Exception("Failed to open clipboard");
+
+            try
+            {
+                EmptyClipboard();
+
+                var bytes = (text.Length + 1) * 2;
+                var hGlobal = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)bytes);
+
+                if (hGlobal == IntPtr.Zero)
+                    throw new Exception("Failed to allocate memory");
+
+                var target = GlobalLock(hGlobal);
+
+                if (target == IntPtr.Zero)
+                    throw new Exception("Failed to lock memory");
+
+                try
+                {
+                    Marshal.Copy(text.ToCharArray(), 0, target, text.Length);
+                }
+                finally
+                {
+                    GlobalUnlock(hGlobal);
+                }
+
+                if (SetClipboardData(CF_UNICODETEXT, hGlobal) == IntPtr.Zero)
+                    throw new Exception("Failed to set clipboard data");
+            }
+            finally
+            {
+                CloseClipboard();
+            }
         }
     }
 }

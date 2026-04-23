@@ -10,6 +10,7 @@
     <ApplicationIcon>..\..\.\SparkleShare\Windows\Images\sparkleshare-app.ico</ApplicationIcon>
     <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
     <DisableImplicitNuGetFallbackFolder>false</DisableImplicitNuGetFallbackFolder>
+    <Utf8Output>true</Utf8Output>
   </PropertyGroup>
 
   <ItemGroup>
@@ -161,6 +162,7 @@
       <Link>Presets\own-server.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Installer\SparkleShare.Installer.wixproj" />
   </ItemGroup>
 
   <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
