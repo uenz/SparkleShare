@@ -1,0 +1,102 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+    <Package Name="SparkleShare"
+             Id="184950D5-67F6-4D06-9717-7E2F1607A7B1"
+             UpgradeCode="D3DF1D99-87F5-47A7-A349-863DD6E4B73A"
+             Language="1033" Version="3.39.0" Manufacturer="SparkleShare"
+             Compressed="yes" InstallerVersion="500">
+        <SummaryInformation Description="SparkleShare Avalonia Setup" Keywords="Installer" Manufacturer="SparkleShare"/>
+        <Media Id="1" Cabinet="SparkleShare.cab" EmbedCab="yes"/>
+        <MajorUpgrade DowngradeErrorMessage="A newer version is already installed."/>
+        <StandardDirectory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLDIR" Name="SparkleShare">
+                <Component Id="MainExecutable" Guid="0DA582D5-4ABE-4251-9F62-E7DEA76F10E2">
+                    <File Id="SparkleShare.exe" Name="SparkleShare.exe" Source="$(var.BuildRoot)\SparkleShare.Avalonia.exe" KeyPath="yes"/>
+                </Component>
+                <Component Id="CoreLibraries" Guid="0DA692D5-4DBE-4251-9F62-E7C1A76F10E2">
+                    <File Id="Sparkles.dll"                        Source="$(var.BuildRoot)\Sparkles.dll"/>
+                    <File Id="Sparkles.Git.dll"                    Source="$(var.BuildRoot)\Sparkles.Git.dll"/>
+                    <File Id="SparkleShare.Avalonia.dll"           Source="$(var.BuildRoot)\SparkleShare.Avalonia.dll"/>
+                    <File Id="SparkleShare.Avalonia.runtimeconfig" Source="$(var.BuildRoot)\SparkleShare.Avalonia.runtimeconfig.json"/>
+                    <File Id="SparkleShare.Avalonia.deps"          Source="$(var.BuildRoot)\SparkleShare.Avalonia.deps.json"/>
+                </Component>
+                <Component Id="AvaloniaLibraries" Guid="1EA692D5-4DBE-4251-9F62-E7C1A76F10E3">
+                    <File Id="Avalonia.Base.dll"            Source="$(var.BuildRoot)\Avalonia.Base.dll"/>
+                    <File Id="Avalonia.Controls.dll"        Source="$(var.BuildRoot)\Avalonia.Controls.dll"/>
+                    <File Id="Avalonia.Desktop.dll"         Source="$(var.BuildRoot)\Avalonia.Desktop.dll"/>
+                    <File Id="Avalonia.Dialogs.dll"         Source="$(var.BuildRoot)\Avalonia.Dialogs.dll"/>
+                    <File Id="Avalonia.dll"                 Source="$(var.BuildRoot)\Avalonia.dll"/>
+                    <File Id="Avalonia.Fonts.Inter.dll"     Source="$(var.BuildRoot)\Avalonia.Fonts.Inter.dll"/>
+                    <File Id="Avalonia.FreeDesktop.dll"     Source="$(var.BuildRoot)\Avalonia.FreeDesktop.dll"/>
+                    <File Id="Avalonia.Markup.dll"          Source="$(var.BuildRoot)\Avalonia.Markup.dll"/>
+                    <File Id="Avalonia.Markup.Xaml.dll"     Source="$(var.BuildRoot)\Avalonia.Markup.Xaml.dll"/>
+                    <File Id="Avalonia.Metal.dll"           Source="$(var.BuildRoot)\Avalonia.Metal.dll"/>
+                    <File Id="Avalonia.MicroCom.dll"        Source="$(var.BuildRoot)\Avalonia.MicroCom.dll"/>
+                    <File Id="Avalonia.Native.dll"          Source="$(var.BuildRoot)\Avalonia.Native.dll"/>
+                    <File Id="Avalonia.OpenGL.dll"          Source="$(var.BuildRoot)\Avalonia.OpenGL.dll"/>
+                    <File Id="Avalonia.ReactiveUI.dll"      Source="$(var.BuildRoot)\Avalonia.ReactiveUI.dll"/>
+                    <File Id="Avalonia.Remote.Protocol.dll" Source="$(var.BuildRoot)\Avalonia.Remote.Protocol.dll"/>
+                    <File Id="Avalonia.Skia.dll"            Source="$(var.BuildRoot)\Avalonia.Skia.dll"/>
+                    <File Id="Avalonia.Themes.Fluent.dll"   Source="$(var.BuildRoot)\Avalonia.Themes.Fluent.dll"/>
+                    <File Id="Avalonia.Win32.dll"           Source="$(var.BuildRoot)\Avalonia.Win32.dll"/>
+                    <File Id="Avalonia.X11.dll"             Source="$(var.BuildRoot)\Avalonia.X11.dll"/>
+                    <File Id="Avalonia.DesignerSupport.dll" Source="$(var.BuildRoot)\Avalonia.DesignerSupport.dll"/>
+                </Component>
+                <Component Id="ThirdPartyLibraries" Guid="2EA692D5-4DBE-4251-9F62-E7C1A76F10E4">
+                    <File Id="DynamicData.dll"                                Source="$(var.BuildRoot)\DynamicData.dll"/>
+                    <File Id="HarfBuzzSharp.dll"                              Source="$(var.BuildRoot)\HarfBuzzSharp.dll"/>
+                    <File Id="MicroCom.Runtime.dll"                           Source="$(var.BuildRoot)\MicroCom.Runtime.dll"/>
+                    <File Id="Microsoft.Win32.SystemEvents.dll"               Source="$(var.BuildRoot)\Microsoft.Win32.SystemEvents.dll"/>
+                    <File Id="ReactiveUI.dll"                                 Source="$(var.BuildRoot)\ReactiveUI.dll"/>
+                    <File Id="SkiaSharp.dll"                                  Source="$(var.BuildRoot)\SkiaSharp.dll"/>
+                    <File Id="Splat.dll"                                      Source="$(var.BuildRoot)\Splat.dll"/>
+                    <File Id="System.Configuration.ConfigurationManager.dll"  Source="$(var.BuildRoot)\System.Configuration.ConfigurationManager.dll"/>
+                    <File Id="System.Diagnostics.EventLog.dll"                Source="$(var.BuildRoot)\System.Diagnostics.EventLog.dll"/>
+                    <File Id="System.Drawing.Common.dll"                      Source="$(var.BuildRoot)\System.Drawing.Common.dll"/>
+                    <File Id="System.Private.Windows.Core.dll"                Source="$(var.BuildRoot)\System.Private.Windows.Core.dll"/>
+                    <File Id="System.Reactive.dll"                            Source="$(var.BuildRoot)\System.Reactive.dll"/>
+                    <File Id="System.Security.Cryptography.ProtectedData.dll" Source="$(var.BuildRoot)\System.Security.Cryptography.ProtectedData.dll"/>
+                    <File Id="Tmds.DBus.Protocol.dll"                         Source="$(var.BuildRoot)\Tmds.DBus.Protocol.dll"/>
+                </Component>
+                <Directory Id="GITSCM_DIR" Name="git_scm"/>
+                <Directory Id="PRESETS_DIR" Name="Presets"/>
+                <Directory Id="IMAGES_DIR" Name="Images"/>
+                <Directory Id="RUNTIMES_DIR" Name="runtimes"/>
+            </Directory>
+        </StandardDirectory>
+        <StandardDirectory Id="ProgramMenuFolder">
+            <Component Id="ApplicationShortcut" Guid="468550D5-67F6-4D06-97A2-7E2F1607A7B1">
+                <Shortcut Id="ApplicationStartMenuShortcut" Name="SparkleShare" Target="[INSTALLDIR]SparkleShare.exe" WorkingDirectory="INSTALLDIR" Icon="SparkleShareIcon"/>
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+                <RegistryValue Root="HKCU" Key="Software\Microsoft\SparkleShare" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+            </Component>
+            <Component Id="SparkleShareProtocolHandler" Guid="B83A4473-A26F-491A-BCD7-B999A8F6E552">
+                <RegistryValue Root="HKCU" Key="Software\Classes\sparkleshare" Name="URL Protocol" Value="" Type="string" KeyPath="yes"/>
+                <RegistryValue Root="HKCU" Key="Software\Classes\sparkleshare-unsafe" Name="URL Protocol" Value="" Type="string"/>
+            </Component>
+        </StandardDirectory>
+        <Feature Id="SparkleShareFeature" Title="SparkleShare" Description="SparkleShare - Avalonia Edition" Level="1" AllowAdvertise="no">
+            <ComponentRef Id="MainExecutable"/>
+            <ComponentRef Id="CoreLibraries"/>
+            <ComponentRef Id="AvaloniaLibraries"/>
+            <ComponentRef Id="ThirdPartyLibraries"/>
+            <ComponentRef Id="ApplicationShortcut"/>
+            <ComponentRef Id="SparkleShareProtocolHandler"/>
+            <ComponentGroupRef Id="gitScmComponentGroup"/>
+            <ComponentGroupRef Id="PresetsComponentGroup"/>
+            <ComponentGroupRef Id="ImagesComponentGroup"/>
+            <ComponentGroupRef Id="runtimesComponentGroup"/>
+        </Feature>
+        <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseFile)"/>
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR"/>
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch SparkleShare"/>
+        <ui:WixUI Id="WixUI_InstallDir" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"/>
+        <Property Id="WixShellExecTarget" Value="[#SparkleShare.exe]"/>
+        <CustomAction Id="LaunchApplication" DllEntry="WixShellExec" Impersonate="yes"/>
+        <InstallExecuteSequence>
+            <Custom Action="LaunchApplication" After="InstallFinalize">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Custom>
+        </InstallExecuteSequence>
+        <util:CloseApplication Id="CloseSparkleShare" Target="SparkleShare.exe" RebootPrompt="no" ElevatedCloseMessage="yes" CloseMessage="yes"/>
+        <Icon Id="SparkleShareIcon" SourceFile="$(var.BuildRoot)\SparkleShare.Avalonia.exe"/>
+    </Package>
+</Wix>

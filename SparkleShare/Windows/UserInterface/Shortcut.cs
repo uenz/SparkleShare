@@ -23,7 +23,7 @@ namespace SparkleShare {
 
    public class Shortcut : IDisposable {
         
-        private IShellLinkW link;
+        private IShellLinkW link = null!;
         
         public Shortcut ()
         {
@@ -33,9 +33,9 @@ namespace SparkleShare {
         public void Create (string file_path, string target_path)
         {
             link = (IShellLinkW) new CShellLink ();
-            this.link.SetShowCmd (1);        
+            this.link!.SetShowCmd (1);        
             this.link.SetPath (target_path);
-            (this.link as IPersistFile).Save (file_path, true);
+            (this.link as IPersistFile)!.Save (file_path, true);
         }
             
         
@@ -44,7 +44,7 @@ namespace SparkleShare {
                 return;
             
             Marshal.ReleaseComObject (this.link);
-            this.link = null;
+            this.link = null!;
         }
         
         

@@ -16,7 +16,6 @@
 
 
 using System;
-using System.DirectoryServices.ActiveDirectory;
 using System.Threading;
 
 using Sparkles;
@@ -25,16 +24,13 @@ namespace SparkleShare {
 
     public class SparkleShare {
 
-        public static Controller Controller;
-        public static UserInterface UI;
+        public static Controller Controller = null!;
+        public static IUserInterface UI = null!;
 
         static Mutex program_mutex = new Mutex (false, "SparkleShare");
-        
-     
-        #if !__MonoCS__
-        [STAThread]
-        #endif
-        public static void Main (string [] args)
+
+
+        public static void Initialize (string[] args)
         {
             // Only allow one instance of SparkleShare (on Windows)
             if (!program_mutex.WaitOne (0, exitContext: false)) {
@@ -46,15 +42,6 @@ namespace SparkleShare {
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             Controller = new Controller (Configuration.DefaultConfiguration);
             Controller.Initialize ();
-
-            UI = new UserInterface ();
-            UI.Run (args);
-
-            #if !__MonoCS__
-            // Suppress assertion messages in debug mode
-            GC.Collect (GC.MaxGeneration, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers ();
-            #endif
         }
 
 
@@ -64,7 +51,8 @@ namespace SparkleShare {
             Logger.WriteCrashReport (exception);
             Controller.OpenFile(Configuration.DefaultConfiguration.CrashReportFilePath);
         }
-        static void OnProcessExit(object sender, EventArgs e)
+
+        static void OnProcessExit(object? sender, EventArgs e)
         {
         }
     }

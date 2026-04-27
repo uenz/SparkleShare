@@ -50,14 +50,14 @@ namespace SparkleShare {
         public delegate void ShowSaveDialogEventHandler (string file_name, string target_folder_path);
 
 
-        private string selected_folder;
-        private RevisionInfo restore_revision_info;
+        private string? selected_folder;
+        private RevisionInfo? restore_revision_info;
         private bool history_view_active;
         private bool fix_utf_encoding;
 
         public bool WindowIsOpen { get; private set; }
 
-        public string SelectedFolder {
+        public string? SelectedFolder {
             get {
                 return this.selected_folder;
             }
@@ -210,7 +210,7 @@ namespace SparkleShare {
         {
             WindowIsOpen = false;
             HideWindowEvent ();
-			this.selected_folder = null;
+            this.selected_folder = null;
         }
 
 
@@ -241,8 +241,8 @@ namespace SparkleShare {
                     string file_name = Path.GetFileNameWithoutExtension (this.restore_revision_info.FilePath) +
                         " (" + author_name + " " + timestamp + ")" + Path.GetExtension (this.restore_revision_info.FilePath);
 
-                    string target_folder_path = Path.Combine (this.restore_revision_info.Folder.FullPath,
-                        Path.GetDirectoryName (this.restore_revision_info.FilePath));
+                    string target_folder_path = Path.Combine (this.restore_revision_info!.Folder!.FullPath,
+                        Path.GetDirectoryName (this.restore_revision_info.FilePath) ?? string.Empty);
 
                     ShowSaveDialogEvent (file_name, target_folder_path);
                 }
@@ -301,22 +301,22 @@ namespace SparkleShare {
         public void SaveDialogCompleted (string target_file_path)
         {
             foreach (BaseRepository repo in SparkleShare.Controller.Repositories) {
-                if (repo.Name.Equals (this.restore_revision_info.Folder.Name)) {
-                    repo.RestoreFile (this.restore_revision_info.FilePath,
-                        this.restore_revision_info.Revision, target_file_path);
+                if (repo.Name.Equals (this.restore_revision_info!.Folder!.Name)) {
+                    repo.RestoreFile (this.restore_revision_info.FilePath!,
+                        this.restore_revision_info.Revision!, target_file_path);
 
                     break;
                 }
             }
 
-            this.restore_revision_info = null;
-            SparkleShare.Controller.OpenFolder (Path.GetDirectoryName (target_file_path));
+            this.restore_revision_info = null!;
+            SparkleShare.Controller.OpenFolder (Path.GetDirectoryName (target_file_path) ?? string.Empty);
         }
 
 
         public void SaveDialogCancelled ()
         {
-            this.restore_revision_info = null;
+            this.restore_revision_info = null!;
         }
 
 
@@ -343,7 +343,8 @@ namespace SparkleShare {
         }
 
 
-        private List<ChangeSet> GetLog (string name)
+
+        private List<ChangeSet> GetLog (string? name)
         {
             if (name == null)
                 return GetLog ();
@@ -388,7 +389,7 @@ namespace SparkleShare {
                             "</td>" +
                             "<td class='time'>" + change_set.Timestamp.ToString ("HH:mm") + "</td>" +
                             "<td class='restore'>" +
-                                "<a href='restore://" + change_set.Folder.Name + "/" +
+                                "<a href='restore://" + change_set.Folder!.Name + "/" +
                                 change_set.Revision + "/" + change_set.User.Name + "/" +
                                 change_set.Timestamp.ToString ("MMM d H\\hmm", CultureInfo.InvariantCulture) + "/" +
                                 file_path + "'>Restore&hellip;</a>" +
@@ -444,7 +445,8 @@ namespace SparkleShare {
             foreach (ActivityDay activity_day in activity_days) {
                 string event_entries = "";
 
-                foreach (ChangeSet change_set in activity_day) {
+                foreach (ChangeSet? change_set in activity_day) {
+                    if (change_set == null) continue;
                     string event_entry = "<dl>";
 
                     foreach (Change change in change_set.Changes) {
@@ -452,7 +454,7 @@ namespace SparkleShare {
                             event_entry += "<dd class='" + change.Type.ToString ().ToLower () + "'>";
 
                             if (!change.IsFolder) {
-                                event_entry += "<small><a href=\"history://" + change_set.Folder.Name + "/" +
+                                event_entry += "<small><a href=\"history://" + change_set.Folder!.Name + "/" +
                                     change.Path + "\" title=\"View revisions\">" + change.Timestamp.ToString ("HH:mm") +
                                     " &#x25BE;</a></small> &nbsp;";
 
@@ -460,16 +462,16 @@ namespace SparkleShare {
                                 event_entry += "<small>" + change.Timestamp.ToString ("HH:mm") + "</small> &nbsp;";
                             }
 
-                            event_entry += FormatBreadCrumbs (change_set.Folder.FullPath, change.Path);
+                            event_entry += FormatBreadCrumbs (change_set.Folder!.FullPath, change.Path);
                             event_entry += "</dd>";
 
                         } else {
                             event_entry += "<dd class='moved'>";
                             event_entry += "<small>" + change.Timestamp.ToString ("HH:mm") +"</small> &nbsp;";
-                            event_entry += FormatBreadCrumbs (change_set.Folder.FullPath, change.Path);
+                            event_entry += FormatBreadCrumbs (change_set.Folder!.FullPath, change.Path);
                             event_entry += "<br>";
                             event_entry += "<small>" + change.Timestamp.ToString ("HH:mm") +"</small> &nbsp;";
-                            event_entry += FormatBreadCrumbs (change_set.Folder.FullPath, change.MovedToPath);
+                            event_entry += FormatBreadCrumbs (change_set.Folder!.FullPath, change.MovedToPath);
                             event_entry += "</dd>";
                         }
                     }
@@ -489,12 +491,16 @@ namespace SparkleShare {
                         .Replace ("<!-- $event-user-name -->", change_set.User.Name)
                         .Replace ("<!-- $event-user-email -->", change_set.User.Email)
                         .Replace ("<!-- $event-avatar-url -->", GetAvatarFilePath (change_set.User))
-                        .Replace ("<!-- $event-url -->", change_set.RemoteUrl.ToString ())
+                        .Replace ("<!-- $event-url -->", change_set.RemoteUrl?.ToString () ?? "")
                         .Replace ("<!-- $event-revision -->", change_set.Revision);
 
                     if (this.selected_folder == null) {
-                        event_entries = event_entries.Replace ("<!-- $event-folder -->", " @ " + change_set.Folder.Name);
-                        event_entries = event_entries.Replace ("<!-- $event-folder-url -->", change_set.Folder.FullPath);
+                        event_entries = event_entries.Replace ("<!-- $event-folder -->", " @ " + change_set.Folder!.Name);
+                        event_entries = event_entries.Replace ("<!-- $event-folder-url -->", change_set.Folder!.FullPath);
+                    } else {
+                        // Replace with empty values so no broken placeholders remain in HTML
+                        event_entries = event_entries.Replace ("<!-- $event-folder -->", "");
+                        event_entries = event_entries.Replace ("<!-- $event-folder-url -->", "#");
                     }
                 }
 
@@ -632,9 +638,9 @@ namespace SparkleShare {
 
 
         private class RevisionInfo {
-            public SparkleFolder Folder;
-            public string FilePath;
-            public string Revision;
+            public SparkleFolder? Folder;
+            public string? FilePath;
+            public string? Revision;
         }
 
 

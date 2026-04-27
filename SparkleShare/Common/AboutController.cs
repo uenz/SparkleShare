@@ -16,8 +16,6 @@
 
 
 using System;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Threading;
 
@@ -62,8 +60,6 @@ namespace SparkleShare {
         {
             UpdateLabelEvent ("Checking for updates…");
             Thread.Sleep (500);
-
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
             var uri = new Uri ("https://raw.githubusercontent.com/uenz/SparkleShare/refs/heads/master/version-latest");
             HttpClient client = new();

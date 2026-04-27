@@ -1,3 +1,4 @@
+# https://docs.github.com/en/actions/tutorials/build-and-test-code/net
 name: GitHub Actions Demo
 on: [push]
 
@@ -19,6 +20,13 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        with:
+          # Semantic version range syntax or exact version of a dotnet version
+          dotnet-version: '9.x'
+      - name: Display dotnet version
+        run: dotnet --version
       - name: Install Dependencies (Linux)
         run: |
           echo "Linux {{matrix.config.os}}"
@@ -59,7 +67,7 @@ jobs:
           brew install autoconf automake libtool pkg-config
         if: matrix.os == 'macos-12'
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - run: git status
@@ -81,8 +89,8 @@ jobs:
           cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
         if: matrix.os == 'windows-latest'
       - name: Publish
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
         with:
             files: 'SparkleShare-*'
         env:

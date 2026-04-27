@@ -26,7 +26,7 @@ using Drawing = System.Drawing;
 
 namespace SparkleShare {
 
-    public class StatusIcon : Control {
+    public class StatusIcon : Control, IStatusIcon {
 
         public StatusIconController Controller = new StatusIconController();
 
@@ -36,12 +36,11 @@ namespace SparkleShare {
         private readonly Drawing.Bitmap syncing_image = UserInterfaceHelpers.GetBitmap("process-syncing");
         private readonly Drawing.Bitmap syncing_error_image = UserInterfaceHelpers.GetBitmap("process-syncing-error");
 
-        private ContextMenu context_menu;
-
-        private SparkleMenuItem log_item;
-        private SparkleMenuItem state_item;
-        private SparkleMenuItem exit_item;
-        private SparkleMenuItem[] state_menu_items;
+        private ContextMenu context_menu = null!;
+        private SparkleMenuItem log_item = null!;
+        private SparkleMenuItem state_item = null!;
+        private SparkleMenuItem exit_item = null!;
+        private SparkleMenuItem[] state_menu_items = null!;
 
         private readonly NotifyIcon notify_icon = new NotifyIcon();
 
@@ -140,9 +139,10 @@ namespace SparkleShare {
                 Header = "Client ID"
             };
 
-            if(Controller.LinkCodeItemEnabled) {
+            if(Controller.LinkCodeItemEnabled && SparkleShare.Controller.UserAuthenticationInfo?.PublicKey != null) {
+                string publicKey = SparkleShare.Controller.UserAuthenticationInfo.PublicKey;
                 SparkleMenuItem code_item = new SparkleMenuItem {
-                    Header = SparkleShare.Controller.UserAuthenticationInfo.PublicKey.Substring(0, 20) + "..."
+                    Header = publicKey.Length > 20 ? publicKey.Substring(0, 20) + "..." : publicKey
                 };
 
                 SparkleMenuItem copy_item = new SparkleMenuItem {

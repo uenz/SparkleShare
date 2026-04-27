@@ -36,11 +36,11 @@ namespace SparkleShare {
             this.fix_utf_encoding = fix_utf_encoding;
 
             SparkleShare.Controller.AlertNotificationRaised += delegate (string title, string message) {
-                ShowBubble (title, message, null);
+                ShowBubble (title, message, string.Empty);
             };
 
             SparkleShare.Controller.NotificationRaised += delegate (ChangeSet change_set) {
-                ShowBubble (change_set.User.Name, change_set.ToMessage (), change_set.User.AvatarFilePath);
+                ShowBubble (change_set.User.Name, change_set.ToMessage (), change_set.User.AvatarFilePath ?? string.Empty);
             };
         }
 

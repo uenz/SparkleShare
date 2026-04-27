@@ -31,20 +31,17 @@ using System.Windows.Data;
 
 namespace SparkleShare
 {
-    public class EventLog : Window {
+    public class EventLog : Window, IEventLog {
 
-        public EventLogController Controller = new EventLogController ();
+        public EventLogController Controller { get; } = new EventLogController ();
 
-        private Label label_Size;
-        private Label label_History;
+        private Label label_Size = null!;
+        private Label label_History = null!;
+        private WebBrowser webbrowser = null!;
 
-        private WebBrowser webbrowser;
-
-        private Spinner spinner;
-
-        private ComboBox combobox;
-
-        private Grid grid_Base;
+        private Spinner spinner = null!;
+        private ComboBox combobox = null!;
+        private Grid grid_Base = null!;
 
         [DllImport("urlmon.dll")]
         [PreserveSig]
@@ -83,8 +80,8 @@ namespace SparkleShare
             Controller.HideWindowEvent += delegate {
                 Dispatcher.BeginInvoke((Action)(() => {
                     Hide();
-                    this.spinner.Visibility = Visibility.Visible;
-                    this.webbrowser.Visibility = Visibility.Collapsed;
+                    this.spinner!.Visibility = Visibility.Visible;
+                    this.webbrowser!.Visibility = Visibility.Collapsed;
                 }));
             };
 
@@ -111,16 +108,16 @@ namespace SparkleShare
                 Dispatcher.BeginInvoke((Action)(() => {
                     UpdateContent(html);
 
-                    this.spinner.Visibility = Visibility.Collapsed;
-                    this.webbrowser.Visibility = Visibility.Visible;
+                    this.spinner!.Visibility = Visibility.Collapsed;
+                    this.webbrowser!.Visibility = Visibility.Visible;
                 }));
             };
 
             Controller.ContentLoadingEvent += () => this.Dispatcher.BeginInvoke(
                 (Action)(() => {
-                    this.spinner.Visibility = Visibility.Visible;
+                    this.spinner!.Visibility = Visibility.Visible;
                     this.spinner.Start();
-                    this.webbrowser.Visibility = Visibility.Collapsed;
+                    this.webbrowser!.Visibility = Visibility.Collapsed;
                 }));
 
             Controller.ShowSaveDialogEvent += delegate (string file_name, string target_folder_path) {
@@ -227,7 +224,7 @@ namespace SparkleShare
             Content = grid_Base;
         }
 
-        private void OnClosing(object sender, CancelEventArgs cancel_event_args)
+        private void OnClosing(object? sender, CancelEventArgs cancel_event_args)
         {
             Controller.WindowClosed();
             cancel_event_args.Cancel = true;

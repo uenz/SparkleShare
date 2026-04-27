@@ -29,11 +29,11 @@ namespace Sparkles
     public class SparkleInvite : XmlDocument
     {
 
-        public string Address { get; private set; } = null!;
-        public string RemotePath { get; private set; } = null!;
-        public string Fingerprint { get; private set; } = null!;
-        public string AcceptUrl { get; private set; } = null!;
-        public string AnnouncementsUrl { get; private set; } = null!;
+        public string? Address { get; private set; } = null;
+        public string? RemotePath { get; private set; } = null;
+        public string? Fingerprint { get; private set; } = null;
+        public string? AcceptUrl { get; private set; } = null;
+        public string? AnnouncementsUrl { get; private set; } = null;
 
         public bool IsValid
         {

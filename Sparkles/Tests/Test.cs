@@ -58,7 +58,7 @@ namespace Sparkles.Tests
         }
 
 
-        string cipher_text;
+        string cipher_text = null!;
         string plain_text = "secret";
         string password = "password";
 

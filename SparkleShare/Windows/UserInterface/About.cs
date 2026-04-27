@@ -28,7 +28,7 @@ namespace SparkleShare {
 
         public AboutController Controller = new AboutController ();
 
-        private Label updates;
+        private Label updates = null!;
 
 
         public About ()
@@ -144,7 +144,7 @@ namespace SparkleShare {
         }
 
 
-        private void Close (object sender, CancelEventArgs args)
+        private void Close (object? sender, CancelEventArgs args)
         {
             Controller.WindowClosed ();
             args.Cancel = true;

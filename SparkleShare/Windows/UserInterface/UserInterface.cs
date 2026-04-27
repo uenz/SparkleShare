@@ -23,7 +23,7 @@ using Sparkles;
 
 namespace SparkleShare {
 
-    public class UserInterface {
+    public class UserInterface : IUserInterface {
 
         public Setup Setup;
         public EventLog EventLog;
@@ -31,6 +31,10 @@ namespace SparkleShare {
         public StatusIcon StatusIcon;
         public About About;
         public Note Note;
+
+        IStatusIcon IUserInterface.StatusIcon => StatusIcon;
+        IBubbles IUserInterface.Bubbles => Bubbles;
+        IEventLog IUserInterface.EventLog => EventLog;
 
         static UserInterface ()
         {
@@ -59,6 +63,15 @@ namespace SparkleShare {
         {
             Application.Run ();
             StatusIcon.Dispose ();
+        }
+
+        [System.STAThread]
+        public static void Main (string [] args)
+        {
+            SparkleShare.Initialize (args);
+            var ui = new UserInterface ();
+            SparkleShare.UI = ui;
+            ui.Run (args);
         }
 
         private static void OnUnhandledException (object sender, ThreadExceptionEventArgs exception_args)

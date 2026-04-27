@@ -31,7 +31,7 @@ namespace SparkleShare {
         public delegate void UpdateTitleEventDelegate (string title);
 
         public readonly string AvatarFilePath = "";
-        public string CurrentProject { get; private set; }
+        public string? CurrentProject { get; private set; }
 
 
         public NoteController ()
@@ -73,8 +73,8 @@ namespace SparkleShare {
 
         void ResumeWithNote (string note)
         {
-            BaseRepository repo = SparkleShare.Controller.GetRepoByName (CurrentProject);
-            repo.Resume (note);
+            BaseRepository? repo = SparkleShare.Controller.GetRepoByName (CurrentProject!);
+            repo!.Resume (note);
         }
     }
 }

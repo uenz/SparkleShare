@@ -41,8 +41,6 @@
                 <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.dll" Checksum="yes" />
                 <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.Git.dll" Checksum="yes" />
                 <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.runtimeconfig.json" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Diagnostics.EventLog.dll" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Configuration.ConfigurationManager.dll" Checksum="yes" />  
                 <!-- Start Menu shortcut to run the program -->
                 <Shortcut Id="ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"

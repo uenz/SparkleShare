@@ -1,0 +1,173 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>..\..\.\SparkleShare\Windows\Images\sparkleshare-app.ico</ApplicationIcon>
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <DisableImplicitNuGetFallbackFolder>false</DisableImplicitNuGetFallbackFolder>
+    <Utf8Output>true</Utf8Output>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sparkles\Sparkles.csproj" />
+    <ProjectReference Include="..\..\Sparkles\Git\Sparkles.Git.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Images - use None with CopyToOutputDirectory for file-based loading -->
+    <None Include="..\Common\Images\about.png">
+      <Link>Images\about.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Images\side-splash.png">
+      <Link>Images\side-splash.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Images\user-icon-default.png">
+      <Link>Images\user-icon-default.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Images\tutorial-slide-1.png">
+      <Link>Images\tutorial-slide-1.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Images\tutorial-slide-2.png">
+      <Link>Images\tutorial-slide-2.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Images\text-balloon.png">
+      <Link>Images\text-balloon.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    
+    <!-- Icons from Linux folder -->
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-added.png">
+      <Link>Images\document-added-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-deleted.png">
+      <Link>Images\document-deleted-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-edited.png">
+      <Link>Images\document-edited-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-moved.png">
+      <Link>Images\document-moved-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\22x22\status\process-working.png">
+      <Link>Images\process-working-22.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    
+    <!-- Tray Icons from Windows folder -->
+    <None Include="..\Windows\Images\process-syncing-down.png">
+      <Link>Images\process-syncing-down.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-idle.png">
+      <Link>Images\process-syncing-idle.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-up.png">
+      <Link>Images\process-syncing-up.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing.png">
+      <Link>Images\process-syncing.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-error.png">
+      <Link>Images\process-syncing-error.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\folder.png">
+      <Link>Images\folder.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\tutorial-slide-3.png">
+      <Link>Images\tutorial-slide-3.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\sparkleshare-app.ico">
+      <Link>Images\sparkleshare-app.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\sparkleshare-folder.png">
+      <Link>Images\sparkleshare-folder.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\sparkleshare-folder.ico">
+      <Link>Images\sparkleshare-folder.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <!-- HTML files -->
+    <EmbeddedResource Include="..\Common\HTML\day-entry.html">
+      <Link>HTML\day-entry.html</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Common\HTML\event-entry.html">
+      <Link>HTML\event-entry.html</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Common\HTML\event-log.html">
+      <Link>HTML\event-log.html</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Common\HTML\jquery.js">
+      <Link>HTML\jquery.js</Link>
+    </EmbeddedResource>
+
+    <!-- Presets -->
+    <None Include="..\Common\Presets\github.png">
+      <Link>Presets\github.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Presets\own-server.png">
+      <Link>Presets\own-server.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Presets\bitbucket.png">
+      <Link>Presets\bitbucket.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Presets\bitbucket.xml">
+      <Link>Presets\bitbucket.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Presets\github.xml">
+      <Link>Presets\github.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Common\Presets\own-server.xml">
+      <Link>Presets\own-server.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Installer\SparkleShare.Installer.wixproj" />
+  </ItemGroup>
+
+  <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
+    <Exec Command="&quot;$(ProjectDir)..\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
+  </Target>
+</Project>

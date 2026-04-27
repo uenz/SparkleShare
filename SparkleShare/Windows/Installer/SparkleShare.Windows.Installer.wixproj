@@ -1,4 +1,5 @@
-﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="WixToolset.Sdk/4.0.5">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutputPath>..\build\setup\x64\Debug\</OutputPath>
     <Platforms>x86;x64</Platforms>
@@ -24,8 +25,9 @@
     <Content Include="productVersion.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
-    <PackageReference Include="WixToolset.Heat" Version="5.0.2" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Heat" Version="4.0.5" />
   </ItemGroup>
   <ItemGroup>
     <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\git_scm">
@@ -37,16 +39,6 @@
       <Link>git_scm</Link>
     </HarvestDirectory>
     <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\git_scm" />
-  </ItemGroup>
-  <ItemGroup>
-    <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\runtimes">
-      <ComponentGroupName>RUNTIMES_DIR</ComponentGroupName>
-      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
-      <SuppressRootDirectory>false</SuppressRootDirectory>
-      <SuppressRegistry>true</SuppressRegistry>
-      <Link>runtimes</Link>
-    </HarvestDirectory>
-    <BindPath Include="$(SolutionDir)\SparkleShare\Windows\bin\runtimes" />
   </ItemGroup>
   <ItemGroup>
     <HarvestDirectory Include="$(SolutionDir)\SparkleShare\Windows\bin\Images">

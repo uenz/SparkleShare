@@ -55,15 +55,8 @@ namespace SparkleShare {
             }
         }
 
-        public ContextMenu ContextMenu {
-            get;
-            set;
-        }
-
-        public string HeaderText {
-            get;
-            set;
-        }
+        public ContextMenu? ContextMenu { get; set; }
+        public string? HeaderText       { get; set; }
 
         private Forms.NotifyIcon Notification {
             get;
@@ -148,23 +141,23 @@ namespace SparkleShare {
             control.Notification.Visible = (control.Visibility == Visibility.Visible);
         }
 
-        private void OnMouseDown(object sender, Forms.MouseEventArgs args) {
+        private void OnMouseDown(object? sender, Forms.MouseEventArgs args) {
             RaiseEvent(CreateMouseButtonEventArgs(MouseDownEvent, args.Button));
         }
 
-        private void OnMouseClick(object sender, Forms.MouseEventArgs args) {
+        private void OnMouseClick(object? sender, Forms.MouseEventArgs args) {
             RaiseEvent(CreateMouseButtonEventArgs(MouseClickEvent, args.Button));
         }
 
-        private void OnMouseDoubleClick(object sender, Forms.MouseEventArgs args) {
+        private void OnMouseDoubleClick(object? sender, Forms.MouseEventArgs args) {
             RaiseEvent(CreateMouseButtonEventArgs(MouseDoubleClickEvent, args.Button));
         }
 
-        private void OnMouseUp(object sender, Forms.MouseEventArgs args) {
+        private void OnMouseUp(object? sender, Forms.MouseEventArgs args) {
 
             if(args.Button == Forms.MouseButtons.Right) {
 
-                ContextMenu.IsOpen = true;
+                ContextMenu!.IsOpen = true;
                 ContextMenu.StaysOpen = false;
             }
 

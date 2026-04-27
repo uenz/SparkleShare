@@ -21,7 +21,6 @@
     These are accessed with $(var.NAME).
 -->
 <?include Predefines.wxi ?>
-
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
     <!--
         The package name is used throughout the installer to refer to the product
@@ -95,7 +94,6 @@
         -->
         <Feature Id="Main" Title="SparkleShare" AllowAbsent="no" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="The core elements that must be installed">
             <ComponentGroupRef Id="Components" />
-            <ComponentGroupRef Id="RUNTIMES_DIR"/>
             <ComponentGroupRef Id="IMAGES_DIR"/>
             <ComponentGroupRef Id="PRESETS_DIR"/>
             <ComponentGroupRef Id="GIT_SCM_DIR"/>

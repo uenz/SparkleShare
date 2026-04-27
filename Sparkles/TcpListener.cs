@@ -26,8 +26,8 @@ namespace Sparkles
     public class TcpListener : BaseListener
     {
 
-        private Socket socket = null!;
-        private Thread thread = null!;
+        private Socket? socket = null;
+        private Thread? thread = null;
         private bool is_connected = false;
         private bool is_connecting = false;
         private DateTime last_ping = DateTime.Now;
@@ -233,7 +233,7 @@ namespace Sparkles
 
             try
             {
-                this.socket.Send(Encoding.UTF8.GetBytes(to_send));
+                this.socket!.Send(Encoding.UTF8.GetBytes(to_send));
                 this.last_ping = DateTime.Now;
 
             }
@@ -278,7 +278,7 @@ namespace Sparkles
             }
 
 
-            this.thread.Interrupt();
+            this.thread!.Interrupt();
             this.thread.Join();
 
             base.Dispose();

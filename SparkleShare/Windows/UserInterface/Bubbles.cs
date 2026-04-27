@@ -17,9 +17,9 @@
 
 namespace SparkleShare {
     
-    public class Bubbles {
+    public class Bubbles : IBubbles {
 
-        public BubblesController Controller = new BubblesController ();
+        public BubblesController Controller { get; } = new BubblesController ();
 
 
         public Bubbles ()

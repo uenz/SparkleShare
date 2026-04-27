@@ -39,9 +39,9 @@ namespace SparkleShare
 
             // test the handleName for third party protocols like GitHub
             // if one exist and their default value doesn't match our custom Protocol, do not update
-            using (RegistryKey testKey = Registry.ClassesRoot.OpenSubKey(handleName))
+            using (RegistryKey? testKey = Registry.ClassesRoot.OpenSubKey(handleName))
             {
-                if (testKey == null || handleValue.Equals(testKey.GetValue("")))
+                if (testKey == null || handleValue.Equals(testKey.GetValue("")?.ToString()))
                 {
                     using (RegistryKey key = Registry.CurrentUser.CreateSubKey("Software").CreateSubKey("Classes").CreateSubKey(handleName))
                     {

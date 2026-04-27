@@ -25,7 +25,7 @@ using System.ComponentModel;
 namespace SparkleShare {
     public class Spinner : Image {
 
-        private Timer timer;
+        private Timer timer = null!;
 
         public Spinner ()
             : this (22) {            
