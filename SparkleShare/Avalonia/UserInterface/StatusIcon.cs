@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia.Labs.Notifications;
 using Avalonia.Threading;
 using Sparkles;
 
@@ -75,12 +76,33 @@ namespace SparkleShare.UserInterface
 
         public void ShowBalloon(string title, string message)
         {
-            Sparkles.Logger.LogInfo("StatusIcon", $"Notification: {title} - {message}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                try
+                {
+                    var manager = NativeNotificationManager.Current;
+                    if (manager != null)
+                    {
+                        var notification = manager.CreateNotification("sparkleshare");
+                        notification!.Title = title;
+                        notification!.Message = message;
+                        notification!.Show();
+                    }
+                    else
+                    {
+                        Logger.LogInfo("StatusIcon", $"Notification (no manager): {title} - {message}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogInfo("StatusIcon", $"Failed to show notification: {title}", ex);
+                }
+            });
         }
 
         public void ShowBalloon(string title, string subtext, string image_path)
         {
-            Sparkles.Logger.LogInfo("StatusIcon", $"Notification: {title} - {subtext}");
+            ShowBalloon(title, subtext); //TODO: at the moment NativeNotificationManager does not support images
         }
 
         private void CreateTrayIcon()

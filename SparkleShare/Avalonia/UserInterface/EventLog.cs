@@ -297,7 +297,7 @@ namespace SparkleShare.UserInterface
 
         private void RenderDayEntry(string block)
         {
-            // Day header
+            // Day header: <div class='day-entry-header'>...</div>
             string day_text = ExtractDivContent(block, "day-entry-header");
             if (!string.IsNullOrWhiteSpace(day_text))
             {
@@ -318,7 +318,7 @@ namespace SparkleShare.UserInterface
                 _entriesPanel.Children.Add(day_header);
             }
 
-            // Event entries within the day block
+            // Event entries: <div class='event-entry'>...</div>
             int pos = 0;
             while (true)
             {
@@ -349,7 +349,7 @@ namespace SparkleShare.UserInterface
 
         private void RenderEventEntry(string entry_block)
         {
-            // Extract user, action, file info from the <tr> block
+            // Extract user name: <div class='event-user-name'>
             string user_name = StripTags(ExtractDivContent(entry_block, "event-user-name"));
 
             // Extract event content: <!-- $event-entry-content --> is replaced with <dl>...</dl>
@@ -372,7 +372,7 @@ namespace SparkleShare.UserInterface
             entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(36)));
             entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
 
-            // Avatar placeholder
+            // Avatar
             var avatar_border = new Border
             {
                 Width = 28, Height = 28,
@@ -382,7 +382,7 @@ namespace SparkleShare.UserInterface
                 Margin = new Thickness(0, 2, 4, 0)
             };
 
-            // User name
+            // Try to load avatar image
             if (!string.IsNullOrEmpty(avatar_url))
             {
                 try
@@ -400,7 +400,7 @@ namespace SparkleShare.UserInterface
             Grid.SetColumn(avatar_border, 0);
             entry.Children.Add(avatar_border);
 
-            // Action / file
+            // Right side: user + content
             var right = new StackPanel { Spacing = 2 };
 
             if (!string.IsNullOrWhiteSpace(user_name))
@@ -414,7 +414,7 @@ namespace SparkleShare.UserInterface
                 });
             }
 
-            // Time
+            // Parse <dd> entries for file changes
             int dd_pos = 0;
             while (true)
             {

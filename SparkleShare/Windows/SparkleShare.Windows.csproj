@@ -28,6 +28,7 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
     <DisableImplicitNuGetFallbackFolder>false</DisableImplicitNuGetFallbackFolder>
+    <Configurations>Debug;Release</Configurations>
   
 </PropertyGroup>
    <PropertyGroup>
