@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
     <AnalysisLevel>latest-minimum</AnalysisLevel>
+    <Configurations>Debug;Release;ReleaseAvalonia;DebugAvalonia</Configurations>
   </PropertyGroup>
 
   <!--<snippetPackages>-->

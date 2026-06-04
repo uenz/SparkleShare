@@ -34,7 +34,18 @@
                 
                 Note: bind.Property.ProductName comes from <Package Name="">.
             -->
-            <Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)\$(var.InstallFolderName)" />
+            <Directory Id="INSTALLFOLDER" Name="!(bind.Property.Manufacturer)\$(var.InstallFolderName)">
+                <Directory Id="RUNTIMES_DIR" Name="runtimes">
+                    <Directory Id="RUNTIMES_WIN_X64_DIR" Name="win-x64">
+                        <Directory Id="RUNTIMES_WIN_X64_NATIVE_DIR" Name="native" />
+                    </Directory>
+                    <Directory Id="RUNTIMES_WIN_DIR" Name="win">
+                        <Directory Id="RUNTIMES_WIN_LIB_DIR" Name="lib">
+                            <Directory Id="RUNTIMES_WIN_LIB_NET9_DIR" Name="net9.0" />
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
         </StandardDirectory>
         <StandardDirectory Id="ProgramMenuFolder">
             <!--

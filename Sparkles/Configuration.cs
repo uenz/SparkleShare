@@ -29,7 +29,8 @@ namespace Sparkles
         private static readonly Lazy<Configuration> lazy = new(() =>
                 {
                     string app_data_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
+                    //TODO: MACOS move ./config/opr.sparkle... to ~/Library/Application Support/opr.sparkle... and remove the special case for windows
+                    //TODO: check if windows path needs to be special
                     if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
                         app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
                     // TODO: rename Compiler switch
@@ -43,9 +44,9 @@ namespace Sparkles
         private static readonly Lazy<Configuration> ConfigLazy = lazy;
 
         public static Configuration DefaultConfiguration { get { return ConfigLazy.Value; } }
-#pragma warning disable CA2211 // Nicht konstante Felder dürfen nicht sichtbar sein
+#pragma warning disable CA2211 // Nicht konstante Felder dÃ¼rfen nicht sichtbar sein
         public static bool DebugMode = true;
-#pragma warning restore CA2211 // Nicht konstante Felder dürfen nicht sichtbar sein
+#pragma warning restore CA2211 // Nicht konstante Felder dÃ¼rfen nicht sichtbar sein
 
         public readonly string DirectoryPath;
         public readonly string FilePath;
@@ -59,10 +60,7 @@ namespace Sparkles
         {
             get
             {
-                if (InstallationInfo.OperatingSystem == OS.Windows)
-                    return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-
-                return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
         }
 
@@ -85,10 +83,7 @@ namespace Sparkles
 
         public Configuration(string config_path, string config_file_name)
         {
-            string home_path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-
-            if (InstallationInfo.OperatingSystem == OS.Windows)
-                home_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string home_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             CrashReportFilePath = Path.Combine(home_path, "SparkleShare", "crash_report.txt");
 

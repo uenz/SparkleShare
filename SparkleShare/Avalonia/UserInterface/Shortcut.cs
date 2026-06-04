@@ -14,6 +14,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+using Sparkles;
 using System;
 using System.Runtime.InteropServices;
 
@@ -23,11 +24,11 @@ namespace SparkleShare.UserInterface
     {
         public void Create(string target_path, string shortcut_path)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (InstallationInfo.OperatingSystem == OS.Windows)
             {
                 CreateWindowsShortcut(target_path, shortcut_path);
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if (InstallationInfo.OperatingSystem == OS.macOS)
             {
                 CreateMacOSShortcut(target_path, shortcut_path);
             }

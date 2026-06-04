@@ -50,11 +50,24 @@ if (-not $version) {
 
     # Write the updated content back to the plist file
     Set-Content -Path $plistPath -Value $content
-    $version | Out-File $PSScriptRoot/../version-latest
-    Remove-Item ../meson.build.bak -ErrorAction SilentlyContinue
-    Remove-Item ../SparkleShare/Mac/Info.plist.tmp -ErrorAction SilentlyContinue
-    Remove-Item ../SparkleShare/Windows/SparkleShare.wxs.bak -ErrorAction SilentlyContinue
-    Remove-Item ../Sparkles/InstallationInfo.Directory.cs.bak -ErrorAction SilentlyContinue
+    # Also update Avalonia macOS Info.plist if present
+    $avaloniaPlist = "$PSScriptRoot/../SparkleShare/Avalonia/os_specific/MacOS/Info.plist"
+    if (Test-Path $avaloniaPlist) {
+        $avaloniaContent = Get-Content -Path $avaloniaPlist -Raw
+        foreach ($key in $newValues.Keys) {
+            $avaloniaContent = Replace-KeyValue-InPlist -content $avaloniaContent -key $key -newValue $newValues[$key]
+        }
+        Set-Content -Path $avaloniaPlist -Value $avaloniaContent
+    }
+
+    # Append version to version-latest
+    Add-Content -Path $PSScriptRoot/../version-latest -Value $version
+
+    # Clean up backup/temp files created by other scripts
+    Remove-Item $PSScriptRoot/../meson.build.bak -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../SparkleShare/Mac/Info.plist.tmp -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi.bak -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs.bak -ErrorAction SilentlyContinue
 }
 
 

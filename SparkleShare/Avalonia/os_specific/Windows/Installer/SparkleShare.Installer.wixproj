@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="WiX.Sdk/4.0.5">
+
+  <PropertyGroup>
+    <OutputName>SparkleShare-Setup</OutputName>
+    <Platform>x86</Platform>
+    <!-- Root of the Avalonia build output -->
+    <BuildRoot Condition=" '$(Configuration)' == 'Release' ">..\bin\Release\net9.0</BuildRoot>
+    <BuildRoot Condition=" '$(Configuration)' != 'Release' ">..\bin\Debug\net9.0</BuildRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WiX" Version="4.0.5" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="4.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\SparkleShare.Avalonia.wxs" />
+  </ItemGroup>
+
+</Project>
+

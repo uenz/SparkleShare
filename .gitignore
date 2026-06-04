@@ -16,10 +16,13 @@ bin/
 build/
 obj/
 git-*
+*.gz
 Sparkles/InstallationInfo.Directory.cs
 SparkleShare/Linux/sparkleshare
 SparkleShare/Mac/git*
 SparkleShare/Mac/*.tar.gz
+SparkleShare/Avalonia/os_specific/MacOS/git*
+SparkleShare/Avalonia/os_specific/MacOS/*.tar.gz
 /sparkleshare-*
 desktop.ini
 _ReSharper.*

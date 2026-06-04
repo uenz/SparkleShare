@@ -34,20 +34,53 @@
     <Fragment>
         <ComponentGroup Id="Components" >
             <Component Guid="$(var.ProductComponentGUID)" Directory="INSTALLFOLDER">
-                <!-- The file represented by this component -->
-                <!--<File Id="SparkleShareAppexe" Source="$(var.SparkleShare.Windows.TargetPath)" Checksum="yes" />-->
-                <File Id="SparkleShareAppexe" Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.exe"  Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.dll" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.dll" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/Sparkles.Git.dll" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/SparkleShare.Windows.runtimeconfig.json" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Diagnostics.EventLog.dll" Checksum="yes" />
-                <File Source="$(var.SparkleShare.Windows.ProjectDir)bin/System.Configuration.ConfigurationManager.dll" Checksum="yes" />  
+                <!-- EXE – KeyPath="yes" so the component key path is the file itself -->
+                <File Id="SparkleShareAppexe" Source="$(var.SparkleShare.Avalonia.TargetDir)SparkleShare.Avalonia.exe" Checksum="yes" />
+                <!-- Application DLLs -->
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)SparkleShare.Avalonia.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Sparkles.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Sparkles.Git.dll" Checksum="yes" />
+                <!-- Avalonia framework DLLs -->
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Base.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Controls.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.DesignerSupport.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Desktop.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Dialogs.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Fonts.Inter.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.FreeDesktop.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Markup.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Markup.Xaml.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Metal.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.MicroCom.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Native.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.OpenGL.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.ReactiveUI.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Remote.Protocol.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Skia.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Themes.Fluent.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.Win32.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Avalonia.X11.dll" Checksum="yes" />
+                <!-- Third-party DLLs -->
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)DynamicData.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)HarfBuzzSharp.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)MicroCom.Runtime.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Microsoft.Win32.SystemEvents.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)ReactiveUI.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)SkiaSharp.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Splat.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Configuration.ConfigurationManager.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Diagnostics.EventLog.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Drawing.Common.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Private.Windows.Core.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Reactive.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)System.Security.Cryptography.ProtectedData.dll" Checksum="yes" />
+                <File Source="$(var.SparkleShare.Avalonia.TargetDir)Tmds.DBus.Protocol.dll" Checksum="yes" />
                 <!-- Start Menu shortcut to run the program -->
                 <Shortcut Id="ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"
                     Description="Launch $(var.Name) application"
-                    Target="[#SparkleShareAppexe]"
+                    Target="[!SparkleShareAppexe]"
                     Arguments="--pause"
                     WorkingDirectory="INSTALLFOLDER" />
                     
@@ -70,11 +103,8 @@
                 -->
                 <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
                 <!--
-                    Define the key path for the parent component.  If the key
-                    path is not present, the component is not installed;
-                    otherwise, if the key path is present, the installer
-                    performs an upgrade, repair, or remove.
-
+                    HKCU KeyPath satisfies ICE43: non-advertised shortcuts
+                    require the component KeyPath to be under HKCU.
                     Note: A key path must be unique across all components.
                 -->
                 <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.Name)" Name="installed" Type="integer" KeyPath="yes" Value="1" />
@@ -108,7 +138,7 @@
             of this component.
         
         <Component Id="SparkleShareDocs" Directory="INSTALLFOLDER" Subdirectory="Docs" KeyPath="yes" Guid="$(var.AppDocsGUID)">
-            <File Id="readmetxt" Source="$(var.SparkleShare.Windows.ProjectDir)\README.md" Checksum="yes" Vital="no" />
+            <File Id="readmetxt" Source="$(var.SparkleShare.Avalonia.ProjectDir)\README.md" Checksum="yes" Vital="no" />
         </Component>
         -->
     </Fragment>

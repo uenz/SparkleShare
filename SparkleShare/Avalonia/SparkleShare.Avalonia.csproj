@@ -11,7 +11,9 @@
     <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
     <DisableImplicitNuGetFallbackFolder>false</DisableImplicitNuGetFallbackFolder>
     <Utf8Output>true</Utf8Output>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;ReleaseAvalonia;DebugAvalonia</Configurations>
+    <StartupObject>SparkleShare.Program</StartupObject>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
@@ -169,7 +171,20 @@
 
   <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
-    <Exec Command="&quot;$(ProjectDir)..\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
-  </Target>
+<Target Name="PostBuildWindows" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <Message Text="Running on Windows" Importance="High" />
+  <Exec Command="&quot;$(ProjectDir)\os_specific\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
+</Target>
+
+<Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+  <Message Text="Running on macOS" Importance="High" />
+  <Exec Command="chmod +x &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot;" />
+  <Exec Command="&quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" />
+</Target>
+
+<Target Name="PostBuildLinux" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+  <Message Text="Running on Linux" Importance="High" />
+  <Exec Command="&quot;$(ProjectDir)/os_specific/Linux/postBuild.sh&quot; &quot;$(TargetDir)git_scm&quot;" />
+</Target>
+
 </Project>

@@ -17,6 +17,7 @@
 using System;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Avalonia.Platform; 
 
 namespace SparkleShare
 {
@@ -39,6 +40,10 @@ namespace SparkleShare
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
+                .With(new MacOSPlatformOptions
+                {
+                    ShowInDock = false
+                })
                 .WithInterFont()
                 .LogToTrace()
                 .UseReactiveUI();

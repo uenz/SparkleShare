@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="WixToolset.Sdk/4.0.5">
+  <!-- Declare all valid configurations and platforms unconditionally so the
+       WiX SDK never remaps an unknown configuration (e.g. ReleaseAvalonia)
+       back to Release before our per-configuration PropertyGroups run. -->
+  <PropertyGroup>
+    <Configurations>Debug;Release;ReleaseAvalonia;DebugAvalonia</Configurations>
+    <Platforms>x86;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>..\..\..\build\setup\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>..\..\..\build\setup\x64\Release\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+    <SuppressAllWarnings>false</SuppressAllWarnings>
+    <Pedantic>true</Pedantic>
+    <SuppressIces>ICE57</SuppressIces>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAvalonia|x64'">
+    <OutputPath>..\..\..\build\setup\x64\ReleaseAvalonia\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+    <SuppressAllWarnings>false</SuppressAllWarnings>
+    <Pedantic>true</Pedantic>
+    <SuppressIces>ICE57</SuppressIces>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutputPath>..\..\..\build\setup\x86\Release\</OutputPath>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutputPath>..\..\..\build\setup\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <!-- Map Configuration+Platform to the actual Avalonia build output folder.
+       Uses MSBuildThisFileDirectory so the path resolves correctly during
+       static item evaluation regardless of whether SolutionDir is set. -->
+  <PropertyGroup Condition="'$(Configuration)'=='ReleaseAvalonia'">
+    <AvaloniaTargetDir>$(MSBuildThisFileDirectory)..\..\..\bin\$(Platform)\ReleaseAvalonia\net9.0</AvaloniaTargetDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AvaloniaTargetDir Condition="'$(AvaloniaTargetDir)'==''">$(MSBuildThisFileDirectory)..\..\..\bin\$(Platform)\$(Configuration)\net9.0</AvaloniaTargetDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="LaunchAppOnExit.wxi" />
+    <Content Include="Predefines.wxi" />
+    <Content Include="productVersion.wxi" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Heat" Version="4.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(AvaloniaTargetDir)\git_scm">
+      <ComponentGroupName>GIT_SCM_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressCom>true</SuppressCom>
+      <SuppressRegistry>true</SuppressRegistry>
+      <Link>git_scm</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(AvaloniaTargetDir)\git_scm" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(AvaloniaTargetDir)\Images">
+      <ComponentGroupName>IMAGES_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <Link>Images</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(AvaloniaTargetDir)\Images" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(AvaloniaTargetDir)\Presets">
+      <ComponentGroupName>PRESETS_DIR</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <Link>Presets</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(AvaloniaTargetDir)\Presets" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(AvaloniaTargetDir)\runtimes\win-x64\native">
+      <ComponentGroupName>RUNTIMES_WIN_X64_NATIVE_DIR</ComponentGroupName>
+      <DirectoryRefId>RUNTIMES_WIN_X64_NATIVE_DIR</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressCom>true</SuppressCom>
+      <SuppressRegistry>true</SuppressRegistry>
+      <Link>runtimes\win-x64\native</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(AvaloniaTargetDir)\runtimes\win-x64\native" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(AvaloniaTargetDir)\runtimes\win\lib\net9.0">
+      <ComponentGroupName>RUNTIMES_WIN_LIB_DIR</ComponentGroupName>
+      <DirectoryRefId>RUNTIMES_WIN_LIB_NET9_DIR</DirectoryRefId>
+      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressCom>true</SuppressCom>
+      <SuppressRegistry>true</SuppressRegistry>
+      <Link>runtimes\win\lib\net9.0</Link>
+    </HarvestDirectory>
+    <BindPath Include="$(AvaloniaTargetDir)\runtimes\win\lib\net9.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\SparkleShare\SparkleShare\Avalonia\SparkleShare.Avalonia.csproj" />
+  </ItemGroup>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+</Project>

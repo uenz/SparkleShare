@@ -45,21 +45,34 @@ namespace SparkleShare
 
         public override void Initialize()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            string[] search_path= Array.Empty<string>();
+            
+            if (InstallationInfo.OperatingSystem == OS.Windows)
             {
-                string[] search_path = new string[] {
+                search_path = new string[] {
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "git_scm", "mingw64", "bin"),
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "git_scm", "mingw32", "bin"),
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "git_scm", "usr", "bin"),
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "git_scm", "cmd")
                 };
-                Command.SetSearchPath(search_path);
+                
                 Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
-            }
+            } else if (InstallationInfo.OperatingSystem == OS.macOS)
+            {
+                var exePath = Environment.ProcessPath ?? Assembly.GetExecutingAssembly().Location;
+                var exeDir = Path.GetDirectoryName(exePath) ?? string.Empty;
+                var resourcePath = Path.GetFullPath(Path.Combine(exeDir, "..", "Resources"));
 
+                search_path = new string[] {
+                    Path.Combine(resourcePath, "Resources", "git", "libexec", "git-core"), //debugging
+                    Path.Combine(resourcePath, "..", "Resources", "git", "libexec", "git-core") //app bundle
+                }; 
+            }
+            Command.SetSearchPath(search_path);
+            //TODO: Check if necessary to set PATH as well, or if Command.SetSearchPath is sufficient
+            Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             base.Initialize();
         }
-
         public override string EventLogHTML
         {
             get
@@ -87,11 +100,11 @@ namespace SparkleShare
 
         public override void SetFolderIcon()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (InstallationInfo.OperatingSystem == OS.Windows)
             {
                 SetFolderIconWindows();
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if (InstallationInfo.OperatingSystem == OS.macOS)
             {
                 SetFolderIconMacOS();
             }
@@ -139,11 +152,11 @@ namespace SparkleShare
 
         public override void CreateStartupItem()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (InstallationInfo.OperatingSystem == OS.Windows)
             {
                 CreateStartupItemWindows();
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if (InstallationInfo.OperatingSystem == OS.macOS)
             {
                 CreateStartupItemMacOS();
             }
@@ -200,7 +213,7 @@ namespace SparkleShare
             {
                 Directory.CreateDirectory(FoldersPath);
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (InstallationInfo.OperatingSystem == OS.Windows)
                 {
                     File.SetAttributes(FoldersPath, File.GetAttributes(FoldersPath) | FileAttributes.System);
                 }
@@ -300,13 +313,13 @@ namespace SparkleShare
         {
             try
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (InstallationInfo.OperatingSystem == OS.Windows)
                 {
                     // Windows-specific clipboard using Win32 API
                     WindowsClipboard.SetText(text);
                     Logger.LogInfo("Controller", "Text copied using Windows clipboard API");
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                else if (InstallationInfo.OperatingSystem == OS.macOS)
                 {
                     // macOS clipboard using pbcopy
                     var process = new Process

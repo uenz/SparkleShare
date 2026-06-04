@@ -45,11 +45,11 @@ namespace SparkleShare.UserInterface
                 string appDir = Path.GetDirectoryName(assembly.Location) ?? string.Empty;
                 string imagePath = Path.Combine(appDir, "Images", $"{name}.{type}");
                 
-                Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Looking for image at: {imagePath}");
+                //Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Looking for image at: {imagePath}");
                 
                 if (File.Exists(imagePath))
                 {
-                    Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Found image file: {imagePath}");
+                    //Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Found image file: {imagePath}");
                     return new Bitmap(imagePath);
                 }
                 
