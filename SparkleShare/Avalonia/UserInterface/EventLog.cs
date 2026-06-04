@@ -113,7 +113,7 @@ namespace SparkleShare.UserInterface
             };
             _spinnerLabel = new TextBlock
             {
-                Text = "Loading…",
+                Text = "Loadingï¿½",
                 FontSize = 16,
                 Opacity  = 0.5,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -432,24 +432,54 @@ namespace SparkleShare.UserInterface
                     // Remove the ? symbol (&#x25BE;) that comes from the HTML time link
                     dd_text = dd_text.Replace("\u25BE", "").Trim();
 
-                    // Pick icon based on change type using Unicode escape sequences
-                    // \u2795 = ?  \u2796 = ?  \u270F = ?  \u27A1 = ?  \u2022 = •
-                    string icon = css_class switch
-                    {
-                        "added"   => "\u2795",  // ?
-                        "deleted" => "\u2796",  // ?
-                        "edited"  => "\u270F",  // ?
-                        "moved"   => "\u27A1",  // ?
-                        _         => "\u2022"   // •
-                    };
-
+                    // Use small PNG icons (same names as Windows version) when available
                     var file_row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
-                    file_row.Children.Add(new TextBlock
+
+                    // Map css class to expected icon name (added/deleted/edited/moved)
+                    string iconName = null;
+                    if (!string.IsNullOrWhiteSpace(css_class))
                     {
-                        Text    = icon,
-                        Opacity = 0.6,
-                        Width   = 16
-                    });
+                        switch (css_class)
+                        {
+                            case "added":   iconName = "document-added-12"; break;
+                            case "deleted": iconName = "document-deleted-12"; break;
+                            case "edited":  iconName = "document-edited-12"; break;
+                            case "moved":   iconName = "document-moved-12"; break;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(iconName))
+                    {
+                        try
+                        {
+                            var iconBmp = UserInterfaceHelpers.GetImageSource(iconName);
+                            if (iconBmp != null)
+                            {
+                                file_row.Children.Add(new Avalonia.Controls.Image
+                                {
+                                    Source = iconBmp,
+                                    Width  = 16,
+                                    Height = 16,
+                                    Opacity = 0.6,
+                                    VerticalAlignment = VerticalAlignment.Center
+                                });
+                            }
+                            else
+                            {
+                                // fallback to small bullet
+                                file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                            }
+                        }
+                        catch
+                        {
+                            file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                        }
+                    }
+                    else
+                    {
+                        file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                    }
+
                     file_row.Children.Add(new TextBlock
                     {
                         Text         = dd_text,
@@ -457,6 +487,7 @@ namespace SparkleShare.UserInterface
                         Opacity      = 0.75,
                         TextTrimming = TextTrimming.CharacterEllipsis
                     });
+
                     right.Children.Add(file_row);
                 }
                 dd_pos = dd_end + 5;
