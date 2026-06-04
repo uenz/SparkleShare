@@ -12,6 +12,7 @@
 *.sln.cache
 *.user
 *.resources
+*.tmp
 bin/
 build/
 obj/
@@ -22,6 +23,7 @@ SparkleShare/Linux/sparkleshare
 SparkleShare/Mac/git*
 SparkleShare/Mac/*.tar.gz
 SparkleShare/Avalonia/os_specific/MacOS/git*
+SparkleShare/Avalonia/os_specific/MacOS/Resources/git
 SparkleShare/Avalonia/os_specific/MacOS/*.tar.gz
 /sparkleshare-*
 desktop.ini
