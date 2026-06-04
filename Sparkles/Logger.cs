@@ -18,6 +18,7 @@
 using System;
 using System.IO;
 using System.Xml.Schema;
+using System.Diagnostics;
 
 namespace Sparkles
 {
@@ -65,6 +66,27 @@ namespace Sparkles
                         Configuration.DefaultConfiguration.LogFilePath, e.Message, e.StackTrace));
                 }
             }
+        }
+
+        [Conditional("DEBUG")]
+        public static void LogDebug(string message)
+        {
+            LogDebug("DEBUG", message, null);
+        }
+
+        [Conditional("DEBUG")]
+        public static void LogDebug(string type, string message)
+        {
+            LogDebug(type, message, null);
+        }
+
+        [Conditional("DEBUG")]
+        public static void LogDebug(string type, string message, Exception? exception)
+        {
+            if (string.IsNullOrEmpty(type))
+                type = "DEBUG";
+
+            LogInfo(type, message, exception);
         }
 
 
