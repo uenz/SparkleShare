@@ -45,11 +45,11 @@ namespace SparkleShare.UserInterface
                 string appDir = Path.GetDirectoryName(assembly.Location) ?? string.Empty;
                 string imagePath = Path.Combine(appDir, "Images", $"{name}.{type}");
                 
-                //Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Looking for image at: {imagePath}");
+                Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Looking for image at: {imagePath}");
                 
                 if (File.Exists(imagePath))
                 {
-                    //Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Found image file: {imagePath}");
+                    Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Found image file: {imagePath}");
                     return new Bitmap(imagePath);
                 }
                 
@@ -59,7 +59,7 @@ namespace SparkleShare.UserInterface
                 
                 if (image_stream != null)
                 {
-                    Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Found embedded resource: {resourceName}");
+                    Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Found embedded resource: {resourceName}");
                     return new Bitmap(image_stream);
                 }
                 
@@ -69,16 +69,16 @@ namespace SparkleShare.UserInterface
                 
                 if (File.Exists(windowsImagePath))
                 {
-                    Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Found Windows image: {windowsImagePath}");
+                    Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Found Windows image: {windowsImagePath}");
                     return new Bitmap(windowsImagePath);
                 }
                 
-                Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Image '{name}.{type}' not found in any location");
+                Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Image '{name}.{type}' not found in any location");
                 return null;
             }
             catch (Exception ex)
             {
-                Sparkles.Logger.LogInfo("UserInterfaceHelpers", $"Failed to load image '{name}.{type}': {ex.Message}");
+                Sparkles.Logger.LogDebug("UserInterfaceHelpers", $"Failed to load image '{name}.{type}': {ex.Message}");
                 return null;
             }
         }
