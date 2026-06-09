@@ -436,7 +436,7 @@ namespace SparkleShare.UserInterface
                     var file_row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
 
                     // Map css class to expected icon name (added/deleted/edited/moved)
-                    string iconName = null;
+                    string? iconName = null;
                     if (!string.IsNullOrWhiteSpace(css_class))
                     {
                         switch (css_class)

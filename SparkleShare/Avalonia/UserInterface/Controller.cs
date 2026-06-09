@@ -108,6 +108,11 @@ namespace SparkleShare
             {
                 SetFolderIconMacOS();
             }
+            else if (InstallationInfo.OperatingSystem == OS.Ubuntu ||
+                     InstallationInfo.OperatingSystem == OS.GNOME)
+            {
+                SetFolderIconLinux();
+            }
         }
 
         private void SetFolderIconWindows()
@@ -145,9 +150,105 @@ namespace SparkleShare
 
         private void SetFolderIconMacOS()
         {
-            // macOS folder icon implementation would go here
-            // This typically involves setting the .VolumeIcon.icns file
-            Logger.LogInfo("Config", "Setting folder icon on macOS not yet implemented");
+            string folder_icon_name = "sparkleshare-folder.icns";
+
+            if (Environment.OSVersion.Version.Major >= 14)
+                folder_icon_name = "sparkleshare-folder-yosemite.icns";
+
+            string app_path = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty) ?? string.Empty;
+            string candidate1 = Path.Combine(app_path, "..", "Resources", folder_icon_name);
+            string candidate2 = Path.Combine(app_path, folder_icon_name);
+            string icon_file_path = Path.GetFullPath(File.Exists(candidate1) ? candidate1 : candidate2);
+
+            if (!File.Exists(icon_file_path))
+            {
+                Logger.LogInfo("Config", "macOS folder icon file not found: " + folder_icon_name);
+                return;
+            }
+
+            try
+            {
+                string script = "tell application \"Finder\"\n" +
+                    "set icon of folder (POSIX file \"" + FoldersPath + "\") to POSIX file \"" + icon_file_path + "\"\n" +
+                    "end tell";
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "/usr/bin/osascript",
+                    Arguments = $"-e \"{script.Replace("\"", "\\\"")}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(psi);
+                if (process != null)
+                {
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        string error = process.StandardError.ReadToEnd();
+                        Logger.LogInfo("Config", "Failed setting macOS folder icon: " + error);
+                    }
+                    else
+                    {
+                        Logger.LogInfo("Config", "Set macOS folder icon for " + FoldersPath);
+                    }
+                }
+                else
+                {
+                    Logger.LogInfo("Config", "Failed to start osascript for setting folder icon");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Config", "Exception setting macOS folder icon: " + e.Message, e);
+            }
+        }
+
+        private void SetFolderIconLinux()
+        {
+            try
+            {
+                string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                string xdgDataHome = Path.Combine(home, ".local", "share");
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "/usr/bin/gio",
+                    Arguments = $"set \"{FoldersPath}\" metadata::custom-icon-name org.sparkleshare.SparkleShare",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                psi.Environment["XDG_DATA_HOME"] = xdgDataHome;
+
+                using var process = Process.Start(psi);
+                if (process != null)
+                {
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        string error = process.StandardError.ReadToEnd();
+                        Logger.LogInfo("Config", "Failed setting Linux folder icon: " + error);
+                    }
+                    else
+                    {
+                        Logger.LogInfo("Config", "Set Linux folder icon for " + FoldersPath);
+                    }
+                }
+                else
+                {
+                    Logger.LogInfo("Config", "Failed to start gio for setting folder icon");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Config", "Exception setting Linux folder icon: " + e.Message, e);
+            }
         }
 
         public override void CreateStartupItem()
@@ -159,6 +260,10 @@ namespace SparkleShare
             else if (InstallationInfo.OperatingSystem == OS.macOS)
             {
                 CreateStartupItemMacOS();
+            }
+            else if (InstallationInfo.OperatingSystem == OS.Ubuntu || InstallationInfo.OperatingSystem == OS.GNOME)
+            {
+                CreateStartupItemLinux();
             }
         }
 
@@ -178,9 +283,109 @@ namespace SparkleShare
 
         private void CreateStartupItemMacOS()
         {
-            // macOS startup item implementation would go here
-            // This typically involves creating a LaunchAgent plist file
-            Logger.LogInfo("Config", "Creating startup item on macOS not yet implemented");
+            string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string launch_agents_dir = Path.Combine(home, "Library", "LaunchAgents");
+            string plist_path = Path.Combine(launch_agents_dir, "com.sparkleshare.SparkleShare.plist");
+
+            if (!Directory.Exists(launch_agents_dir))
+                Directory.CreateDirectory(launch_agents_dir);
+
+            if (File.Exists(plist_path))
+                return;
+
+            string processPath = Environment.ProcessPath ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(processPath))
+            {
+                Logger.LogInfo("Config", "Could not create macOS startup item: process path is empty");
+                return;
+            }
+
+            string[] programArguments;
+
+            try
+            {
+                var exeFile = new FileInfo(processPath);
+                if (exeFile.Directory?.Parent?.Parent != null && exeFile.Directory.Parent.Parent.Extension == ".app")
+                {
+                    string appBundlePath = exeFile.Directory.Parent.Parent.FullName;
+                    programArguments = new[] { "/usr/bin/open", "-a", appBundlePath };
+                }
+                else
+                {
+                    programArguments = new[] { processPath };
+                }
+            }
+            catch
+            {
+                programArguments = new[] { processPath };
+            }
+
+            string plist = $"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+                "<plist version=\"1.0\">\n" +
+                "<dict>\n" +
+                "  <key>Label</key>\n" +
+                "  <string>com.sparkleshare.SparkleShare</string>\n" +
+                "  <key>ProgramArguments</key>\n" +
+                "  <array>\n" +
+                string.Join("", Array.ConvertAll(programArguments, arg => "    <string>" + System.Security.SecurityElement.Escape(arg) + "</string>\n")) +
+                "  </array>\n" +
+                "  <key>RunAtLoad</key>\n" +
+                "  <true/>\n" +
+                "  <key>KeepAlive</key>\n" +
+                "  <false/>\n" +
+                "</dict>\n" +
+                "</plist>\n";
+
+            try
+            {
+                File.WriteAllText(plist_path, plist);
+                Logger.LogInfo("Config", "Created macOS startup item: " + plist_path);
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Config", "Failed creating macOS startup item", e);
+            }
+        }
+
+        private void CreateStartupItemLinux()
+        {
+            string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string autostart_dir = Path.Combine(home, ".config", "autostart");
+            string desktop_file_path = Path.Combine(autostart_dir, "SparkleShare.desktop");
+
+            if (!Directory.Exists(autostart_dir))
+                Directory.CreateDirectory(autostart_dir);
+
+            if (File.Exists(desktop_file_path))
+                return;
+
+            string processPath = Environment.ProcessPath ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(processPath))
+            {
+                Logger.LogInfo("Config", "Could not create Linux startup item: process path is empty");
+                return;
+            }
+
+            string execPath = processPath.Replace(" ", "\\ ");
+            string desktopEntry = "[Desktop Entry]" + Environment.NewLine +
+                "Type=Application" + Environment.NewLine +
+                "Name=SparkleShare" + Environment.NewLine +
+                "Exec=" + execPath + Environment.NewLine +
+                "Terminal=false" + Environment.NewLine +
+                "Hidden=false" + Environment.NewLine +
+                "X-GNOME-Autostart-enabled=true" + Environment.NewLine +
+                "NoDisplay=false" + Environment.NewLine;
+
+            try
+            {
+                File.WriteAllText(desktop_file_path, desktopEntry);
+                Logger.LogInfo("Config", "Created Linux startup item: " + desktop_file_path);
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo("Config", "Failed creating Linux startup item", e);
+            }
         }
 
         public override void InstallProtocolHandler()

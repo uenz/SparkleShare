@@ -61,7 +61,7 @@ if (-not $version) {
     }
 
     # Append version to version-latest
-    Add-Content -Path $PSScriptRoot/../version-latest -Value $version
+    Set-Content -Path $PSScriptRoot/../version-latest -Value $version
 
     # Clean up backup/temp files created by other scripts
     Remove-Item $PSScriptRoot/../meson.build.bak -ErrorAction SilentlyContinue

@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x   # turn on command tracing
 
 if [ "$1" = "" ]; then
     echo "No version number specified. Usage: ./bump-version.sh VERSION_NUMBER"
@@ -10,7 +11,7 @@ else
     cat ../SparkleShare/Mac/Info.plist.tmp | eval "sed -e '/<key>CFBundleVersion<\/key>/{N;s#<string>.*<\/string>#<string>$1<\/string>#;}'" > ../SparkleShare/Mac/Info.plist
     cat ../SparkleShare/Avalonia/os_specific/MacOS/Info.plist | eval "sed -e '/<key>CFBundleShortVersionString<\/key>/{N;s#<string>.*<\/string>#<string>$1<\/string>#;}'" > ../SparkleShare/Avalonia/os_specific/MacOS/Info.plist.tmp
     cat ../SparkleShare/Avalonia/os_specific/MacOS/Info.plist.tmp | eval "sed -e '/<key>CFBundleVersion<\/key>/{N;s#<string>.*<\/string>#<string>$1<\/string>#;}'" > ../SparkleShare/Avalonia/os_specific/MacOS/Info.plist
-    cat $1 >> ../version-latest
+    echo "$1" > ../version-latest
     rm ../meson.build.bak
     rm ../SparkleShare/Mac/Info.plist.tmp
     rm ../SparkleShare/Windows/Installer/productVersion.wxi.bak

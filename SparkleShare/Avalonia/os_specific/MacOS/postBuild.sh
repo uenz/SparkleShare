@@ -34,21 +34,6 @@ cp -R "$(dirname "$INPUT_PATH")"/* "$APP_DIR/Contents/MacOS/"
 ${projectFolder}/checkGit.sh
 
 cp "${projectFolder}/Info.plist" "$APP_DIR/Contents"
-# Info.plist erzeugen
-# cat > "$APP_DIR/Contents/Info.plist" <<EOF
-# <?xml version="1.0" encoding="UTF-8"?>
-# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-#  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-# <plist version="1.0">
-# <dict>
-#     <key>CFBundleName</key><string>${APP_NAME}</string>
-#     <key>CFBundleExecutable</key><string>${APP_NAME}</string>
-#     <key>CFBundleIdentifier</key><string>com.sparkleshare.${APP_NAME}</string>
-#     <key>CFBundleVersion</key><string>1.0</string>
-#     <key>CFBundlePackageType</key><string>APPL</string>
-# </dict>
-# </plist>
-# EOF
 
 # Icon kopieren (optional)
 # if [ -f "$(dirname "$INPUT_PATH")/icon.icns" ]; then
@@ -58,6 +43,6 @@ cp "${projectFolder}/Info.plist" "$APP_DIR/Contents"
 
 # Binary ausführbar machen
 chmod +x "$APP_DIR/Contents/MacOS/${APP_NAME}"
-
+hdiutil create -volname "${APP_NAME}" -srcfolder "${APP_DIR}" -ov -format UDZO "${APP_NAME}.dmg"
 echo "✅ Fertig! App erstellt:"
 echo "$APP_DIR"
