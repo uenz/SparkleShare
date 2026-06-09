@@ -73,6 +73,7 @@ jobs:
       - run: git status
       - name: Compile (macOS)
         run: |
+          chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/build.sh
           ./SparkleShare/Avalonia/os_specific/MacOS/build.sh
           cp ./SparkleShare/Avalonia/bin/Release/net9.0/SparkleShare.dmg -r SparkleShare-MacOs-${GITHUB_REF##*/}.
 
