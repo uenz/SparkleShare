@@ -77,7 +77,7 @@ jobs:
           ./SparkleShare/Avalonia/os_specific/MacOS/build.sh
           cp ./SparkleShare/Avalonia/bin/Release/net9.0/SparkleShare.dmg -r SparkleShare-MacOs-${GITHUB_REF##*/}.
 
-        if: matrix.os == 'macos-15'
+        if: matrix.os == 'macos-26'
       - name: Compile (Linux)
         run: |
           meson build/
