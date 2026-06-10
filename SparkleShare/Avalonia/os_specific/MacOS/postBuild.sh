@@ -32,15 +32,12 @@ cp -R "${projectFolder}/Resources" "$APP_DIR/Contents"
 echo "➡️ Kopiere Build-Output in .app..."
 cp -R "$(dirname "$INPUT_PATH")"/* "$APP_DIR/Contents/MacOS/"
 ${projectFolder}/checkGit.sh
-
 cp "${projectFolder}/Info.plist" "$APP_DIR/Contents"
-
 # Icon kopieren (optional)
 # if [ -f "$(dirname "$INPUT_PATH")/icon.icns" ]; then
 #     echo "🎨 Icon gefunden — kopiere icon.icns"
 #     cp "$(dirname "$INPUT_PATH")/icon.icns" "$APP_DIR/Contents/Resources/"
 # fi
-
 # Binary ausführbar machen
 chmod +x "$APP_DIR/Contents/MacOS/${APP_NAME}"
 hdiutil create -volname "${APP_NAME}" -srcfolder "${APP_DIR}" -ov -format UDZO "${APP_NAME}.dmg"

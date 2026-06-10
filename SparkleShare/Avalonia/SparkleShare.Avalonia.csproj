@@ -179,7 +179,7 @@
 <Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <Message Text="Running on macOS" Importance="High" />
   <Exec Command="chmod +x &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot;" />
-  <Exec Command="&quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" />
+  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" StandardOutputImportance="high"/>
 </Target>
 
 <Target Name="PostBuildLinux" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
