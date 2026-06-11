@@ -1,6 +1,7 @@
 #!/bin/sh
 # Expect path to app bundle argument
 export bundle=$1
+export runtimeidentifier=$2
 export projectFolder=$(dirname $0)
 ${projectFolder}/checkGit.sh
 
@@ -17,7 +18,7 @@ APP_NAME=$(basename "$INPUT_PATH")
 # .app Zielordner
 APP_DIR="${INPUT_PATH}.app"
 
-echo "📦 Erstelle macOS App Bundle für: $APP_NAME"
+echo "📦 Erstelle macOS App Bundle für: $APP_NAME : $runtimeidentifier"
 echo "📁 Input: $INPUT_PATH"
 echo "📁 AppDir: $APP_DIR"
 
@@ -31,7 +32,7 @@ cp -R "${projectFolder}/Resources" "$APP_DIR/Contents"
 # Build-Output kopieren
 echo "➡️ Kopiere Build-Output in .app..."
 cp -R "$(dirname "$INPUT_PATH")"/* "$APP_DIR/Contents/MacOS/"
-${projectFolder}/checkGit.sh
+${projectFolder}/checkGit.sh $runtimeidentifier
 cp "${projectFolder}/Info.plist" "$APP_DIR/Contents"
 # Icon kopieren (optional)
 # if [ -f "$(dirname "$INPUT_PATH")/icon.icns" ]; then

@@ -10,11 +10,17 @@ function abspath()
     ;;
   esac
 }
-
+export runtimeidentifier=$1
 export projectFolder=$(dirname $0)
 export projectFolder=$(abspath ${projectFolder})
 
-LINE=$(cat ${projectFolder}/git.download)
+echo "checkGit RuntimeIdentifier: ${runtimeidentifier}"
+if [[ $runtimeidentifier == "osx-arm64" ]]; then
+    LINE=$(cat ${projectFolder}/git.osx-arm64.download)
+else
+    LINE=$(cat ${projectFolder}/git.osx-x64.download)
+fi
+
 TMP=()
 
 for val in $LINE ; do
