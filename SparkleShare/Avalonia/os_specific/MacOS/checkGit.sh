@@ -15,7 +15,7 @@ export projectFolder=$(dirname $0)
 export projectFolder=$(abspath ${projectFolder})
 
 echo "checkGit RuntimeIdentifier: ${runtimeidentifier}"
-if [[ $runtimeidentifier == "osx-arm64" ]]; then
+if [[ $runtimeidentifier == "arm64" ]]; then
     LINE=$(cat ${projectFolder}/git.osx-arm64.download)
 else
     LINE=$(cat ${projectFolder}/git.osx-x64.download)
