@@ -90,7 +90,9 @@ jobs:
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
-          cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
+          cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-Legacy-${GITHUB_REF##*/}.msi
+          ./SparkleShare/Avalonia/os_specific/Windows/build.cmd installer
+          cp ./SparkleShare/Avalonia/os_specific/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
         if: matrix.os == 'windows-latest'
       - name: Publish
         uses: softprops/action-gh-release@v3

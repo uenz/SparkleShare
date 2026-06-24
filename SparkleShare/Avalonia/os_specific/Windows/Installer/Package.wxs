@@ -95,11 +95,11 @@
         -->
         <Feature Id="Main" Title="SparkleShare" AllowAbsent="no" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="The core elements that must be installed">
             <ComponentGroupRef Id="Components" />
-            <ComponentGroupRef Id="IMAGES_DIR"/>
-            <ComponentGroupRef Id="PRESETS_DIR"/>
+            <ComponentGroupRef Id="AppFiles"/>
+            <!-- <ComponentGroupRef Id="PRESETS_DIR"/>
             <ComponentGroupRef Id="GIT_SCM_DIR"/>
             <ComponentGroupRef Id="RUNTIMES_WIN_X64_NATIVE_DIR"/>
-            <ComponentGroupRef Id="RUNTIMES_WIN_LIB_DIR"/>
+            <ComponentGroupRef Id="RUNTIMES_WIN_LIB_DIR"/>    -->
 
         </Feature>
         

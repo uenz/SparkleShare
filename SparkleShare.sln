@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -19,7 +19,7 @@ Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "SparkleShare.Windows.Instal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkleShare.Avalonia", "SparkleShare\Avalonia\SparkleShare.Avalonia.csproj", "{4A0474F0-B31A-320C-2CAE-16EEFD2A5D62}"
 EndProject
-Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "SparkleShare.Avalonia.Installer", "SparkleShare\Avalonia\Installer\SparkleShare.Avalonia.Installer.wixproj", "{EB2F8FC9-2491-4A92-A34C-783926E5C95E}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "SparkleShare.Avalonia.Installer", "SparkleShare\Avalonia\os_specific\Windows\Installer\SparkleShare.Avalonia.Installer.wixproj", "{EB2F8FC9-2491-4A92-A34C-783926E5C95E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4A0474F0-B31A-320C-2CAE-16EEFD2A5D62} = {4A0474F0-B31A-320C-2CAE-16EEFD2A5D62}
 	EndProjectSection

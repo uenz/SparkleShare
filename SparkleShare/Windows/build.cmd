@@ -18,7 +18,7 @@ if "%1"=="installer" (
 	REM wix extension add WixToolset.UI.wixext/4.05 --global
 	REM wix extension add WixToolset.Util.wixext/4.05 --global
 	REM dotnet tool install --global wix --version 4.05
-	dotnet restore
+	dotnet restore "%~dp0..\..\SparkleShare.sln"
 	REM dotnet tool install wix --create-manifest-if-needed
 	dotnet build "%~dp0..\..\SparkleShare.sln" /target:SparkleShare_Windows_Installer:Rebuild /p:Configuration=ReleaseWindows /p:Platform="Any CPU" -m
 	REM if exist "%wixBinDir%" (
