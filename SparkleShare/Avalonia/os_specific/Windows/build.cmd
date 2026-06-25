@@ -1,7 +1,7 @@
 @echo off
 set  DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-dotnet build "%~dp0..\..\..\..\SparkleShare.sln" /target:SparkleShare_Avalonia:Rebuild /p:Configuration=ReleaseAvalonia /p:Platform="Any CPU" -m -v:detailed
+dotnet build "%~dp0..\..\..\..\SparkleShare.sln" /target:SparkleShare_Avalonia:Rebuild /p:Configuration=ReleaseAvalonia /p:Platform="Any CPU" -m -v:detailed -v:detailed
 
 if "%1"=="installer" (
 	dotnet restore "%~dp0..\..\..\..\SparkleShare.sln"
