@@ -73,6 +73,8 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - run: git status
       - name: Compile (macOS)
+        env:
+          ARCH_NAME: ${{ matrix.os == 'macos-26-intel' && 'x64' || 'arm64' }}
         run: |
           # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/build.sh
           # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/checkGit.sh
