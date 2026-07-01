@@ -21,7 +21,7 @@ if (-not $version) {
 
     # replace version in installer script
     (Get-Content $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi) -replace " ProductVersion=`"[^']*`"", " ProductVersion=`"$version`"" | Set-Content $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi
-    (Get-Content $PSScriptRoot/../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi) -replace " ProductVersion=`"[^']*`"", " ProductVersion=`"$version`"" | Set-Content $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi
+    (Get-Content $PSScriptRoot/../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi) -replace " ProductVersion=`"[^']*`"", " ProductVersion=`"$version`"" | Set-Content $PSScriptRoot/../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi
     # replace version in assembly info
     (Get-Content $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs) -replace "assembly:AssemblyVersion *\(`"[^`']*`"\)", "assembly:AssemblyVersion (`"$version`")" | Set-Content $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs
     # replace version in meson.build

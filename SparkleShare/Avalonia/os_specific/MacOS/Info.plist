@@ -9,9 +9,9 @@
 	<key>CFBundleName</key>
 	<string>SparkleShare</string>
 	<key>CFBundleShortVersionString</key>
-	<string> 3.40.0 </string>
+	<string> 3.99.00 </string>
 	<key>CFBundleVersion</key>
-	<string> 3.40.0 </string>
+	<string> 3.99.00 </string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
@@ -26,5 +26,7 @@
 	<string>true</string>
 </dict>
 </plist>
+
+
 
 

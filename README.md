@@ -3,7 +3,8 @@
 ## Status
 This is a fork of https://github.com/hbons/SparkleShare/ with is not maintained anymore. 
 At the moment this fork offers the latest MacOS and Windows builds and recent build instructions. 
-Goal of this fork is to port the code to net8.0 to keep the great application alive and multiplatform. The librarys are almost ported to net8.0. The gui shall be ported to [MAUI](https://learn.microsoft.com/de-de/dotnet/maui/what-is-maui?view=net-maui-8.0) or [AvaloniaUI](https://avaloniaui.net/) which will take a while.
+Goal of this fork is to port the code to net9.0 to keep the great application alive and multiplatform. The librarys are almost ported to net9.0. 
+A preview version of the GUI is implemented with [AvaloniaUI](https://avaloniaui.net/).
 
 ## SparkleSahare
 

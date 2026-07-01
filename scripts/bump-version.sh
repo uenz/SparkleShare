@@ -5,6 +5,7 @@ if [ "$1" = "" ]; then
     echo "No version number specified. Usage: ./bump-version.sh VERSION_NUMBER"
 else
     sed -i.bak "s/ ProductVersion=\"[^']*\"/ ProductVersion=\"$1\"/" ../SparkleShare/Windows/Installer/productVersion.wxi
+    sed -i.bak "s/ ProductVersion=\"[^']*\"/ ProductVersion=\"$1\"/" ../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi
     sed -i.bak "s/assembly:AssemblyVersion *(\"[^\"]*\")/assembly:AssemblyVersion (\"$1\")/" ../Sparkles/InstallationInfo.Directory.cs                 
     sed -i.bak "s/configuration.set('VERSION', '[^\"]*')/configuration.set('VERSION', '$1')/" ../meson.build
     cat ../SparkleShare/Mac/Info.plist | eval "sed -e '/<key>CFBundleShortVersionString<\/key>/{N;s#<string>.*<\/string>#<string>$1<\/string>#;}'" > ../SparkleShare/Mac/Info.plist.tmp

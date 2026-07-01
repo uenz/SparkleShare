@@ -45,7 +45,7 @@
                 <Shortcut Id="ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"
                     Description="Launch $(var.Name) application"
-                    Target="[#SparkleShareAppexe]"
+                    Target="[INSTALLFOLDER]SparkleShare.Windows.exe"
                     Arguments="--pause"
                     WorkingDirectory="INSTALLFOLDER" />
                     
@@ -94,7 +94,7 @@
                 <Shortcut Id="ApplicationDesktopShortcut" Directory="DesktopFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"
                     Description="Launch $(var.Name) application"
-                    Target="[!SparkleShareAppexe]"
+                    Target="[INSTALLFOLDER]SparkleShare.Windows.exe"
                     Arguments="--pause"
                     WorkingDirectory="INSTALLFOLDER" />
                 <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.Name)" Name="shortcut_installed" Type="integer" Value="1" KeyPath="yes" />
