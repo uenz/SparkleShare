@@ -63,7 +63,7 @@
       <SuppressRegistry>true</SuppressRegistry>
       <ComponentGroupName>AppFiles</ComponentGroupName>
       <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
-      <SuppressRootDirectory>false</SuppressRootDirectory>
+      <SuppressRootDirectory>true</SuppressRootDirectory>
       <SuppressRegistry>true</SuppressRegistry>
       <Link>/</Link>
     </HarvestDirectory>
