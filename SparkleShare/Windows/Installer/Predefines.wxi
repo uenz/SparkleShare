@@ -35,7 +35,7 @@
             fea  (FeatureTree)
             cus  (Custom InstallDir)
     -->
-    <?define InstallType = ""?>
+    <?define InstallType = "legacy"?>
 
     <!--
         The AppName variable is built from the Simple App's target name property
