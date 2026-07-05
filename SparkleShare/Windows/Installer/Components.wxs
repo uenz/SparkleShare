@@ -45,7 +45,7 @@
                 <Shortcut Id="ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"
                     Description="Launch $(var.Name) application"
-                    Target="[INSTALLFOLDER]SparkleShare.Windows.exe"
+                    Target="[#SparkleShareAppexe]"
                     Arguments="--pause"
                     WorkingDirectory="INSTALLFOLDER" />
                     
@@ -94,12 +94,20 @@
                 <Shortcut Id="ApplicationDesktopShortcut" Directory="DesktopFolder" Advertise="no"
                     Icon="icon.ico" Name="$(var.Name)"
                     Description="Launch $(var.Name) application"
-                    Target="[INSTALLFOLDER]SparkleShare.Windows.exe"
+                    Target="[!SparkleShareAppexe]"
                     Arguments="--pause"
                     WorkingDirectory="INSTALLFOLDER" />
                 <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.Name)" Name="shortcut_installed" Type="integer" Value="1" KeyPath="yes" />
-
-            </Component>                        
+            </Component>      
+            <Component Id="AutoStartComponent" Directory="INSTALLFOLDER" Guid="8F8C1A4E-3C6B-4F7E-9A2D-9F4B6C1D8E11">
+                <RegistryValue
+                    Root="HKCU"
+                    Key="Software\Microsoft\Windows\CurrentVersion\Run"
+                    Name="$(var.Name)"
+                    Value="[!SparkleShareAppexe]"
+                    Type="string"
+                    KeyPath="yes" />
+            </Component>                                  
         </ComponentGroup>
         <!--
             The key path for this component is the directory/subdirectory name
