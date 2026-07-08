@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           # Semantic version range syntax or exact version of a dotnet version
-          dotnet-version: '9.x'
+          dotnet-version: '9.0.100'
       - name: Display dotnet version
         run: dotnet --version
       - name: Install Dependencies (Linux)
