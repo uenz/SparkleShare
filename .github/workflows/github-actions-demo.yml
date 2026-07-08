@@ -26,6 +26,7 @@ jobs:
         with:
           # Semantic version range syntax or exact version of a dotnet version
           dotnet-version: '9.0.100'
+          cache: false
       - name: Display dotnet version
         run: dotnet --version
       - name: Install Dependencies (Linux)
