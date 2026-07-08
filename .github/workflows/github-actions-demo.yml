@@ -25,8 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           # Semantic version range syntax or exact version of a dotnet version
-          dotnet-version: '9.0.100'
-          runtime: none
+          dotnet-version: '9.x'
           cache: false
 
       - name: Display dotnet version
