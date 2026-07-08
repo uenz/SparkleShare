@@ -14,7 +14,8 @@ jobs:
         os: [ #macos-26,  
               #macos-26-intel,
               # ubuntu-20.04, 
-              windows-latest
+              windows-latest,
+              macos-26
             ]
 
     steps:
