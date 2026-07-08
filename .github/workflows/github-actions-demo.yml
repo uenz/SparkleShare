@@ -11,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-26,  
-              macos-26-intel,
+        os: [ #macos-26,  
+              #macos-26-intel,
               # ubuntu-20.04, 
               windows-latest
             ]
@@ -26,7 +26,9 @@ jobs:
         with:
           # Semantic version range syntax or exact version of a dotnet version
           dotnet-version: '9.0.100'
+          runtime: none
           cache: false
+
       - name: Display dotnet version
         run: dotnet --version
       - name: Install Dependencies (Linux)
