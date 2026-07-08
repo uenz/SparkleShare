@@ -23,7 +23,7 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Setup .NET 9.x
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v4
         with:
           # Semantic version range syntax or exact version of a dotnet version
           dotnet-version: '9.x'
