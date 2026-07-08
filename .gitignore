@@ -13,6 +13,7 @@
 *.user
 *.resources
 *.tmp
+*.dmg
 bin/
 build/
 obj/
@@ -25,6 +26,7 @@ SparkleShare/Mac/*.tar.gz
 SparkleShare/Avalonia/os_specific/MacOS/git*
 SparkleShare/Avalonia/os_specific/MacOS/Resources/git
 SparkleShare/Avalonia/os_specific/MacOS/*.tar.gz
+SparkleShare/Avalonia/os_specific/MacOS/SparkleShare.app
 /sparkleshare-*
 desktop.ini
 _ReSharper.*

@@ -2,30 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleIconFile</key>
-	<string>sparkleshare-app</string>
-	<key>CFBundleIdentifier</key>
-	<string>org.sparkleshare.SparkleShare</string>
-	<key>CFBundleName</key>
-	<string>SparkleShare</string>
-	<key>CFBundleShortVersionString</key>
-	<string> 3.99.00 </string>
-	<key>CFBundleVersion</key>
-	<string> 3.99.00 </string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.utilities</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.9</string>
-	<key>LSUIElement</key>
-	<string>1</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>NSHighResolutionCapable</key>
-	<string>true</string>
+    <key>CFBundleIconFile</key>
+    <string>sparkleshare-app</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.sparkleshare.SparkleShare</string>
+    <key>CFBundleName</key>
+    <string>SparkleShare</string>
+    <key>CFBundleShortVersionString</key>
+    <string>3.99.00</string>
+    <key>CFBundleVersion</key>
+    <string>3.99.00</string>
+	<key>CFBundleExecutable</key>
+	<string>SparkleShare.Avalonia</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.9</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSMainNibFile</key>
+    <string>MainMenu</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
 </dict>
 </plist>
+
 
 
 
