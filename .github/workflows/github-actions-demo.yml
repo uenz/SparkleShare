@@ -68,7 +68,7 @@ jobs:
       - name: Install Dependencies (macOS)
         run: |
           echo "macOS {{matrix.config.os}}"
-#          brew install create-dmg
+          brew install create-dmg
         if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
         uses: actions/checkout@v6
