@@ -23,7 +23,7 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Setup .NET 9.x
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           # Semantic version range syntax or exact version of a dotnet version
           dotnet-version: '9.x'
@@ -65,11 +65,11 @@ jobs:
           choco install tartool
           choco install unzip
         if: matrix.os == 'windows-latest'
-      - name: Install Dependencies (macOS)
-        run: |
-          echo "macOS {{matrix.config.os}}"
-          brew install create-dmg
-        if: startsWith(matrix.os, 'macos-')
+#      - name: Install Dependencies (macOS)
+#        run: |
+#          echo "macOS {{matrix.config.os}}"
+#          brew install create-dmg
+#        if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
         uses: actions/checkout@v6
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
