@@ -65,11 +65,11 @@ jobs:
           choco install tartool
           choco install unzip
         if: matrix.os == 'windows-latest'
-#      - name: Install Dependencies (macOS)
-#        run: |
-#          echo "macOS {{matrix.config.os}}"
+      - name: Install Dependencies (macOS)
+        run: |
+          echo "macOS {{matrix.config.os}}"
 #          brew install create-dmg
-#        if: startsWith(matrix.os, 'macos-')
+        if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
         uses: actions/checkout@v6
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
