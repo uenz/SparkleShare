@@ -73,6 +73,7 @@ echo "ℹ️ App bundle is created unsigned; no code signature is applied."
 chmod +x "${APP_DIR}/Contents/MacOS/${APP_NAME}"
 
 if command -v create-dmg >/dev/null 2>&1; then
+  rm -f "${projectFolder}/SparkleShare-Installer.dmg"
   create-dmg --volname "${BUNDLE_NAME} Installer" \
     --volicon "${projectFolder}/Resources/sparkleshare-app.icns" \
     --background "${projectFolder}/../../../Common/Images/about.png" \
@@ -82,7 +83,7 @@ if command -v create-dmg >/dev/null 2>&1; then
     --icon "${BUNDLE_NAME}.app" 200 300 \
     --hide-extension "${BUNDLE_NAME}.app" \
     --app-drop-link 400 300 \
-    --overwrite \
+##    --overwrite \
     "${projectFolder}/SparkleShare-Installer.dmg" \
     "${APP_DIR}/"
 else
