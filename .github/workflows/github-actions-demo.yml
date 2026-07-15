@@ -11,11 +11,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ #macos-26,  
-              #macos-26-intel,
+        os: [ macos-26,  
+              macos-26-intel,
               # ubuntu-20.04, 
-              windows-latest,
-              macos-26
+              windows-latest
             ]
 
     steps:
@@ -68,6 +67,8 @@ jobs:
       - name: Install Dependencies (macOS)
         run: |
           echo "macOS {{matrix.config.os}}"
+          brew update
+          brew upgrade
           brew install create-dmg
         if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
