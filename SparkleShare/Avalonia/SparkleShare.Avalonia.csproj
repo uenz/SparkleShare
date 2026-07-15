@@ -178,7 +178,6 @@
 
 <Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <Message Text="Running on macOS" Importance="High" />
-  <Exec Command="chmod +x &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot;" />
  <!-- 
   commented out, becaouse execution works but build fails with : command not found. So it is done in actions
   <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot; $(Architecture)" Condition="'$(Architecture)' != ''" />
