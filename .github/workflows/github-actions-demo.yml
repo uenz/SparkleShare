@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "macOS {{matrix.config.os}}"
           brew update
-          brew upgrade
+          # brew upgrade
           brew install create-dmg
         if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
