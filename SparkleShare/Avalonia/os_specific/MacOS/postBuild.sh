@@ -1,15 +1,17 @@
 #!/bin/bash
 set -euo pipefail
-
+echo "Shell:"
+ps -o comm= -p "$PPID"
+printf '%s\n' "$@"
 # Expect path to app bundle argument
-export bundle=${1:-}
-export runtimeidentifier=${2:-}
+export bundle="../../bin/Release/net9.0/SparkleShare.Avalonia.dll" # ${1:-}
+export runtimeidentifier="" # ${2:-}
 export projectFolder=$(cd "$(dirname "$0")" && pwd)
 
 "${projectFolder}/checkGit.sh"
 
 # Parameter 1 = Pfad + AssemblyName
-INPUT_PATH="$1"
+INPUT_PATH="$bundle"
 
 # AssemblyName extrahieren (Dateiname ohne Pfad)
 APP_NAME=$(basename "$INPUT_PATH")
@@ -33,7 +35,8 @@ cp -R "${projectFolder}/Resources" "$APP_DIR/Contents"
 # Build-Output kopieren
 echo "➡️ Kopiere Build-Output in .app..."
 mkdir -p "$APP_DIR/Contents/MacOS"
-cp -R "$(dirname "$INPUT_PATH")"/* "$APP_DIR/Contents/MacOS/"
+echo "${projectFolder}/$(dirname "$INPUT_PATH")"/ "$APP_DIR/Contents/MacOS/"
+cp -R "${projectFolder}/$(dirname "$INPUT_PATH")/" "$APP_DIR/Contents/MacOS/"
 
 # Copy the macOS native libraries into the bundle root so Avalonia can resolve them.
 if [ -f "$(dirname "$INPUT_PATH")/runtimes/osx/native/libSkiaSharp.dylib" ]; then
@@ -83,7 +86,7 @@ if command -v create-dmg >/dev/null 2>&1; then
     --icon "${BUNDLE_NAME}.app" 200 300 \
     --hide-extension "${BUNDLE_NAME}.app" \
     --app-drop-link 400 300 \
-##    --overwrite \
+    --overwrite \
     "${projectFolder}/SparkleShare-Installer.dmg" \
     "${APP_DIR}/"
 else

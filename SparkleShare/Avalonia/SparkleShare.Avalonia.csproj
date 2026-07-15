@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -179,7 +179,11 @@
 <Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <Message Text="Running on macOS" Importance="High" />
   <Exec Command="chmod +x &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot;" />
-  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot; $(Architecture)" StandardOutputImportance="high"/>
+ <!-- 
+  commented out, becaouse execution works but build fails with : command not found. So it is done in actions
+  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot; $(Architecture)" Condition="'$(Architecture)' != ''" />
+  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" Condition="'$(Architecture)' == ''" />
+ -->
 </Target>
 
 <Target Name="PostBuildLinux" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
