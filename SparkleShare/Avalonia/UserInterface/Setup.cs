@@ -332,7 +332,7 @@ namespace SparkleShare.UserInterface
 
         private void ShowErrorPage(string[] warnings)
         {
-            _header.Text      = "Oops! Something went wrong�";
+            _header.Text      = "Oops! Something went wrong…";
             _description.Text = "Please check the following:";
 
             var stack = new StackPanel { Spacing = 6 };
@@ -354,7 +354,7 @@ namespace SparkleShare.UserInterface
             _contentPanel.Children.Add(stack);
 
             var cancel_btn    = Btn("Cancel");
-            var try_again_btn = Btn("Try again�", isDefault: true);
+            var try_again_btn = Btn("Try again…", isDefault: true);
             AddButtons(cancel_btn, try_again_btn);
 
             cancel_btn.Click    += (_, _) => Controller.PageCancelled();
