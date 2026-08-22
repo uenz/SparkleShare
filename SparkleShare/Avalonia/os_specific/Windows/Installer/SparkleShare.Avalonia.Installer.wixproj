@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <HarvestDirectory Include="..\..\..\bin\Release\net9.0\">
+    <HarvestDirectory Include="..\..\..\bin\Release\net9.0\publish">
       <SuppressRegistry>true</SuppressRegistry>
       <ComponentGroupName>AppFiles</ComponentGroupName>
       <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
@@ -51,7 +51,7 @@
       <SuppressRegistry>true</SuppressRegistry>
       <Link>/</Link>
     </HarvestDirectory>
-    <BindPath Include="..\..\..\bin\Release\net9.0\" />
+    <BindPath Include="..\..\..\bin\Release\net9.0\publish" />
   </ItemGroup>
   
 </Project>

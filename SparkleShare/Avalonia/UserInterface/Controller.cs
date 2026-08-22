@@ -56,20 +56,17 @@ namespace SparkleShare
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "git_scm", "cmd")
                 };
                 
-                Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             } else if (InstallationInfo.OperatingSystem == OS.macOS)
             {
                 var exePath = Environment.ProcessPath ?? Assembly.GetExecutingAssembly().Location;
                 var exeDir = Path.GetDirectoryName(exePath) ?? string.Empty;
-                var resourcePath = Path.GetFullPath(Path.Combine(exeDir, "..", "Resources"));
 
                 search_path = new string[] {
-                    Path.Combine(resourcePath, "Resources", "git", "libexec", "git-core"), //debugging
-                    Path.Combine(resourcePath, "..", "Resources", "git", "libexec", "git-core") //app bundle
+                    Path.Combine(exeDir, "Resources", "git", "libexec", "git-core"), //debugging
+                    Path.Combine(exeDir, "..", "Resources", "git", "libexec", "git-core") //app bundle
                 }; 
             }
             Command.SetSearchPath(search_path);
-            //TODO: Check if necessary to set PATH as well, or if Command.SetSearchPath is sufficient
             Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             base.Initialize();
         }
@@ -128,6 +125,8 @@ namespace SparkleShare
                     string n = Environment.NewLine;
 
                     string ini_file = "[.ShellClassInfo]" + n +
+                        "ConfirmFileOp = 0" + n +
+                        "NoSharing = 1" + n +
                         "IconFile=" + icon_file_path + n +
                         "IconIndex=0" + n +
                         "InfoTip=SparkleShare";
@@ -150,61 +149,27 @@ namespace SparkleShare
 
         private void SetFolderIconMacOS()
         {
+           
             string folder_icon_name = "sparkleshare-folder.icns";
 
             if (Environment.OSVersion.Version.Major >= 14)
                 folder_icon_name = "sparkleshare-folder-yosemite.icns";
-
+           
             string app_path = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty) ?? string.Empty;
             string candidate1 = Path.Combine(app_path, "..", "Resources", folder_icon_name);
             string candidate2 = Path.Combine(app_path, folder_icon_name);
             string icon_file_path = Path.GetFullPath(File.Exists(candidate1) ? candidate1 : candidate2);
-
             if (!File.Exists(icon_file_path))
             {
                 Logger.LogInfo("Config", "macOS folder icon file not found: " + folder_icon_name);
                 return;
             }
-
-            try
+            Logger.LogInfo("Config", "Setting macOS folder icon for " + FoldersPath + " using icon file: " + icon_file_path);
+            if(MacOSCustomIcon.SetCustomIcon(FoldersPath, icon_file_path)!=0)
             {
-                string script = "tell application \"Finder\"\n" +
-                    "set icon of folder (POSIX file \"" + FoldersPath + "\") to POSIX file \"" + icon_file_path + "\"\n" +
-                    "end tell";
-
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "/usr/bin/osascript",
-                    Arguments = $"-e \"{script.Replace("\"", "\\\"")}\"",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                };
-
-                using var process = Process.Start(psi);
-                if (process != null)
-                {
-                    process.WaitForExit();
-                    if (process.ExitCode != 0)
-                    {
-                        string error = process.StandardError.ReadToEnd();
-                        Logger.LogInfo("Config", "Failed setting macOS folder icon: " + error);
-                    }
-                    else
-                    {
-                        Logger.LogInfo("Config", "Set macOS folder icon for " + FoldersPath);
-                    }
-                }
-                else
-                {
-                    Logger.LogInfo("Config", "Failed to start osascript for setting folder icon");
-                }
+                Logger.LogInfo("Config", "Failed to set macOS folder icon for " + FoldersPath);
             }
-            catch (Exception e)
-            {
-                Logger.LogInfo("Config", "Exception setting macOS folder icon: " + e.Message, e);
-            }
+
         }
 
         private void SetFolderIconLinux()
@@ -367,7 +332,7 @@ namespace SparkleShare
                 return;
             }
 
-            string execPath = processPath.Replace(" ", "\\ ");
+            string execPath = processPath;
             string desktopEntry = "[Desktop Entry]" + Environment.NewLine +
                 "Type=Application" + Environment.NewLine +
                 "Name=SparkleShare" + Environment.NewLine +
@@ -390,26 +355,19 @@ namespace SparkleShare
 
         public override void InstallProtocolHandler()
         {
-            // Protocol handler installation is platform-specific
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // We ship a separate .exe for this on Windows
-            }
         }
 
         public void AddToBookmarks()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                string shortcut_path = Path.Combine(user_profile_path, "Links", "SparkleShare.lnk");
+		//TODO: check if it works
+            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string shortcut_path = Path.Combine(user_profile_path, "Links", "SparkleShare.lnk");
 
-                if (File.Exists(shortcut_path))
-                    File.Delete(shortcut_path);
+            if (File.Exists(shortcut_path))
+                File.Delete(shortcut_path);
 
-                UserInterface.Shortcut shortcut = new UserInterface.Shortcut();
-                shortcut.Create(FoldersPath, shortcut_path);
-            }
+            UserInterface.Shortcut shortcut = new UserInterface.Shortcut();
+            shortcut.Create(FoldersPath, shortcut_path);
         }
 
         public override void CreateSparkleShareFolder()

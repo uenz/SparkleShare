@@ -29,8 +29,7 @@ namespace Sparkles
         private static readonly Lazy<Configuration> lazy = new(() =>
                 {
                     string app_data_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    //TODO: MACOS move ./config/opr.sparkle... to ~/Library/Application Support/opr.sparkle... and remove the special case for windows
-                    //TODO: check if windows path needs to be special
+                    //TODO: check if Linux path needs to be special
                     if (InstallationInfo.OperatingSystem != OS.Windows && InstallationInfo.OperatingSystem != OS.macOS)
                         app_data_path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".config");
                     // TODO: rename Compiler switch
@@ -60,7 +59,11 @@ namespace Sparkles
         {
             get
             {
-                return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            	// TODO: check-me
+                if (InstallationInfo.OperatingSystem == OS.Windows)
+                    return Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+
+                return Environment.GetFolderPath (Environment.SpecialFolder.Personal);
             }
         }
 
@@ -212,6 +215,7 @@ namespace Sparkles
                         folders.Add(node_folder["name"]!.InnerText);
                     }
                 folders.Sort();
+                Logger.LogInfo("Configuration", "Folders: " + string.Join(", ", folders));
                 return folders;
             }
         }

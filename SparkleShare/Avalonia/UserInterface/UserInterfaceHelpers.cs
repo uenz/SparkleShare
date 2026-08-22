@@ -64,7 +64,7 @@ namespace SparkleShare.UserInterface
                 }
                 
                 // Third try: look in parent Windows folder (for shared images)
-                string windowsImagePath = Path.Combine(appDir, "..", "..", "SparkleShare", "Windows", "Images", $"{name}.{type}");
+                string windowsImagePath = Path.Combine(appDir, "..", "..", "SparkleShare", "Avalonia", "Images", $"{name}.{type}");
                 windowsImagePath = Path.GetFullPath(windowsImagePath);
                 
                 if (File.Exists(windowsImagePath))

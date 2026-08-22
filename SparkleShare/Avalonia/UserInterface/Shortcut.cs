@@ -83,7 +83,9 @@ namespace SparkleShare.UserInterface
             try
             {
                 // Creating a proper Finder alias is non-trivial; create a symlink as a pragmatic fallback
-                if (File.Exists(shortcut_path) || Directory.Exists(shortcut_path))
+                if (Directory.Exists(shortcut_path))
+                    Directory.Delete(shortcut_path);
+                else if (File.Exists(shortcut_path))
                     File.Delete(shortcut_path);
 
                 var psi = new System.Diagnostics.ProcessStartInfo

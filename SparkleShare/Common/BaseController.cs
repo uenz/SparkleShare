@@ -718,7 +718,7 @@ namespace SparkleShare {
             Logger.LogInfo ("Controller", "Adding folder to config: name=" + target_folder_name + 
                 ", url=" + this.fetcher.RemoteUrl.ToString () + ", backend=" + backend);
 
-            Config.AddFolder (target_folder_name, identifier, this.fetcher.RemoteUrl.ToString (), backend);
+            Config.AddFolder (target_folder_name, identifier, this.fetcher.RemoteUrl.ToUriString (), backend);
 
             if (this.fetcher.FetchedRepoStorageType != StorageType.Plain) {
                 Config.SetFolderOptionalAttribute (target_folder_name,
@@ -750,7 +750,7 @@ namespace SparkleShare {
             // TODO: check if folder path is correct or if
             // string folder_path = Path.Combine (folder_group_path, folder_name);
             // is correct
-            Logger.LogInfo ("Controller", "DetermineFolderPath: folder_name=" + folder_name + 
+            Logger.LogInfo ("Controller-CheckMe", "DetermineFolderPath: folder_name=" + folder_name + 
                 ", host=" + this.fetcher.RemoteUrl.Host + 
                 ", folder_path=" + folder_path);
 

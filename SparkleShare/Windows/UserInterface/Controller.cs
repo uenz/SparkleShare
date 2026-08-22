@@ -94,6 +94,8 @@ namespace SparkleShare {
                     string n = Environment.NewLine;
 
                     string ini_file = "[.ShellClassInfo]" + n +
+                        "ConfirmFileOp = 0" + n +
+                        "NoSharing = 1" + n +
                         "IconFile=" + icon_file_path + n +
                         "IconIndex=0" + n +
                         "InfoTip=SparkleShare";

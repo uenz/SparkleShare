@@ -76,7 +76,7 @@ namespace Sparkles.Git {
             var git_config = new GitCommand (LocalPath, "config core.ignorecase false");
             git_config.StartAndWaitForExit ();
 
-            git_config = new GitCommand (LocalPath, "config remote.origin.url \"" + RemoteUrl + "\"");
+            git_config = new GitCommand (LocalPath, "config remote.origin.url \"" + RemoteUrl.ToUriString() + "\"");
             git_config.StartAndWaitForExit ();
 
             git_config = new GitCommand (LocalPath, "config core.sshCommand \"" + GitCommand.FormatGitSSHCommand (auth_info).Replace("\"", "\\\"") + "\"");
@@ -217,7 +217,7 @@ namespace Sparkles.Git {
 
             PrepareGitLFS ();
 
-            var git_push = new GitCommand (LocalPath, string.Format ("push --all --progress origin", RemoteUrl), auth_info);
+            var git_push = new GitCommand (LocalPath, string.Format ("push --all --progress origin", RemoteUrl.ToUriString()), auth_info);
             git_push.StartInfo.RedirectStandardError = true;
             git_push.Start ();
 
@@ -900,9 +900,7 @@ namespace Sparkles.Git {
 
 
             if (InstallationInfo.OperatingSystem != OS.Windows) {
-                // TODO: Use proper API
-                var chmod = new Command ("chmod", "700 " + pre_push_hook_path);
-                chmod.StartAndWaitForExit ();
+                File.SetUnixFileMode(pre_push_hook_path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
             }
 
             Directory.CreateDirectory (Path.GetDirectoryName (pre_push_hook_path)!);

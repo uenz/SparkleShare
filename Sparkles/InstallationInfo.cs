@@ -108,6 +108,10 @@ namespace Sparkles
                                 release = "Sonoma"; break;
                             case 15:
                                 release = "Sequoia"; break;
+                            case 26:
+                                release = "Tahoe"; break;
+                            case 27:
+                                release = "Golden Gate"; break;
                         }
                     }
 

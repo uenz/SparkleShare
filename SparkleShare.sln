@@ -143,15 +143,20 @@ Global
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugAvalonia|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugAvalonia|Any CPU.Build.0 = Debug|Any CPU
-		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugMac|Any CPU.ActiveCfg = Debug|x64
-		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugWindows|Any CPU.ActiveCfg = Debug|x64
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.DebugWindows|Any CPU.Build.0 = Debug|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseAvalonia|Any CPU.ActiveCfg = Release|Any CPU
 		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseAvalonia|Any CPU.Build.0 = Release|Any CPU
-		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseDist|Any CPU.ActiveCfg = Release|x64
-		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseMac|Any CPU.ActiveCfg = Release|x64
-		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseWindows|Any CPU.ActiveCfg = Release|x64
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseDist|Any CPU.ActiveCfg = Release|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseDist|Any CPU.Build.0 = Release|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseWindows|Any CPU.ActiveCfg = Release|Any CPU
+		{EB2F8FC9-2491-4A92-A34C-783926E5C95E}.ReleaseWindows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
