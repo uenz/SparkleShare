@@ -43,7 +43,7 @@ namespace Sparkles.Git {
         {
             this.auth_info = auth_info;
             var uri_builder = new UriBuilder (RemoteUrl.ToUriString());
-            // TODO debug this section
+
             if (!RemoteUrl.Scheme.Equals ("ssh") && !RemoteUrl.Scheme.Equals ("git"))
                 uri_builder.Scheme = "ssh";
 
@@ -94,7 +94,7 @@ namespace Sparkles.Git {
                 git_clone_command = "lfs clone --progress --no-checkout";
 
             git_clone = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
-                string.Format ("{0} \"{1}\" \"{2}\"", git_clone_command, RemoteUrl, TargetFolder),
+                string.Format ("{0} \"{1}\" \"{2}\"", git_clone_command, RemoteUrl.ToUriString(), TargetFolder),
                 auth_info);
 
             git_clone.StartInfo.RedirectStandardError = true;
@@ -257,8 +257,11 @@ namespace Sparkles.Git {
             string git_info_path = Path.Combine (TargetFolder, ".git", "info");
             Directory.CreateDirectory (git_info_path);
 
-            // Store the password, TODO: 600 permissions
             string password_file_path = Path.Combine (git_info_path, "encryption_password");
+            // Store the password, TODO: 600 permissions
+            if (InstallationInfo.OperatingSystem != OS.Windows) {
+                File.SetUnixFileMode(password_file_path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            }
             File.WriteAllText (password_file_path, password.SHA256 (password_salt));
         }
 
@@ -308,7 +311,6 @@ namespace Sparkles.Git {
 
         StorageType? DetermineStorageType ()
         {
-            // TODO bad hack, because ls-remote cant handle scp_like syntax
             var git_ls_remote = new GitCommand (Configuration.DefaultConfiguration.TmpPath,
                 string.Format ("ls-remote --heads \"{0}\"", RemoteUrl.ToUriString()), auth_info);
 
