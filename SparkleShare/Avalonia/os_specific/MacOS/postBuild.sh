@@ -81,7 +81,7 @@ if command -v create-dmg >/dev/null 2>&1; then
     --volicon "${projectFolder}/Resources/sparkleshare-app.icns" \
     --background "${projectFolder}/../../../Common/Images/about.png" \
     --window-pos 200 120 \
-    --window-size 680 50 \
+    --window-size 680 500 \
     --icon-size 100 \
     --icon "${BUNDLE_NAME}.app" 200 300 \
     --hide-extension "${BUNDLE_NAME}.app" \
