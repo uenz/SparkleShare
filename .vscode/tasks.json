@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build SparkleShare.Avalonia",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "SparkleShare/Avalonia/SparkleShare.Avalonia.csproj",
+        "-nologo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
