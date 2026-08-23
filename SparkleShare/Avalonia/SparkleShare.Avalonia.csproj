@@ -235,16 +235,15 @@
   <Message Text="Running on Windows" Importance="High" />
   <Exec Command="&quot;$(ProjectDir)\os_specific\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
 </Target>
-
+  
 <Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <Message Text="Running on macOS" Importance="High" />
- <!-- 
-  commented out, becaouse execution works but build fails with : command not found. So it is done in actions
+<!--
+  commented out, because execution works but build fails with : command not found. So it is done in actions
   <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot; $(Architecture)" Condition="'$(Architecture)' != ''" />
   <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" Condition="'$(Architecture)' == ''" />
- -->
+-->
 </Target>
-
 <Target Name="PostBuildLinux" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
   <Message Text="Running on Linux" Importance="High" />
   <Exec Command="&quot;$(ProjectDir)/os_specific/Linux/postBuild.sh&quot; &quot;$(TargetDir)git_scm&quot;" />
