@@ -36,7 +36,7 @@ namespace SparkleShare.UserInterface
         private ScrollViewer _scrollViewer = null!;
         private StackPanel _entriesPanel  = null!;
         private Panel      _spinnerPanel  = null!;
-        private TextBlock  _spinnerLabel  = null!;
+        private Spinner    _spinner       = null!;
 
         public EventLog()
         {
@@ -111,15 +111,12 @@ namespace SparkleShare.UserInterface
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment   = VerticalAlignment.Stretch
             };
-            _spinnerLabel = new TextBlock
+            _spinner = new Spinner(22)
             {
-                Text = "Loading…",
-                FontSize = 16,
-                Opacity  = 0.5,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Center
             };
-            _spinnerPanel.Children.Add(_spinnerLabel);
+            _spinnerPanel.Children.Add(_spinner);
 
             // Entries list
             _entriesPanel = new StackPanel { Margin = new Thickness(12), Spacing = 8 };
@@ -433,14 +430,14 @@ namespace SparkleShare.UserInterface
                     dd_text = dd_text.Replace("\u25BE", "").Trim();
 
                     // Pick icon based on change type using Unicode escape sequences
-                    // \u2795 = ?  \u2796 = ?  \u270F = ?  \u27A1 = ?  \u2022 = •
+                    // \u2795 = ?  \u2796 = ?  \u270F = ?  \u27A1 = ?  \u2022 = ï¿½
                     string icon = css_class switch
                     {
                         "added"   => "\u2795",  // ?
                         "deleted" => "\u2796",  // ?
                         "edited"  => "\u270F",  // ?
                         "moved"   => "\u27A1",  // ?
-                        _         => "\u2022"   // •
+                        _         => "\u2022"   // ï¿½
                     };
 
                     var file_row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
@@ -496,8 +493,8 @@ namespace SparkleShare.UserInterface
         }
 
         // ?? Helpers ???????????????????????????????????????????????????????????
-        private void ShowSpinner()  { _spinnerPanel.IsVisible = true;  _scrollViewer.IsVisible = false; }
-        private void ShowContent()  { _spinnerPanel.IsVisible = false; _scrollViewer.IsVisible = true;  }
+        private void ShowSpinner()  { _spinnerPanel.IsVisible = true;  _scrollViewer.IsVisible = false; _spinner?.Start(); }
+        private void ShowContent()  { _spinner?.Stop(); _spinnerPanel.IsVisible = false; _scrollViewer.IsVisible = true;  }
 
         // Extract content of first <div class='cssClass'>...</div>
         private static string ExtractDivContent(string html, string css_class)
