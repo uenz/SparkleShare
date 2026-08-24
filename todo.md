@@ -1,4 +1,7 @@
 # todolist
+## macos
+- [ ] old config is in .config, new is in application.library...
+      if new is empty move old to new if old exists
 ## windows
 - [ ] delete unnecessary avalonia installer.wixproj, files soud be in .../Windows/installer
 - [ ] adjust bump-version scripts for avalonia installer
@@ -13,3 +16,4 @@
 - [ ] Add icons to Recent changes
 - [ ] Add Debug Logger output
 - [ ] Use different icons for platforms
+- [ ] Implement spinner icon

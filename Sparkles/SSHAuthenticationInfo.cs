@@ -42,7 +42,7 @@ namespace Sparkles
         public SSHAuthenticationInfo()
         {
             Path = IO.Path.Combine(Configuration.DefaultConfiguration.DirectoryPath, "ssh");
-            Logger.LogInfo("SSHAuthenticationInfo",Path);
+            Logger.LogDebug("SSHAuthenticationInfo",Path);
             KnownHostsFilePath = IO.Path.Combine(Path, "known_hosts");
             KnownHostsFilePath = MakeWindowsDomainAccountSafe(KnownHostsFilePath);
 

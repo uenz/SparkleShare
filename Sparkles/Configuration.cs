@@ -59,11 +59,17 @@ namespace Sparkles
         {
             get
             {
-            	// TODO: check-me
                 if (InstallationInfo.OperatingSystem == OS.Windows)
+                {
                     return Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
-
-                return Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+                }else if (InstallationInfo.OperatingSystem == OS.macOS)
+                {
+                    return Environment.GetEnvironmentVariable("HOME");
+                }else
+                {
+                    //TODO check linux path, maybe use Environment.SpecialFolder.UserProfile
+                    return Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+                }    
             }
         }
 
@@ -73,13 +79,20 @@ namespace Sparkles
             get
             {
                 if (GetConfigOption("folders_path") != null)
+                {
+                    Logger.LogDebug("Configuration", "Using custom folders path: " + GetConfigOption("folders_path"));
                     return GetConfigOption("folders_path")!;
-
+                }
+                else
+                {
 #if DEBUG_DATASET  // TODO: rename compiler switch
-                return Path.Combine(HomePath, "SparkleShareDebug");
+                    Logger.LogDebug("Configuration", "Using debug folders path: " + Path.Combine(HomePath, "SparkleShareDebug"));
+                    return Path.Combine(HomePath, "SparkleShareDebug");
 #else
-                return Path.Combine(HomePath, "SparkleShare");
+                    Logger.LogDebug("Configuration", "Using default folders path: " + Path.Combine(HomePath, "SparkleShare"));   
+                    return Path.Combine(HomePath, "SparkleShare");
 #endif
+                }
             }
         }
 

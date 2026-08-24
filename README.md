@@ -3,10 +3,9 @@
 ## Status
 This is a fork of https://github.com/hbons/SparkleShare/ with is not maintained anymore. 
 At the moment this fork offers the latest MacOS and Windows builds and recent build instructions. 
-Goal of this fork is to port the code to net9.0 to keep the great application alive and multiplatform. The librarys are almost ported to net9.0. 
-A preview version of the GUI is implemented with [AvaloniaUI](https://avaloniaui.net/).
-
-## SparkleSahare
+The code is ported to net 9.0 and the GUI is rebuild with [AvaloniaUI](https://avaloniaui.net/).
+The old Windows Version is calld Legacy and also provided for download.
+## SparkleShare
 
 [SparkleShare](https://www.sparkleshare.org/) is a file sharing and collaboration app. It works just like Dropbox, and you can run it on your own server. It's available for Linux distributions, macOS, and Windows.
 

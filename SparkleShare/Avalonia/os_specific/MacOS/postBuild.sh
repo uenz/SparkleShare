@@ -4,11 +4,11 @@ echo "Shell:"
 ps -o comm= -p "$PPID"
 printf '%s\n' "$@"
 # Expect path to app bundle argument
-export bundle="../../bin/Release/net9.0/SparkleShare.Avalonia.dll" # ${1:-}
-export runtimeidentifier="" # ${2:-}
+export bundle="${1:-../../bin/Release/net9.0/SparkleShare.Avalonia.dll}"
+export runtimeidentifier="${2:-x64}"
 export projectFolder=$(cd "$(dirname "$0")" && pwd)
 
-"${projectFolder}/checkGit.sh"
+"${projectFolder}/checkGit.sh" runtimeidentifier
 
 # Parameter 1 = Pfad + AssemblyName
 INPUT_PATH="$bundle"
@@ -81,11 +81,11 @@ if command -v create-dmg >/dev/null 2>&1; then
     --volicon "${projectFolder}/Resources/sparkleshare-app.icns" \
     --background "${projectFolder}/../../../Common/Images/about.png" \
     --window-pos 200 120 \
-    --window-size 680 500 \
+    --window-size 560 500 \
     --icon-size 100 \
-    --icon "${BUNDLE_NAME}.app" 200 300 \
+    --icon "${BUNDLE_NAME}.app" 140 300 \
     --hide-extension "${BUNDLE_NAME}.app" \
-    --app-drop-link 400 300 \
+    --app-drop-link 420 300 \
     --overwrite \
     "${projectFolder}/SparkleShare-Installer.dmg" \
     "${APP_DIR}/"

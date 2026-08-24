@@ -4,20 +4,17 @@
     {
       "label": "build SparkleShare.Avalonia",
       "type": "shell",
-      "command": "dotnet",
+      "command": "/usr/local/opt/dotnet@9/bin/dotnet",
       "args": [
         "build",
-        "SparkleShare/Avalonia/SparkleShare.Avalonia.csproj",
-        "-nologo"
+        "${workspaceFolder}/SparkleShare/Avalonia/SparkleShare.Avalonia.csproj",
+        "-c",
+        "Debug"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": "$msCompile",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "problemMatcher": "$msCompile"
     }
   ]
 }

@@ -67,7 +67,8 @@ namespace SparkleShare
                 }; 
             }
             Command.SetSearchPath(search_path);
-            Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            // TODO checkme is next line neccesary?
+            //Environment.SetEnvironmentVariable("HOME", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             base.Initialize();
         }
         public override string EventLogHTML
@@ -372,6 +373,7 @@ namespace SparkleShare
 
         public override void CreateSparkleShareFolder()
         {
+            Logger.LogInfo("Config", "Creating SparkleShare folder: " + FoldersPath);
             if (!Directory.Exists(FoldersPath))
             {
                 Directory.CreateDirectory(FoldersPath);
