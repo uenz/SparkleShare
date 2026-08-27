@@ -84,7 +84,7 @@ jobs:
           # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/checkGit.sh
           # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/postBuild.sh
           ./SparkleShare/Avalonia/os_specific/MacOS/build.sh $ARCH_NAME
-          ./SparkleShare/Avalonia/os_specific/MacOS/postBuild.sh "../../bin/Release/net9.0/publish/osx-${ARCH_NAME}/SparkleShare.Avalonia.dll" $ARCH_NAME
+          ./SparkleShare/Avalonia/os_specific/MacOS/postBuild.sh "../../bin/Release/net9.0/osx-${ARCH_NAME}/publish/SparkleShare.Avalonia.dll" $ARCH_NAME
           cp ./SparkleShare/Avalonia/os_specific/MacOS/SparkleShare-Installer.dmg SparkleShare-MacOs-${ARCH_NAME}-${GITHUB_REF##*/}.dmg
 
         if: startsWith(matrix.os, 'macos-')
