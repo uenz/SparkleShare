@@ -8,7 +8,7 @@ export bundle="${1:-../../bin/Release/net9.0/publish/SparkleShare.Avalonia.dll}"
 export runtimeidentifier="${2:-x64}"
 export projectFolder=$(cd "$(dirname "$0")" && pwd)
 
-"${projectFolder}/checkGit.sh" runtimeidentifier
+"${projectFolder}/checkGit.sh" $runtimeidentifier
 
 # Parameter 1 = Pfad + AssemblyName
 INPUT_PATH="$bundle"
