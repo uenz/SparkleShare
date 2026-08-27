@@ -64,7 +64,7 @@ namespace Sparkles
                     return Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
                 }else if (InstallationInfo.OperatingSystem == OS.macOS)
                 {
-                    return Environment.GetEnvironmentVariable("HOME");
+                    return Environment.GetEnvironmentVariable("HOME") ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 }else
                 {
                     //TODO check linux path, maybe use Environment.SpecialFolder.UserProfile

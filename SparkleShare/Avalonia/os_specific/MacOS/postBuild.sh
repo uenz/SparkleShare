@@ -4,7 +4,7 @@ echo "Shell:"
 ps -o comm= -p "$PPID"
 printf '%s\n' "$@"
 # Expect path to app bundle argument
-export bundle="${1:-../../bin/Release/net9.0/publish/SparkleShare.Avalonia.dll}"
+export bundle="${1:-../../bin/Release/net9.0/osx-x64/publish/SparkleShare.Avalonia.dll}"
 export runtimeidentifier="${2:-x64}"
 export projectFolder=$(cd "$(dirname "$0")" && pwd)
 
@@ -32,6 +32,8 @@ rm -rf "${projectFolder}/Resources/git"
 mkdir -p "${projectFolder}/Resources/git"
 tar -x -f "${projectFolder}/git.tar.gz" --directory "${projectFolder}/Resources/git"
 cp -R "${projectFolder}/Resources" "$APP_DIR/Contents"
+
+
 # Build-Output kopieren
 echo "➡️ Kopiere Build-Output in .app..."
 mkdir -p "$APP_DIR/Contents/MacOS"
@@ -74,6 +76,8 @@ echo "ℹ️ App bundle is created unsigned; no code signature is applied."
 # fi
 # Binary ausführbar machen
 chmod +x "${APP_DIR}/Contents/MacOS/${APP_NAME}"
+# Remove quarantine attributes from the app bundle and its contents to avoid macOS Gatekeeper warnings.
+find "${APP_DIR}" -exec xattr -c {} +
 
 if command -v create-dmg >/dev/null 2>&1; then
   rm -f "${projectFolder}/SparkleShare-Installer.dmg"
