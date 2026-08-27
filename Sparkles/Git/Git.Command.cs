@@ -96,11 +96,11 @@ namespace Sparkles.Git {
 
             if (auth_info != null)
                 GIT_SSH_COMMAND = FormatGitSSHCommand (auth_info!);
-                Logger.LogInfo("Git", "GIT_SSH_COMMAND: "+GIT_SSH_COMMAND);
+                Logger.LogDebug("Git", "GIT_SSH_COMMAND: "+GIT_SSH_COMMAND);
 
             if (ExecPath != null)
                 SetEnvironmentVariable ("GIT_EXEC_PATH", ExecPath);
-                Logger.LogInfo("Git", "GIT_EXEC_PATH: "+ExecPath);
+                Logger.LogDebug("Git", "GIT_EXEC_PATH: "+ExecPath);
 
             SetEnvironmentVariable ("GIT_SSH_COMMAND", GIT_SSH_COMMAND);
             SetEnvironmentVariable ("GIT_TERMINAL_PROMPT", "0");
