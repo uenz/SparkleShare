@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -173,19 +173,19 @@
     
     <!-- Icons from Linux folder for html view -->
     <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-added.png">
-      <Link>Images\document-added.png</Link>
+      <Link>Images\document-added-12.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-deleted.png">
-      <Link>Images\document-deleted.png</Link>
+      <Link>Images\document-deleted-12.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-edited.png">
-      <Link>Images\document-edited.png</Link>
+      <Link>Images\document-edited-12.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-moved.png">
-      <Link>Images\document-moved.png</Link>
+      <Link>Images\document-moved-12.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Linux\Images\icons\hicolor\22x22\status\process-working.png">
