@@ -89,14 +89,18 @@ namespace Sparkles.Git {
         public GitCommand (string? working_dir, string? args, SSHAuthenticationInfo? auth_info) : base (GitPath!, args)
         {
             StartInfo.WorkingDirectory = working_dir;
-
+            Logger.LogDebug("Git", "Working Dir "+working_dir);
+            Logger.LogDebug("Git", "Arguments "+args);
+            Logger.LogDebug("Git", "AuthInfo "+auth_info);
             string GIT_SSH_COMMAND = SSHCommand.SSHCommandPath!;
 
             if (auth_info != null)
                 GIT_SSH_COMMAND = FormatGitSSHCommand (auth_info!);
+                Logger.LogDebug("Git", "GIT_SSH_COMMAND: "+GIT_SSH_COMMAND);
 
             if (ExecPath != null)
                 SetEnvironmentVariable ("GIT_EXEC_PATH", ExecPath);
+                Logger.LogDebug("Git", "GIT_EXEC_PATH: "+ExecPath);
 
             SetEnvironmentVariable ("GIT_SSH_COMMAND", GIT_SSH_COMMAND);
             SetEnvironmentVariable ("GIT_TERMINAL_PROMPT", "0");
@@ -104,7 +108,7 @@ namespace Sparkles.Git {
             // Don't let Git try to read the config options in PREFIX/etc or ~
             SetEnvironmentVariable ("GIT_CONFIG_NOSYSTEM", "1");
             SetEnvironmentVariable ("PREFIX", "");
-            SetEnvironmentVariable ("HOME", "");
+            SetEnvironmentVariable ("HOME", "/tmp");
 
             SetEnvironmentVariable ("LANG", "en_US.UTF8");
             SetEnvironmentVariable ("LC_ALL", "en_US.UTF8");
@@ -228,12 +232,27 @@ namespace Sparkles.Git {
 
         public static string FormatGitSSHCommand (SSHAuthenticationInfo auth_info)
         {
-            return "\""+SSHCommandPath + "\" " +
-                "-i \"" + auth_info.PrivateKeyFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
-                "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + "\" " +
-                "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
-                "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
-                "-F /dev/null"; // Ignore the system's SSH config file
+            if (InstallationInfo.OperatingSystem == OS.Windows)
+            {
+                // Windows command needs to be in quotes and spaces in path must not be replaced with \ in 
+                return "\"" + SSHCommandPath + "\" " +
+                    "-i \"" + auth_info.PrivateKeyFilePath!.Replace("\\", "/") + "\" " +
+                    "-o UserKnownHostsFile=\"" + auth_info.KnownHostsFilePath!.Replace("\\", "/") + "\" " +
+                    "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
+                    "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
+                    "-F /dev/null"; // Ignore the system's SSH config file // Ignore the system's SSH config file
+            }
+            else
+            {
+                return SSHCommandPath + " " +                
+                    "-i " + auth_info.PrivateKeyFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + " " +
+                    "-o UserKnownHostsFile=" + auth_info.KnownHostsFilePath!.Replace ("\\", "/").Replace (" ", "\\ ") + " " +
+                    "-o IdentitiesOnly=yes" + " " + // Don't fall back to other keys on the system
+                    "-o PasswordAuthentication=no" + " " + // Don't hang on possible password prompts
+                    "-F /dev/null"; // Ignore the system's SSH config file
+
+
+            }
         }
     }
 }

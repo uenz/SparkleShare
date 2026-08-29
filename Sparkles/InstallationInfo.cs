@@ -17,6 +17,7 @@
 
 using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Sparkles
 {
@@ -42,31 +43,20 @@ namespace Sparkles
             {
                 if (operating_system != OS.Unknown)
                     return operating_system;
-
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                {
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     operating_system = OS.Windows;
-                    return operating_system;
-                }
-
-                var uname = new Command("uname", "-a", write_output: false);
-                string output = uname.StartAndReadStandardOutput();
-
-                // Environment.OSVersion.Platform.PlatformID.MacOSX is broken in Mono
-                // for historical reasons, so check manually
-                if (output.StartsWith("Darwin", StringComparison.InvariantCulture))
-                {
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     operating_system = OS.macOS;
-
-                }
-                else if (output.Contains("Ubuntu"))
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    operating_system = OS.Ubuntu;
-
-                }
-                else
-                {
-                    operating_system = OS.GNOME;
+                    // Ubuntu vs GNOME unterscheiden
+                    var uname = new Command("uname", "-a", write_output: false);
+                    string output = uname.StartAndReadStandardOutput();
+                    
+                    if (output.Contains("Ubuntu"))
+                        operating_system = OS.Ubuntu;
+                    else
+                        operating_system = OS.GNOME;
                 }
 
                 return operating_system;
@@ -118,6 +108,10 @@ namespace Sparkles
                                 release = "Sonoma"; break;
                             case 15:
                                 release = "Sequoia"; break;
+                            case 26:
+                                release = "Tahoe"; break;
+                            case 27:
+                                release = "Golden Gate"; break;
                         }
                     }
 

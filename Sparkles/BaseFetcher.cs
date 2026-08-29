@@ -109,9 +109,6 @@ namespace Sparkles
 
             if (address.EndsWith("/", StringComparison.InvariantCulture))
                 address = address.Substring(0, address.Length - 1);
-    /*
-            if (!remote_path.StartsWith("/", StringComparison.InvariantCulture))
-                remote_path = "/" + remote_path;*/
 
             if (!address.Contains("://"))
                 address = "ssh://" + address;

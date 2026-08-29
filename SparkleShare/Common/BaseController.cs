@@ -344,8 +344,14 @@ namespace SparkleShare {
         void CheckRepositories ()
         {
             lock (this.check_repos_lock) {
-                DetectRepositoryRenames ();
-                RemoveDeletedRepositories ();
+                Logger.LogDebug ("Controller", "CheckRepositories starting...");
+                try {
+                    DetectRepositoryRenames ();
+                    RemoveDeletedRepositories ();
+                    Logger.LogDebug ("Controller", "CheckRepositories completed");
+                } catch (Exception e) {
+                    Logger.LogDebug ("Controller", "CheckRepositories error: " + e.Message, e);
+                }
             }
 
             FolderListChanged ();
@@ -354,32 +360,40 @@ namespace SparkleShare {
 
         void DetectRepositoryRenames ()
         {
-            foreach (string group_path in Directory.GetDirectories (Config.FoldersPath)) {
-                foreach (string folder_path in Directory.GetDirectories (group_path)) {
-                    string folder_name = Path.GetFileName (folder_path);
+            Logger.LogDebug ("Controller", "DetectRepositoryRenames: checking path: " + Config.FoldersPath);
+            
+            try {
+                foreach (string group_path in Directory.GetDirectories (Config.FoldersPath)) {
+                    Logger.LogDebug ("Controller", "DetectRepositoryRenames: found group_path: " + group_path);
+                    
+                    foreach (string folder_path in Directory.GetDirectories (group_path)) {
+                        string folder_name = Path.GetFileName (folder_path);
 
-                    if (Config.IdentifierByName (folder_name) != null)
-                        continue;
+                        if (Config.IdentifierByName (folder_name) != null)
+                            continue;
 
-                    string identifier_file_path = Path.Combine (folder_path, ".sparkleshare");
+                        string identifier_file_path = Path.Combine (folder_path, ".sparkleshare");
 
-                    if (!File.Exists (identifier_file_path))
-                        continue;
+                        if (!File.Exists (identifier_file_path))
+                            continue;
 
-                    string identifier = File.ReadAllText (identifier_file_path).Trim ();
+                        string identifier = File.ReadAllText (identifier_file_path).Trim ();
 
-                    if (!Config.IdentifierExists (identifier))
-                        continue;
+                        if (!Config.IdentifierExists (identifier))
+                            continue;
 
-                    RemoveRepository (GetRepoByName (folder_name)!);
-                    Config.RenameFolder (identifier, folder_name);
+                        RemoveRepository (GetRepoByName (folder_name)!);
+                        Config.RenameFolder (identifier, folder_name);
 
-                    string new_folder_path = Path.Combine (group_path, folder_name);
-                    AddRepository (new_folder_path);
+                        string new_folder_path = Path.Combine (group_path, folder_name);
+                        AddRepository (new_folder_path);
 
-                    Logger.LogInfo ("Controller",
-                        "Renamed folder with identifier " + identifier + " to '" + folder_name + "'");
+                        Logger.LogInfo ("Controller",
+                            "Renamed folder with identifier " + identifier + " to '" + folder_name + "'");
+                    }
                 }
+            } catch (Exception e) {
+                Logger.LogDebug ("Controller", "DetectRepositoryRenames error: " + e.Message, e);
             }
         }
 
@@ -388,14 +402,18 @@ namespace SparkleShare {
         {
             foreach (string folder_name in Config.Folders) {
                 string folder_path = new SparkleFolder (folder_name).FullPath;
+                
+                Logger.LogDebug ("Controller", "Checking folder '" + folder_name + "' at path: " + folder_path);
 
                 if (!Directory.Exists (folder_path)) {
+                    Logger.LogDebug ("Controller", "Folder does not exist at: " + folder_path);
                     Config.RemoveFolder (folder_name);
                     RemoveRepository (GetRepoByName (folder_name)!);
 
                     Logger.LogInfo ("Controller", "Removed folder '" + folder_name + "' from config");
 
                 } else {
+                    Logger.LogDebug ("Controller", "Folder exists at: " + folder_path);
                     AddRepository (folder_path);
                 }
             }
@@ -672,6 +690,9 @@ namespace SparkleShare {
             string target_folder_path = DetermineFolderPath ();
             string target_folder_name = Path.GetFileName (target_folder_path);
 
+            Logger.LogDebug ("Controller", "FinishFetcher: target_folder_path=" + target_folder_path + 
+                ", target_folder_name=" + target_folder_name);
+
             try {
                 Directory.Move (this.fetcher!.TargetFolder, target_folder_path);
 
@@ -694,7 +715,10 @@ namespace SparkleShare {
 
             string backend = BaseFetcher.GetBackend (this.fetcher!.RemoteUrl.ToString ());
 
-            Config.AddFolder (target_folder_name, identifier, this.fetcher.RemoteUrl.ToString (), backend);
+            Logger.LogDebug ("Controller", "Adding folder to config: name=" + target_folder_name + 
+                ", url=" + this.fetcher.RemoteUrl.ToString () + ", backend=" + backend);
+
+            Config.AddFolder (target_folder_name, identifier, this.fetcher.RemoteUrl.ToUriString (), backend);
 
             if (this.fetcher.FetchedRepoStorageType != StorageType.Plain) {
                 Config.SetFolderOptionalAttribute (target_folder_name,
@@ -733,7 +757,9 @@ namespace SparkleShare {
 
             // Add a number suffix when needed, e.g. "Folder (3)"
             int suffix = 2 + Directory.GetDirectories (folder_group_path, folder_name + " (*").Length;
-            return string.Format ("{0} ({1})", folder_path, suffix);
+            string final_path = string.Format ("{0} ({1})", folder_path, suffix);
+            Logger.LogDebug ("Controller", "Folder exists, using suffix: " + final_path);
+            return final_path;
         }
 
 
