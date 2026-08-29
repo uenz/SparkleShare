@@ -330,7 +330,8 @@ namespace SparkleShare.UserInterface
 
             var sparkleShare_item = new NativeMenuItem
             {
-                Header = "\uD83D\uDCC2 SparkleShare",
+                // Use no icon before SparkleShare menu entry
+                Header = "      SparkleShare",
                 Menu = sparkleShare_menu
             };
             menu.Items.Add(sparkleShare_item);
@@ -475,8 +476,8 @@ namespace SparkleShare.UserInterface
                 {
                     if (item is NativeMenuItem menuItem && menuItem.Menu != null)
                     {
-                        // Skip the "SparkleShare" main menu
-                        if (menuItem.Header?.ToString() == "SparkleShare")
+                        // Skip the "SparkleShare" main menu (header may include emoji/prefixes)
+                        if (menuItem.Header?.ToString()?.Contains("SparkleShare") == true)
                             continue;
 
                         // This is a project menu
