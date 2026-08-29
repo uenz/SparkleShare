@@ -9,9 +9,9 @@
     <key>CFBundleName</key>
     <string>SparkleShare</string>
     <key>CFBundleShortVersionString</key>
-    <string>3.99.00</string>
+    <string> 4.0.0 </string>
     <key>CFBundleVersion</key>
-    <string>3.99.00</string>
+    <string> 4.0.0 </string>
 	<key>CFBundleExecutable</key>
 	<string>SparkleShare.Avalonia</string>
     <key>LSApplicationCategoryType</key>
@@ -28,6 +28,9 @@
     <true/>
 </dict>
 </plist>
+
+
+
 
 
 
