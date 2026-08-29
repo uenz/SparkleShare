@@ -24,9 +24,9 @@
         in all cases to avoid this problem.
     -->
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
-              Value="DUMMY TEXT"
-        />
-
+              Value="DUMMY TEXT" />        
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX"
+              Value="1" /> 
     <!--
         Use a SetProperty to change the value of the property so we can
         reference our variables or MSI variables.
@@ -50,7 +50,7 @@
     -->
     <CustomAction Id="LaunchApplication"
         Directory="INSTALLFOLDER"
-        ExeCommand="[#SparkleShareAppexe] --pause"
+        ExeCommand="[INSTALLFOLDER]SparkleShare.Avalonia.exe --pause"
         Execute="immediate"
         Return="asyncNoWait"
         Impersonate="yes" />

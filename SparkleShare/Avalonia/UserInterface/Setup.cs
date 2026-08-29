@@ -52,7 +52,6 @@ namespace SparkleShare.UserInterface
             BindController();
         }
 
-        // ?? Shell layout (side-splash + header + content + button bar) ????????
         private void BuildShell()
         {
             var root = new Grid();
@@ -129,7 +128,6 @@ namespace SparkleShare.UserInterface
             Content = root;
         }
 
-        // ?? Controller binding ????????????????????????????????????????????????
         private void BindController()
         {
             Controller.ShowWindowEvent += () => Dispatcher.UIThread.Post(() => { Show(); Activate(); });
@@ -140,10 +138,9 @@ namespace SparkleShare.UserInterface
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {
-            e.Cancel = true;   // never close — hide instead
+            e.Cancel = true;   // never close, hide instead
         }
 
-        // ?? Page dispatcher ???????????????????????????????????????????????????
         private void ShowPage(PageType type, string[] warnings)
         {
             _contentPanel.Children.Clear();
@@ -163,7 +160,6 @@ namespace SparkleShare.UserInterface
             }
         }
 
-        // ?? Page: Setup ???????????????????????????????????????????????????????
         private void ShowSetupPage()
         {
             _header.Text      = "Welcome to SparkleShare!";
@@ -200,7 +196,6 @@ namespace SparkleShare.UserInterface
             name_box.Focus();
         }
 
-        // ?? Page: Invite ??????????????????????????????????????????????????????
         private void ShowInvitePage()
         {
             _header.Text      = "You've received an invite!";
@@ -220,7 +215,6 @@ namespace SparkleShare.UserInterface
             add_btn.Click    += (_, _) => Controller.InvitePageCompleted();
         }
 
-        // ?? Page: Add ?????????????????????????????????????????????????????????
         private void ShowAddPage()
         {
             _header.Text      = "Where's your project hosted?";
@@ -310,14 +304,13 @@ namespace SparkleShare.UserInterface
             address_box.Focus();
         }
 
-        // ?? Page: Syncing ?????????????????????????????????????????????????????
         private void ShowSyncingPage()
         {
-            _header.Text      = $"Adding project '{Controller.SyncingFolder}'…";
+            _header.Text      = $"Adding project '{Controller.SyncingFolder}'";
             _description.Text = "This may take a while for large projects.\nIsn't it coffee-o'clock?";
 
             var progress = new ProgressBar { Width = 414, Height = 15, Value = Controller.ProgressBarPercentage };
-            var info_lbl = new TextBlock   { Width = 414, Text = "Preparing to fetch files…", TextAlignment = TextAlignment.Right };
+            var info_lbl = new TextBlock   { Width = 414, Text = "Preparing to fetch files...", TextAlignment = TextAlignment.Right };
 
             var stack = new StackPanel { Spacing = 8 };
             stack.Children.Add(progress);
@@ -337,24 +330,23 @@ namespace SparkleShare.UserInterface
             cancel_btn.Click += (_, _) => Controller.SyncingCancelled();
         }
 
-        // ?? Page: Error ???????????????????????????????????????????????????????
         private void ShowErrorPage(string[] warnings)
         {
-            _header.Text      = "Oops! Something went wrong…";
+            _header.Text      = "Oops! Something went wrongâ€¦";
             _description.Text = "Please check the following:";
 
             var stack = new StackPanel { Spacing = 6 };
 
             stack.Children.Add(new TextBlock
             {
-                Text = $"• {Controller.PreviousUrl} is the address we've compiled. Does this look alright?\n" +
-                        "• Is this computer's Client ID known by the host?",
+                Text = $"{Controller.PreviousUrl}\nis the address we've compiled. Does this look alright?\n" +
+                        "Is this computer's Client ID known by the host?",
                 TextWrapping = TextWrapping.Wrap
             });
 
             if (warnings?.Length > 0)
             {
-                stack.Children.Add(new TextBlock { Text = "• Raw error:", FontWeight = FontWeight.Bold });
+                stack.Children.Add(new TextBlock { Text = "Raw error:", FontWeight = FontWeight.Bold });
                 foreach (var w in warnings)
                     stack.Children.Add(new TextBlock { Text = "  " + w, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold });
             }
@@ -362,14 +354,13 @@ namespace SparkleShare.UserInterface
             _contentPanel.Children.Add(stack);
 
             var cancel_btn    = Btn("Cancel");
-            var try_again_btn = Btn("Try again…", isDefault: true);
+            var try_again_btn = Btn("Try againâ€¦", isDefault: true);
             AddButtons(cancel_btn, try_again_btn);
 
             cancel_btn.Click    += (_, _) => Controller.PageCancelled();
             try_again_btn.Click += (_, _) => Controller.ErrorPageCompleted();
         }
 
-        // ?? Page: StorageSetup ????????????????????????????????????????????????
         private void ShowStoragePage()
         {
             _header.Text      = $"Storage type for '{Controller.SyncingFolder}'";
@@ -410,7 +401,6 @@ namespace SparkleShare.UserInterface
             };
         }
 
-        // ?? Page: CryptoSetup / CryptoPassword ????????????????????????????????
         private void ShowCryptoPage(bool is_password_page)
         {
             _header.Text      = is_password_page ? "This project contains encrypted files"
@@ -465,7 +455,6 @@ namespace SparkleShare.UserInterface
             pw_box.Focus();
         }
 
-        // ?? Page: Finished ????????????????????????????????????????????????????
         private void ShowFinishedPage(string[] warnings)
         {
             _header.Text      = "Your shared project is ready!";
@@ -487,7 +476,6 @@ namespace SparkleShare.UserInterface
             finish_btn.Click     += (_, _) => Controller.FinishPageCompleted();
         }
 
-        // ?? Helpers ???????????????????????????????????????????????????????????
         private static TextBlock Label(string text, bool bold = false) =>
             new TextBlock { Text = text, FontWeight = bold ? FontWeight.Bold : FontWeight.Normal,
                             VerticalAlignment = VerticalAlignment.Center };

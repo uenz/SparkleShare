@@ -21,6 +21,7 @@ if (-not $version) {
 
     # replace version in installer script
     (Get-Content $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi) -replace " ProductVersion=`"[^']*`"", " ProductVersion=`"$version`"" | Set-Content $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi
+    (Get-Content $PSScriptRoot/../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi) -replace " ProductVersion=`"[^']*`"", " ProductVersion=`"$version`"" | Set-Content $PSScriptRoot/../SparkleShare/Avalonia/os_specific/Windows/Installer/productVersion.wxi
     # replace version in assembly info
     (Get-Content $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs) -replace "assembly:AssemblyVersion *\(`"[^`']*`"\)", "assembly:AssemblyVersion (`"$version`")" | Set-Content $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs
     # replace version in meson.build
@@ -50,11 +51,24 @@ if (-not $version) {
 
     # Write the updated content back to the plist file
     Set-Content -Path $plistPath -Value $content
-    $version | Out-File $PSScriptRoot/../version-latest
-    Remove-Item ../meson.build.bak -ErrorAction SilentlyContinue
-    Remove-Item ../SparkleShare/Mac/Info.plist.tmp -ErrorAction SilentlyContinue
-    Remove-Item ../SparkleShare/Windows/SparkleShare.wxs.bak -ErrorAction SilentlyContinue
-    Remove-Item ../Sparkles/InstallationInfo.Directory.cs.bak -ErrorAction SilentlyContinue
+    # Also update Avalonia macOS Info.plist if present
+    $avaloniaPlist = "$PSScriptRoot/../SparkleShare/Avalonia/os_specific/MacOS/Info.plist"
+    if (Test-Path $avaloniaPlist) {
+        $avaloniaContent = Get-Content -Path $avaloniaPlist -Raw
+        foreach ($key in $newValues.Keys) {
+            $avaloniaContent = Replace-KeyValue-InPlist -content $avaloniaContent -key $key -newValue $newValues[$key]
+        }
+        Set-Content -Path $avaloniaPlist -Value $avaloniaContent
+    }
+
+    # Append version to version-latest
+    Set-Content -Path $PSScriptRoot/../version-latest -Value $version
+
+    # Clean up backup/temp files created by other scripts
+    Remove-Item $PSScriptRoot/../meson.build.bak -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../SparkleShare/Mac/Info.plist.tmp -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../SparkleShare/Windows/Installer/productVersion.wxi.bak -ErrorAction SilentlyContinue
+    Remove-Item $PSScriptRoot/../Sparkles/InstallationInfo.Directory.cs.bak -ErrorAction SilentlyContinue
 }
 
 

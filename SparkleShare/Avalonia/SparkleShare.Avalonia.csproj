@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -11,6 +11,9 @@
     <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
     <DisableImplicitNuGetFallbackFolder>false</DisableImplicitNuGetFallbackFolder>
     <Utf8Output>true</Utf8Output>
+    <Configurations>Debug;Release;ReleaseAvalonia;DebugAvalonia</Configurations>
+    <StartupObject>SparkleShare.Program</StartupObject>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,11 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+    <PackageReference Include="Avalonia" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Labs.Notifications" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
@@ -30,8 +34,81 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Sparkles\Sparkles.csproj" />
     <ProjectReference Include="..\..\Sparkles\Git\Sparkles.Git.csproj" />
+    <None Include="Installer\SparkleShare.Installer.wixproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <!-- Tray Icons from Windows folder -->
+    <None Include="..\Windows\Images\process-syncing-down.png">
+      <Link>Images\process-syncing-down.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-idle.png">
+      <Link>Images\process-syncing-idle.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-up.png">
+      <Link>Images\process-syncing-up.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing.png">
+      <Link>Images\process-syncing.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Windows\Images\process-syncing-error.png">
+      <Link>Images\process-syncing-error.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+    <!-- Tray Icons from MacOS folder --> 
+    <None Include="..\Mac\Resources\process-syncing-down@2x.png">
+      <Link>Images\process-syncing-down.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Mac\Resources\process-syncing-idle@2x.png">
+      <Link>Images\process-syncing-idle.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Mac\Resources\process-syncing-up@2x.png">
+      <Link>Images\process-syncing-up.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Mac\Resources\process-syncing@2x.png">
+      <Link>Images\process-syncing.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Mac\Resources\process-syncing-error@2x.png">
+      <Link>Images\process-syncing-error.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <!-- Tray Icons from Linux folder -->
+    <None Include="..\Linux\Images\icons\hicolor\24x24\status\org.sparkleshare.SparkleShare-syncing-down.png">
+      <Link>Images\syncing-down.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\24x24\status\org.sparkleshare.SparkleShare-syncing-idle.png">
+      <Link>Images\process-syncing-idle.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\24x24\status\org.sparkleshare.SparkleShare-syncing-up.png">
+      <Link>Images\syncing-up.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\24x24\status\org.sparkleshare.SparkleShare-syncing.png">
+      <Link>Images\process-syncing.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+        <None Include="..\Linux\Images\icons\hicolor\24x24\status\org.sparkleshare.SparkleShare-syncing-error.png">
+      <Link>Images\process-syncing-error.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
   <ItemGroup>
     <!-- Images - use None with CopyToOutputDirectory for file-based loading -->
     <None Include="..\Common\Images\about.png">
@@ -57,51 +134,8 @@
     <None Include="..\Common\Images\text-balloon.png">
       <Link>Images\text-balloon.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    
-    <!-- Icons from Linux folder -->
-    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-added.png">
-      <Link>Images\document-added-12.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-deleted.png">
-      <Link>Images\document-deleted-12.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-edited.png">
-      <Link>Images\document-edited-12.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-moved.png">
-      <Link>Images\document-moved-12.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Linux\Images\icons\hicolor\22x22\status\process-working.png">
-      <Link>Images\process-working-22.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    
-    <!-- Tray Icons from Windows folder -->
-    <None Include="..\Windows\Images\process-syncing-down.png">
-      <Link>Images\process-syncing-down.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Windows\Images\process-syncing-idle.png">
-      <Link>Images\process-syncing-idle.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Windows\Images\process-syncing-up.png">
-      <Link>Images\process-syncing-up.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Windows\Images\process-syncing.png">
-      <Link>Images\process-syncing.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Windows\Images\process-syncing-error.png">
-      <Link>Images\process-syncing-error.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </None>    
+    <!-- Pictures from Windows folder -->
     <None Include="..\Windows\Images\folder.png">
       <Link>Images\folder.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -136,6 +170,28 @@
     <EmbeddedResource Include="..\Common\HTML\jquery.js">
       <Link>HTML\jquery.js</Link>
     </EmbeddedResource>
+    
+    <!-- Icons from Linux folder for html view -->
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-added.png">
+      <Link>Images\document-added-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-deleted.png">
+      <Link>Images\document-deleted-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-edited.png">
+      <Link>Images\document-edited-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\12x12\status\document-moved.png">
+      <Link>Images\document-moved-12.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Linux\Images\icons\hicolor\22x22\status\process-working.png">
+      <Link>Images\process-working.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
 
     <!-- Presets -->
     <None Include="..\Common\Presets\github.png">
@@ -162,12 +218,35 @@
       <Link>Presets\own-server.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Installer\SparkleShare.Installer.wixproj" />
   </ItemGroup>
 
   <Import Project="..\Common\SparkleShare.projitems" Label="Shared" />
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
-    <Exec Command="&quot;$(ProjectDir)..\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
-  </Target>
+<ItemGroup>
+  <GitFiles Include="bin\Release\net9.0\git_scm\**\*" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+</ItemGroup>
+
+<Target Name="CopyGitFiles" AfterTargets="Publish" Condition="$([MSBuild]::IsOSPlatform('Windows'))" >
+  <Copy
+      SourceFiles="@(GitFiles)"
+      DestinationFiles="@(GitFiles->'$(PublishDir)\git_scm\%(RecursiveDir)%(Filename)%(Extension)')" />
+</Target>  
+<Target Name="PostBuildWindows" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <Message Text="Running on Windows" Importance="High" />
+  <Exec Command="&quot;$(ProjectDir)\os_specific\Windows\postBuild.cmd&quot; &quot;$(TargetDir)git_scm&quot;" />
+</Target>
+  
+<Target Name="PostBuildMac" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+  <Message Text="Running on macOS" Importance="High" />
+<!--
+  commented out, because execution works but build fails with : command not found. So it is done in actions
+  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot; $(Architecture)" Condition="'$(Architecture)' != ''" />
+  <Exec Command="bash &quot;$(ProjectDir)/os_specific/MacOS/postBuild.sh&quot; &quot;$(TargetDir)$(AssemblyName)&quot;" Condition="'$(Architecture)' == ''" />
+-->
+</Target>
+<Target Name="PostBuildLinux" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+  <Message Text="Running on Linux" Importance="High" />
+  <Exec Command="&quot;$(ProjectDir)/os_specific/Linux/postBuild.sh&quot; &quot;$(TargetDir)git_scm&quot;" />
+</Target>
+
 </Project>

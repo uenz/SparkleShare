@@ -35,7 +35,7 @@
             fea  (FeatureTree)
             cus  (Custom InstallDir)
     -->
-    <?define InstallType = ""?>
+    <?define InstallType = "Avalonia"?>
 
     <!--
         The AppName variable is built from the Simple App's target name property
@@ -44,7 +44,7 @@
     <?if $(var.InstallType) = ""?>
         <?define AppName = "SparkleShare"?> <!--"$(var.SparkleShare.Windows.TargetName)" -->
     <?else?>
-        <?define AppName = "SparkleSahre-$(var.InstallType)" ?> <!--"$(var.SparkleShare.Windows.TargetName)-$(var.InstallType)"-->
+        <?define AppName = "SparkleShare-$(var.InstallType)" ?> <!--"$(var.SparkleShare.Windows.TargetName)-$(var.InstallType)"-->
     <?endif?>
 
     <?define Manufacturer = "SparkleShare" ?>

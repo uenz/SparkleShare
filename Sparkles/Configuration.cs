@@ -43,9 +43,9 @@ namespace Sparkles
         private static readonly Lazy<Configuration> ConfigLazy = lazy;
 
         public static Configuration DefaultConfiguration { get { return ConfigLazy.Value; } }
-#pragma warning disable CA2211 // Nicht konstante Felder dürfen nicht sichtbar sein
+#pragma warning disable CA2211
         public static bool DebugMode = true;
-#pragma warning restore CA2211 // Nicht konstante Felder dürfen nicht sichtbar sein
+#pragma warning restore CA2211
 
         public readonly string DirectoryPath;
         public readonly string FilePath;

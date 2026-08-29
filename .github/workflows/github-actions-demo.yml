@@ -11,7 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ # macos-12,  
+        os: [ macos-26,  
+              macos-26-intel,
               # ubuntu-20.04, 
               windows-latest
             ]
@@ -21,10 +22,12 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Setup .NET 9.x
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           # Semantic version range syntax or exact version of a dotnet version
           dotnet-version: '9.x'
+          cache: false
+
       - name: Display dotnet version
         run: dotnet --version
       - name: Install Dependencies (Linux)
@@ -64,19 +67,27 @@ jobs:
       - name: Install Dependencies (macOS)
         run: |
           echo "macOS {{matrix.config.os}}"
-          brew install autoconf automake libtool pkg-config
-        if: matrix.os == 'macos-12'
+          brew update
+          # brew upgrade
+          brew install create-dmg
+        if: startsWith(matrix.os, 'macos-')
       - name: Check out repository code
         uses: actions/checkout@v6
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - run: git status
       - name: Compile (macOS)
+        env:
+          ARCH_NAME: ${{ matrix.os == 'macos-26-intel' && 'x64' || 'arm64' }}
         run: |
-          msbuild SparkleShare.sln /target:SparkleShare_Mac:Rebuild /p:Configuration=ReleaseDist /p:Platform="Any CPU" -m
-          mv ./SparkleShare/Mac/bin/ReleaseDist/SparkleShare.app .
-          zip -r ./SparkleShare-MacOs-${GITHUB_REF##*/}.zip ./SparkleShare.app
-        if: matrix.os == 'macos-12'
+          # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/build.sh
+          # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/checkGit.sh
+          # chmod +x ./SparkleShare/Avalonia/os_specific/MacOS/postBuild.sh
+          ./SparkleShare/Avalonia/os_specific/MacOS/build.sh $ARCH_NAME
+          ./SparkleShare/Avalonia/os_specific/MacOS/postBuild.sh "../../bin/Release/net9.0/osx-${ARCH_NAME}/publish/SparkleShare.Avalonia.dll" $ARCH_NAME
+          cp ./SparkleShare/Avalonia/os_specific/MacOS/SparkleShare-Installer.dmg SparkleShare-MacOs-${ARCH_NAME}-${GITHUB_REF##*/}.dmg
+
+        if: startsWith(matrix.os, 'macos-')
       - name: Compile (Linux)
         run: |
           meson build/
@@ -86,7 +97,9 @@ jobs:
       - name: Compile (Windows)
         run: |
           ./SparkleShare/Windows/build.cmd installer
-          cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
+          cp ./SparkleShare/Windows/Installer/build/setup/x64/Release/en-US/SparkleShare.Windows.Installer.msi SparkleShare-Windows-Legacy-${GITHUB_REF##*/}.msi
+          ./SparkleShare/Avalonia/os_specific/Windows/build.cmd installer
+          cp ./SparkleShare/Avalonia/os_specific/Windows/Installer/bin/Release/en-US/SparkleShare.Avalonia.Installer.msi SparkleShare-Windows-${GITHUB_REF##*/}.msi
         if: matrix.os == 'windows-latest'
       - name: Publish
         uses: softprops/action-gh-release@v3

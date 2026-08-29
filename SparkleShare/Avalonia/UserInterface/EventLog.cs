@@ -53,14 +53,12 @@ namespace SparkleShare.UserInterface
             BindController();
         }
 
-        // ?? Layout ????????????????????????????????????????????????????????????
         private void BuildUI()
         {
             var root = new Grid();
             root.RowDefinitions.Add(new RowDefinition(new GridLength(36)));
             root.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
 
-            // ?? Top bar ??
             var top_bar = new Border
             {
                 Background      = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
@@ -101,7 +99,6 @@ namespace SparkleShare.UserInterface
             Grid.SetRow(top_bar, 0);
             root.Children.Add(top_bar);
 
-            // ?? Content area: spinner OR entries ??
             var content = new Grid();
 
             // Spinner (shown while loading)
@@ -113,7 +110,7 @@ namespace SparkleShare.UserInterface
             };
             _spinnerLabel = new TextBlock
             {
-                Text = "Loading…",
+                Text = "Loadingâ€¦",
                 FontSize = 16,
                 Opacity  = 0.5,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -138,7 +135,6 @@ namespace SparkleShare.UserInterface
             Content = root;
         }
 
-        // ?? Controller binding ????????????????????????????????????????????????
         private void BindController()
         {
             Controller.ShowWindowEvent += () => Dispatcher.UIThread.Post(() => { Show(); Activate(); });
@@ -193,7 +189,6 @@ namespace SparkleShare.UserInterface
             Controller.WindowClosed();
         }
 
-        // ?? Chooser ???????????????????????????????????????????????????????????
         private void UpdateChooser(string[] folders)
         {
             _comboBox.SelectionChanged -= OnChooserChanged;
@@ -230,7 +225,6 @@ namespace SparkleShare.UserInterface
                 : (_comboBox.Items[idx] as ComboBoxItem)?.Content?.ToString() ?? null;
         }
 
-        // ?? Native HTML renderer ??????????????????????????????????????????????
         // Parses the HTML that SparkleShare generates and renders it as
         // native Avalonia controls (no WebView dependency needed).
         private void RenderHtmlAsNative(string html)
@@ -297,7 +291,7 @@ namespace SparkleShare.UserInterface
 
         private void RenderDayEntry(string block)
         {
-            // Day header
+            // Day header: <div class='day-entry-header'>...</div>
             string day_text = ExtractDivContent(block, "day-entry-header");
             if (!string.IsNullOrWhiteSpace(day_text))
             {
@@ -318,7 +312,7 @@ namespace SparkleShare.UserInterface
                 _entriesPanel.Children.Add(day_header);
             }
 
-            // Event entries within the day block
+            // Event entries: <div class='event-entry'>...</div>
             int pos = 0;
             while (true)
             {
@@ -349,7 +343,7 @@ namespace SparkleShare.UserInterface
 
         private void RenderEventEntry(string entry_block)
         {
-            // Extract user, action, file info from the <tr> block
+            // Extract user name: <div class='event-user-name'>
             string user_name = StripTags(ExtractDivContent(entry_block, "event-user-name"));
 
             // Extract event content: <!-- $event-entry-content --> is replaced with <dl>...</dl>
@@ -372,7 +366,7 @@ namespace SparkleShare.UserInterface
             entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(36)));
             entry.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
 
-            // Avatar placeholder
+            // Avatar
             var avatar_border = new Border
             {
                 Width = 28, Height = 28,
@@ -382,7 +376,7 @@ namespace SparkleShare.UserInterface
                 Margin = new Thickness(0, 2, 4, 0)
             };
 
-            // User name
+            // Try to load avatar image
             if (!string.IsNullOrEmpty(avatar_url))
             {
                 try
@@ -400,7 +394,7 @@ namespace SparkleShare.UserInterface
             Grid.SetColumn(avatar_border, 0);
             entry.Children.Add(avatar_border);
 
-            // Action / file
+            // Right side: user + content
             var right = new StackPanel { Spacing = 2 };
 
             if (!string.IsNullOrWhiteSpace(user_name))
@@ -414,7 +408,7 @@ namespace SparkleShare.UserInterface
                 });
             }
 
-            // Time
+            // Parse <dd> entries for file changes
             int dd_pos = 0;
             while (true)
             {
@@ -432,24 +426,54 @@ namespace SparkleShare.UserInterface
                     // Remove the ? symbol (&#x25BE;) that comes from the HTML time link
                     dd_text = dd_text.Replace("\u25BE", "").Trim();
 
-                    // Pick icon based on change type using Unicode escape sequences
-                    // \u2795 = ?  \u2796 = ?  \u270F = ?  \u27A1 = ?  \u2022 = •
-                    string icon = css_class switch
-                    {
-                        "added"   => "\u2795",  // ?
-                        "deleted" => "\u2796",  // ?
-                        "edited"  => "\u270F",  // ?
-                        "moved"   => "\u27A1",  // ?
-                        _         => "\u2022"   // •
-                    };
-
+                    // Use small PNG icons (same names as Windows version) when available
                     var file_row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 4 };
-                    file_row.Children.Add(new TextBlock
+
+                    // Map css class to expected icon name (added/deleted/edited/moved)
+                    string? iconName = null;
+                    if (!string.IsNullOrWhiteSpace(css_class))
                     {
-                        Text    = icon,
-                        Opacity = 0.6,
-                        Width   = 16
-                    });
+                        switch (css_class)
+                        {
+                            case "added":   iconName = "document-added-12"; break;
+                            case "deleted": iconName = "document-deleted-12"; break;
+                            case "edited":  iconName = "document-edited-12"; break;
+                            case "moved":   iconName = "document-moved-12"; break;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(iconName))
+                    {
+                        try
+                        {
+                            var iconBmp = UserInterfaceHelpers.GetImageSource(iconName);
+                            if (iconBmp != null)
+                            {
+                                file_row.Children.Add(new Avalonia.Controls.Image
+                                {
+                                    Source = iconBmp,
+                                    Width  = 16,
+                                    Height = 16,
+                                    Opacity = 0.6,
+                                    VerticalAlignment = VerticalAlignment.Center
+                                });
+                            }
+                            else
+                            {
+                                // fallback to small bullet
+                                file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                            }
+                        }
+                        catch
+                        {
+                            file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                        }
+                    }
+                    else
+                    {
+                        file_row.Children.Add(new TextBlock { Text = "\u2022", Opacity = 0.6, Width = 16 });
+                    }
+
                     file_row.Children.Add(new TextBlock
                     {
                         Text         = dd_text,
@@ -457,6 +481,7 @@ namespace SparkleShare.UserInterface
                         Opacity      = 0.75,
                         TextTrimming = TextTrimming.CharacterEllipsis
                     });
+
                     right.Children.Add(file_row);
                 }
                 dd_pos = dd_end + 5;
@@ -469,7 +494,6 @@ namespace SparkleShare.UserInterface
             _entriesPanel.Children.Add(entry_border);
         }
 
-        // ?? Image export (same as Windows version) ???????????????????????????
         private void WriteOutImages()
         {
             string tmp_path     = Sparkles.Configuration.DefaultConfiguration.TmpPath;
@@ -495,7 +519,6 @@ namespace SparkleShare.UserInterface
             }
         }
 
-        // ?? Helpers ???????????????????????????????????????????????????????????
         private void ShowSpinner()  { _spinnerPanel.IsVisible = true;  _scrollViewer.IsVisible = false; }
         private void ShowContent()  { _spinnerPanel.IsVisible = false; _scrollViewer.IsVisible = true;  }
 

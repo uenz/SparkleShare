@@ -1,7 +1,7 @@
 @ECHO ON
 setlocal enableDelayedExpansion
 REM if no target directory is passed use default on
-IF [%1]==[]  (SET "OUTDIR=%~dp0bin\git_scm") ELSE (SET OUTDIR="%~1")
+IF [%1]==[]  (SET "OUTDIR=%~dp0\..\..\bin\git_scm") ELSE (SET OUTDIR="%~1")
 
 IF EXIST %OUTDIR% GOTO skipgitdownload
 ECHO installing git

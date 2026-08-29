@@ -106,7 +106,7 @@ namespace Sparkles.Tests
         [Test]
         public void ReturnsNullForNullInput()
         {
-            // DeriveFingerprint splits on spaces and accesses [2] ? null throws
+            // DeriveFingerprint splits on spaces and accesses [2] � null throws
             var result = _fetcher.CallDeriveFingerprint(null!);
             Assert.That(result, Is.Null);
         }

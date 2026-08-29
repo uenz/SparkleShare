@@ -34,7 +34,7 @@
             otherwise, the .cab file is external and must be moved around with
             the .msi file.
         -->
-        <Media Id="1" Cabinet="SparkleSahre.cab" EmbedCab="yes" />
+        <Media Id="1" Cabinet="SparkleShare.cab" EmbedCab="yes" />
 
         <!--
             Set the overall type of install dialog that WiX will use as a

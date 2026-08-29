@@ -74,7 +74,7 @@ namespace SparkleShare.UserInterface
             // Updates label
             _updatesLabel = new TextBlock
             {
-                Text       = "Checking for updates…",
+                Text       = "Checking for updatesâ€¦",
                 FontSize   = 11,
                 Foreground = new SolidColorBrush(Color.FromArgb(128, 255, 255, 255))
             };
@@ -87,7 +87,7 @@ namespace SparkleShare.UserInterface
             {
                 FontSize     = 11,
                 Foreground   = Brushes.White,
-                Text         = "Copyright © 2010–" + DateTime.Now.Year + " Hylke Bons and others.\n\n" +
+                Text         = "Copyright Â© 2010-" + DateTime.Now.Year + " Hylke Bons and others.\n\n" +
                                "SparkleShare is Open Source software. You are free to use, modify, " +
                                "and redistribute it under the GNU General Public License version 3 or later.",
                 TextWrapping = TextWrapping.Wrap,

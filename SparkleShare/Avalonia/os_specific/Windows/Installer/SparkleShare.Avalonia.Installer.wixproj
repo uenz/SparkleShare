@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="WixToolset.Sdk/4.0.5">
+
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <EnableDefaultHarvesting>true</EnableDefaultHarvesting>
+    <Platforms>x86;x64</Platforms>
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>  
+  <PropertyGroup>
+    <SuppressIces>ICE57</SuppressIces>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>build\setup\x64\Release\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+    <SuppressAllWarnings>false</SuppressAllWarnings>
+    <Pedantic>true</Pedantic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>build\setup\x64\Debug\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutputPath>build\setup\x86\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutputPath>build\setup\x86\Debug\</OutputPath>
+    <SuppressValidation>false</SuppressValidation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="LaunchAppOnExit.wxi" />
+    <Content Include="Predefines.wxi" />
+    <Content Include="productVersion.wxi" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Heat" Version="4.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SparkleShare.Avalonia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <HarvestDirectory Include="..\..\..\bin\Release\net9.0\publish">
+      <SuppressRegistry>true</SuppressRegistry>
+      <ComponentGroupName>AppFiles</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>true</SuppressRootDirectory>
+      <SuppressRegistry>true</SuppressRegistry>
+      <Link>/</Link>
+    </HarvestDirectory>
+    <BindPath Include="..\..\..\bin\Release\net9.0\publish" />
+  </ItemGroup>
+  
+</Project>
+
+

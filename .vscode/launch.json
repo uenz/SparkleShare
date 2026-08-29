@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "SparkleShare.Avalonia (dotnet@9)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build SparkleShare.Avalonia",
+      "program": "/usr/local/opt/dotnet@9/bin/dotnet",
+      "args": ["${workspaceFolder}/SparkleShare/Avalonia/bin/Debug/net9.0/SparkleShare.Avalonia.dll"],
+      "cwd": "${workspaceFolder}/SparkleShare/Avalonia",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}
+
