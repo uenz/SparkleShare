@@ -258,7 +258,7 @@ namespace Sparkles.Git {
             Directory.CreateDirectory (git_info_path);
 
             string password_file_path = Path.Combine (git_info_path, "encryption_password");
-            // Store the password, TODO: 600 permissions
+            // Store the password, set 600 permissions
             if (InstallationInfo.OperatingSystem != OS.Windows) {
                 File.SetUnixFileMode(password_file_path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
             }

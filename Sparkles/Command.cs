@@ -16,11 +16,11 @@
 
 
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Collections;
 
 namespace Sparkles
 {
@@ -72,8 +72,10 @@ namespace Sparkles
                 folder = Path.GetFileName(StartInfo.WorkingDirectory) + " | ";
 
             if (write_output)
-                Logger.LogDebug("Cmd",StartInfo.ToString());
+            {
+                Logger.LogDebug("Cmd", StartInfo.ToString() ?? string.Empty);
                 Logger.LogDebug("Cmd", folder + Path.GetFileName(StartInfo.FileName) + " " + StartInfo.Arguments);
+            }
             string EnvVarText="";
             foreach (DictionaryEntry entry  in StartInfo.EnvironmentVariables)
             {

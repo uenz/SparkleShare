@@ -127,7 +127,7 @@ namespace Sparkles
             IsActive = true;
             Started();
 
-            Logger.LogDebug("Fetcher", TargetFolder + " | Fetching folder: " + RemoteUrl);
+            Logger.LogInfo("Fetcher", TargetFolder + " | Fetching folder: " + RemoteUrl);
 
             try
             {
@@ -148,7 +148,7 @@ namespace Sparkles
                 if (Fetch())
                 {
                     Thread.Sleep(500);
-                    Logger.LogDebug("Fetcher", "Finished");
+                    Logger.LogInfo("Fetcher", "Finished");
 
                     IsActive = false;
                     Finished(FetchedRepoStorageType, Warnings);
@@ -160,13 +160,13 @@ namespace Sparkles
 
                     if (IsActive)
                     {
-                        Logger.LogDebug("Fetcher", "Failed");
+                        Logger.LogInfo("Fetcher", "Failed");
                         Failed();
 
                     }
                     else
                     {
-                        Logger.LogDebug("Fetcher", "Failed: cancelled by user");
+                        Logger.LogInfo("Fetcher", "Failed: cancelled by user");
                     }
 
                     IsActive = false;

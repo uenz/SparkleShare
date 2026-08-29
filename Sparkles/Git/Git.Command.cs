@@ -164,7 +164,7 @@ namespace Sparkles.Git {
 
             if (!match.Success || string.IsNullOrWhiteSpace (line)) {
                 if (!string.IsNullOrWhiteSpace (line))
-                    Logger.LogInfo("Git", line);
+                    Logger.LogInfo ("Git", line);
 
                 return FindError (line);
             }
